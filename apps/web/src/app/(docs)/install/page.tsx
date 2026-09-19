@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@/components/shell/PageHeader";
+import { IconGlyph } from "@/components/IconGlyph";
 import { TrademarkNotice } from "@/components/TrademarkNotice";
 import { AgentTabs, type AgentGuide } from "@/components/install/AgentTabs";
 import { CopyButton } from "@/components/CopyButton";
@@ -120,12 +120,29 @@ get_icons({ ids: ["lucide:house", "lucide:settings", "lucide:log-out"], format: 
     import { LogOut } from "lucide-react";
     License: ISC — free for commercial use, no attribution`;
 
+const AGENT_LOGOS = [
+  { id: "claude", name: "Claude Code" },
+  { id: "cursor", name: "Cursor" },
+  { id: "openai", name: "Codex" },
+  { id: "visualstudiocode", name: "VS Code" },
+  { id: "windsurf", name: "Windsurf" },
+  { id: "googlegemini", name: "Gemini CLI" },
+  { id: "zedindustries", name: "Zed" },
+];
+
 export default function InstallPage() {
   return (
     <main className="flex-1 pb-16">
-      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Install" />
-      <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
-        <p className="text-fg-muted">
+      <div className="mx-auto w-full max-w-3xl px-4 pt-12 md:px-8">
+        <div className="flex items-center gap-2">
+          {AGENT_LOGOS.map((a) => (
+            <span key={a.id} title={a.name} className="grid size-11 place-items-center rounded-full border bg-bg-elevated text-fg">
+              <IconGlyph prefix="simple-icons" name={a.id} className="size-5" />
+            </span>
+          ))}
+        </div>
+        <h1 className="mt-5 text-[32px] font-medium leading-tight tracking-tight">Install IconsDB for your agents</h1>
+        <p className="mt-3 text-fg-muted">
           Give your coding agent 146,000 open source icons. The IconsDB{" "}
           <a href="https://modelcontextprotocol.io" className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
             MCP
