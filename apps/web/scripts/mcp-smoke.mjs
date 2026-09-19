@@ -1,0 +1,15 @@
+import { Client } from "@modelcontextprotocol/client";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
+const url = process.argv[2] ?? "http://localhost:3000/mcp";
+const client = new Client({ name: "test", version: "0" });
+await client.connect(new StreamableHTTPClientTransport(new URL(url)));
+const call = async (name, args) => { const t = Date.now(); const r = await client.callTool({ name, arguments: args }); console.log(`\n=== ${name} ${JSON.stringify(args)} (${Date.now()-t}ms)\n` + r.content[0].text); };
+console.log((await client.listTools()).tools.map(t => t.name).join(", "));
+await call("detect_icon_packages", { dependencies: ["react", "lucide-react", "next"] });
+await call("search_icons", { queries: ["home", "settings", "log out"], package: "lucide-react" });
+await call("search_icons", { query: "shopping cart", limit: 5 });
+await call("get_icon", { id: "lucide:house", format: "react" });
+await call("get_icon", { id: "heroicons:home-solid", format: "vue" });
+await call("get_icons", { ids: ["tabler:home", "tabler:settings", "ph:sign-out-bold"], format: "react" });
+await call("list_icon_sets", { package: "react-icons" });
+await client.close();

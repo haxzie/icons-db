@@ -10,14 +10,7 @@ export type SnippetKind =
 
 export type Snippet = { kind: SnippetKind; label: string; language: string; code: string };
 
-function pascal(name: string): string {
-  return name
-    .split(/[^a-zA-Z0-9]+/)
-    .filter(Boolean)
-    .map((p) => p[0].toUpperCase() + p.slice(1))
-    .join("")
-    .replace(/^(\d)/, "Icon$1");
-}
+import { pascal } from "./packages";
 
 function toJsxAttrs(svg: string): string {
   return svg

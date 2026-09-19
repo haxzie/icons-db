@@ -7,6 +7,7 @@ import { useKeywordIndex } from "@/lib/use-search-index";
 import { useLocalStorage } from "@/lib/client-utils";
 import { TopBar, type SortKey } from "../shell/TopBar";
 import { Toolbar, type ViewMode } from "../shell/Toolbar";
+import { PromoCards } from "../shell/PromoCards";
 import { FilterSidebar, SidebarLabel, SidebarSection } from "../shell/FilterSidebar";
 import { ResultsGrid, type GridItem } from "../search/ResultsGrid";
 import { IconDetail } from "../icon/IconDetail";
@@ -207,6 +208,7 @@ export function CollectionBrowser({
           }
         />
         <Toolbar filtersOpen={filtersOpen} onToggleFilters={() => setFiltersOpen(!filtersOpen)} activeFilters={activeFilters} view={view} onView={setView} />
+        <PromoCards />
         <div className="mx-auto flex max-w-[1400px] items-start gap-8 px-4 pt-4 md:px-8">
           <div className="min-w-0 flex-1 pb-16">
             <p className="mb-4 text-sm font-medium text-fg-muted">

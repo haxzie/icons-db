@@ -18,6 +18,7 @@ import { useLocalSemanticSearch } from "@/lib/semantic-client";
 import { useDebouncedValue, useLocalStorage } from "@/lib/client-utils";
 import { TopBar, type SortKey } from "../shell/TopBar";
 import { Toolbar, type ViewMode } from "../shell/Toolbar";
+import { PromoCards } from "../shell/PromoCards";
 import { FilterSidebar } from "../shell/FilterSidebar";
 import { SearchFilters, type Kind } from "./SearchFilters";
 import { ResultsGrid, type GridItem } from "./ResultsGrid";
@@ -221,6 +222,7 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
           onSubmit={() => items[0] && setSelected({ prefix: items[0].prefix, name: items[0].name })}
         />
         <Toolbar filtersOpen={filtersOpen} onToggleFilters={() => setFiltersOpen(!filtersOpen)} activeFilters={activeFilters} view={view} onView={setView} />
+        <PromoCards />
 
         <div className="mx-auto flex max-w-[1400px] items-start gap-8 px-4 pt-4 md:px-8">
           <div className="min-w-0 flex-1 pb-16">

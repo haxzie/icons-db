@@ -48,6 +48,13 @@ export default function ApiPage() {
         </Link>
         .
       </p>
+      <p className="mt-4 text-sm text-fg-muted">
+        Using a coding agent? The{" "}
+        <Link href="/docs/mcp" className="underline decoration-line hover:text-fg">
+          MCP server
+        </Link>{" "}
+        exposes the same search with package-aware import snippets.
+      </p>
       <TrademarkNotice className="mt-6" />
       <div className="mt-8 space-y-6">
         {endpoints.map((e) => (

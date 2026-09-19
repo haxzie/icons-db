@@ -52,6 +52,18 @@ const items = [
     ),
   },
   {
+    href: "/docs/mcp",
+    label: "MCP",
+    match: (p: string) => p === "/docs/mcp",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="m5.6 5.6 2.2 2.2M16.2 16.2l2.2 2.2M5.6 18.4l2.2-2.2M16.2 7.8l2.2-2.2" />
+      </svg>
+    ),
+  },
+  {
     href: "/licenses",
     label: "Licenses",
     match: (p: string) => p === "/licenses",
@@ -77,12 +89,12 @@ export function Rail() {
           <Link key={it.href} href={it.href} className="group flex w-full flex-col items-center gap-1.5 py-2.5 text-xs font-medium text-fg-muted">
             <span
               className={`grid h-9 w-16 place-items-center rounded-full transition ${
-                active ? "bg-accent-soft text-accent dark:text-[#d2e3fc]" : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                active ? "bg-[#c2dbff] text-[#0b57d0] dark:bg-[#2b4a75] dark:text-[#d2e3fc]" : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
               }`}
             >
               {it.icon}
             </span>
-            <span className={active ? "text-fg" : ""}>{it.label}</span>
+            <span className={active ? "font-semibold text-fg" : ""}>{it.label}</span>
           </Link>
         );
       })}
