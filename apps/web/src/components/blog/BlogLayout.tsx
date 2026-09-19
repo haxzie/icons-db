@@ -1,45 +1,68 @@
 import Link from "next/link";
 import { CATEGORIES, type Post } from "@/lib/blog";
 
-export function BlogLayout({ active, counts, children }: { active: string; counts: Record<string, number>; children: React.ReactNode }) {
+type Item = { slug: string; label: string; href: string; count: number; description?: string };
+
+export function BlogLayout({ active, counts, title, children }: { active: string; counts: Record<string, number>; title: string; children: React.ReactNode }) {
   const total = Object.values(counts).reduce((n, c) => n + c, 0);
-  const items = [{ slug: "all", label: "All", href: "/blog", count: total }, ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label, href: `/blog/category/${c.slug}`, count: counts[c.slug] ?? 0 }))];
+  const items: Item[] = [
+    { slug: "all", label: "All posts", href: "/blog", count: total },
+    ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label, href: `/blog/category/${c.slug}`, count: counts[c.slug] ?? 0, description: c.description })),
+  ];
   return (
-    <div className="mx-auto flex w-full max-w-5xl gap-10 px-4 md:px-8">
-      <aside className="w-52 shrink-0 max-md:hidden">
-        <nav className="sticky top-24">
-          <div className="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-fg-subtle">Categories</div>
-          <ul className="space-y-0.5">
-            {items.map((it) => {
-              const on = it.slug === active;
-              return (
-                <li key={it.slug}>
-                  <Link
-                    href={it.href}
-                    aria-current={on ? "page" : undefined}
-                    className={`flex items-center justify-between rounded-full px-3 py-2 text-sm transition ${
-                      on ? "bg-accent-soft font-medium text-accent dark:text-[#d2e3fc]" : "text-fg-muted hover:bg-bg-muted hover:text-fg"
-                    }`}
-                  >
-                    {it.label}
-                    <span className="text-xs tabular-nums text-fg-subtle">{it.count}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </aside>
-      <div className="min-w-0 flex-1">
-        <div className="scrollbar-none -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 md:hidden" style={{ scrollbarWidth: "none" }}>
-          {items.map((it) => (
-            <Link key={it.slug} href={it.href} className="chip shrink-0" data-active={it.slug === active}>
-              {it.label}
-            </Link>
-          ))}
+    <div className="flex flex-1">
+      <aside className="scrollbar-thin sticky top-0 hidden h-screen w-[320px] shrink-0 overflow-y-auto bg-panel md:block">
+        <div className="px-5 pb-10 pt-6">
+          <h2 className="mb-3 text-[15px] font-medium">Blog</h2>
+          <section className="border-t py-3">
+            <div className="flex items-center gap-3 px-1 py-2 text-[15px] font-medium">
+              <span className="grid size-6 place-items-center text-fg-muted">
+                <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14v6M14 17h6" />
+                </svg>
+              </span>
+              Category
+            </div>
+            <ul className="px-1 pt-1">
+              {items.map((it) => {
+                const on = it.slug === active;
+                return (
+                  <li key={it.slug}>
+                    <Link
+                      href={it.href}
+                      aria-current={on ? "page" : undefined}
+                      className={`flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition ${on ? "bg-accent-soft text-fg" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
+                    >
+                      <span className={`grid size-4 shrink-0 place-items-center rounded-full border ${on ? "border-accent" : "border-fg-subtle"}`}>
+                        {on && <span className="size-2 rounded-full bg-accent" />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{it.label}</span>
+                        {it.description && <span className="block truncate text-xs text-fg-muted">{it.description}</span>}
+                      </span>
+                      <span className="tabular-nums text-xs text-fg-subtle">{it.count}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         </div>
-        {children}
-      </div>
+      </aside>
+
+      <main className="min-w-0 flex-1 pb-16">
+        <div className="mx-auto w-full max-w-3xl px-4 pt-8 md:px-8">
+          <h1 className="text-[28px] font-medium tracking-tight">{title}</h1>
+          <div className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:hidden" style={{ scrollbarWidth: "none" }}>
+            {items.map((it) => (
+              <Link key={it.slug} href={it.href} className="chip shrink-0" data-active={it.slug === active}>
+                {it.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-6">{children}</div>
+        </div>
+      </main>
     </div>
   );
 }
