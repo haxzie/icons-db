@@ -56,11 +56,7 @@ export function Toolbar({
         type="button"
         onClick={onToggleFilters}
         className={`flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium transition ${
-          activeFilters > 0
-            ? "bg-accent text-accent-fg hover:brightness-110"
-            : filtersOpen
-              ? "bg-accent-soft text-accent dark:text-[#d2e3fc]"
-              : "border text-fg hover:bg-bg-muted"
+          filtersOpen || activeFilters > 0 ? "bg-accent text-accent-fg hover:brightness-110" : "border text-fg hover:bg-bg-muted"
         }`}
       >
         {filtersOpen ? (
