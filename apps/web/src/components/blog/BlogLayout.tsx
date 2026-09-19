@@ -13,9 +13,9 @@ export function BlogLayout({ active, counts, title, children }: { active: string
     <div className="flex flex-1">
       <aside className="scrollbar-thin sticky top-0 hidden h-screen w-[320px] shrink-0 overflow-y-auto bg-panel md:block">
         <div className="px-5 pb-10 pt-6">
-          <h2 className="mb-3 text-[15px] font-medium">Blog</h2>
+          <h2 className="mb-3 text-lg font-semibold">Blog</h2>
           <section className="border-t py-3">
-            <div className="flex items-center gap-3 px-1 py-2 text-[15px] font-medium">
+            <div className="flex items-center gap-3 px-1 py-2 text-base font-semibold">
               <span className="grid size-6 place-items-center text-fg-muted">
                 <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14v6M14 17h6" />
@@ -31,16 +31,16 @@ export function BlogLayout({ active, counts, title, children }: { active: string
                     <Link
                       href={it.href}
                       aria-current={on ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition ${on ? "bg-accent-soft text-fg" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
+                      className={`flex items-center gap-3 rounded-lg px-2 py-2.5 text-[15px] font-medium transition ${on ? "bg-accent-soft text-fg" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
                     >
                       <span className={`grid size-4 shrink-0 place-items-center rounded-full border ${on ? "border-accent" : "border-fg-subtle"}`}>
                         {on && <span className="size-2 rounded-full bg-accent" />}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{it.label}</span>
-                        {it.description && <span className="block truncate text-xs text-fg-muted">{it.description}</span>}
+                        {it.description && <span className="block truncate text-[13px] font-normal text-fg-muted">{it.description}</span>}
                       </span>
-                      <span className="tabular-nums text-xs text-fg-subtle">{it.count}</span>
+                      <span className="text-sm font-medium tabular-nums text-fg-subtle">{it.count}</span>
                     </Link>
                   </li>
                 );
@@ -52,7 +52,7 @@ export function BlogLayout({ active, counts, title, children }: { active: string
 
       <main className="min-w-0 flex-1 pb-16">
         <div className="mx-auto w-full max-w-3xl px-4 pt-8 md:px-8">
-          <h1 className="text-[28px] font-medium tracking-tight">{title}</h1>
+          <h1 className="text-[32px] font-semibold tracking-tight">{title}</h1>
           <div className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:hidden" style={{ scrollbarWidth: "none" }}>
             {items.map((it) => (
               <Link key={it.slug} href={it.href} className="chip shrink-0" data-active={it.slug === active}>
@@ -74,9 +74,9 @@ export function PostList({ posts }: { posts: Post[] }) {
       {posts.map((p) => (
         <li key={p.slug} className="py-6 first:pt-0">
           <Link href={`/blog/${p.slug}`} className="group block">
-            <h2 className="text-xl font-medium group-hover:underline">{p.title}</h2>
-            <p className="mt-1 text-fg-muted">{p.description}</p>
-            <p className="mt-2 text-xs text-fg-subtle">
+            <h2 className="text-2xl font-semibold leading-snug group-hover:underline">{p.title}</h2>
+            <p className="mt-2 text-[17px] leading-relaxed text-fg-muted">{p.description}</p>
+            <p className="mt-3 text-sm font-medium text-fg-subtle">
               {new Date(p.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {p.readingMinutes} min read
             </p>
           </Link>
