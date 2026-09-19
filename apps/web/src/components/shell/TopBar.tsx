@@ -26,7 +26,7 @@ export const TopBar = forwardRef<HTMLInputElement, Props>(function TopBar(
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 md:px-8">
         {title ?? (
           <Link href="/" className="flex shrink-0 items-center gap-2 text-[22px] font-medium tracking-tight max-sm:hidden">
-            <Image src="/logo.png" alt="" width={28} height={28} className="size-7 rounded-lg md:hidden" />
+            <Image src="/logo.svg" alt="" width={28} height={28} className="size-7 rounded-lg md:hidden" />
             IconsDB
           </Link>
         )}

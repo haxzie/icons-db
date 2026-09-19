@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Twemoji, Noto Emoji and 18 more open source sets. Copy as SVG, React, Vue or CSS.",
   openGraph: { type: "website", siteName: "IconsDB", images: ["/logo.png"] },
-  icons: { apple: "/logo.png" },
+  icons: { icon: "/logo.svg", apple: "/logo.png" },
 };
 
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="dark";if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;

@@ -47,7 +47,7 @@ export function Rail() {
   return (
     <nav className="sticky top-0 z-40 flex h-screen w-[72px] shrink-0 flex-col items-center border-r bg-bg py-3 max-md:hidden">
       <Link href="/" className="mb-4" aria-label="IconsDB home">
-        <Image src="/logo.png" alt="IconsDB" width={40} height={40} priority className="size-10 rounded-xl" />
+        <Image src="/logo.svg" alt="IconsDB" width={40} height={40} priority className="size-10 rounded-xl" />
       </Link>
       {items.map((it) => {
         const active = it.match(pathname);
