@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { TrademarkNotice } from "@/components/TrademarkNotice";
 import { AgentTabs, type AgentGuide } from "@/components/install/AgentTabs";
+import { CopyButton } from "@/components/CopyButton";
 
 export const metadata: Metadata = {
   title: "Install — MCP server for coding agents",
@@ -104,6 +105,21 @@ const TOOLS: { name: string; when: string; args: string }[] = [
   { name: "list_icon_sets", when: "All 57 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
 ];
 
+const EXAMPLE = `> Add home, settings and log-out icons to the sidebar using our existing icon library.
+
+detect_icon_packages(["react", "next", "lucide-react"])
+  → lucide-react (react) → sets: lucide
+
+search_icons({ queries: ["home", "settings", "log out"], package: "lucide-react" })
+  → Sets covering all 3 concepts: lucide
+    home → lucide:house · settings → lucide:settings · log out → lucide:log-out
+
+get_icons({ ids: ["lucide:house", "lucide:settings", "lucide:log-out"], format: "react" })
+  → import { House } from "lucide-react";
+    import { Settings } from "lucide-react";
+    import { LogOut } from "lucide-react";
+    License: ISC — free for commercial use, no attribution`;
+
 export default function InstallPage() {
   return (
     <main className="flex-1 pb-16">
@@ -118,9 +134,12 @@ export default function InstallPage() {
           <code className="font-mono text-sm">package.json</code>. Remote, no install, no API key.
         </p>
 
-        <div className="mt-6 rounded-2xl border bg-bg-elevated p-5">
-          <div className="text-xs uppercase tracking-wide text-fg-subtle">MCP endpoint</div>
-          <code className="mt-1 block font-mono text-lg">{URL}</code>
+        <div className="mt-6 flex items-center gap-3 rounded-2xl border bg-bg-elevated p-5">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs uppercase tracking-wide text-fg-subtle">MCP endpoint</div>
+            <code className="mt-1 block truncate font-mono text-lg">{URL}</code>
+          </div>
+          <CopyButton text={URL} label="Copy endpoint" />
         </div>
 
         <h2 className="mt-10 text-lg font-medium">Set up your agent</h2>
@@ -160,20 +179,10 @@ export default function InstallPage() {
         </div>
 
         <h2 className="mt-10 text-lg font-medium">Example session</h2>
-        <pre className="mt-3 overflow-x-auto rounded-2xl border bg-bg-elevated p-4 font-mono text-[13px] leading-relaxed">{`> Add home, settings and log-out icons to the sidebar using our existing icon library.
-
-detect_icon_packages(["react", "next", "lucide-react"])
-  → lucide-react (react) → sets: lucide
-
-search_icons({ queries: ["home", "settings", "log out"], package: "lucide-react" })
-  → Sets covering all 3 concepts: lucide
-    home → lucide:house · settings → lucide:settings · log out → lucide:log-out
-
-get_icons({ ids: ["lucide:house", "lucide:settings", "lucide:log-out"], format: "react" })
-  → import { House } from "lucide-react";
-    import { Settings } from "lucide-react";
-    import { LogOut } from "lucide-react";
-    License: ISC — free for commercial use, no attribution`}</pre>
+        <div className="relative mt-3">
+          <pre className="overflow-x-auto rounded-2xl border bg-bg-elevated p-4 pr-14 font-mono text-[13px] leading-relaxed">{EXAMPLE}</pre>
+          <CopyButton text={EXAMPLE} className="absolute right-2 top-2" />
+        </div>
 
         <p className="mt-10 text-sm text-fg-muted">
           Icons keep their original licences — see{" "}

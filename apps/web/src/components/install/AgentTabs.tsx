@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CopyButton } from "../CopyButton";
 
 export type AgentGuide = {
   id: string;
@@ -10,14 +11,7 @@ export type AgentGuide = {
 
 export function AgentTabs({ agents }: { agents: AgentGuide[] }) {
   const [active, setActive] = useState(agents[0].id);
-  const [copied, setCopied] = useState<string | null>(null);
   const agent = agents.find((a) => a.id === active)!;
-
-  async function copy(code: string) {
-    await navigator.clipboard.writeText(code);
-    setCopied(code);
-    setTimeout(() => setCopied(null), 1500);
-  }
 
   return (
     <div>
@@ -38,14 +32,8 @@ export function AgentTabs({ agents }: { agents: AgentGuide[] }) {
                 <div className="mt-2">
                   {s.file && <div className="mb-1 font-mono text-[11px] text-fg-subtle">{s.file}</div>}
                   <div className="relative">
-                    <pre className="overflow-x-auto rounded-2xl border bg-bg-elevated p-4 pr-20 font-mono text-[13px] leading-relaxed">{s.code}</pre>
-                    <button
-                      type="button"
-                      onClick={() => copy(s.code!)}
-                      className="absolute right-2 top-2 rounded-full border bg-bg px-3 py-1 text-xs text-fg-muted hover:bg-bg-muted hover:text-fg"
-                    >
-                      {copied === s.code ? "Copied" : "Copy"}
-                    </button>
+                    <pre className="overflow-x-auto rounded-2xl border bg-bg-elevated p-4 pr-14 font-mono text-[13px] leading-relaxed">{s.code}</pre>
+                    <CopyButton text={s.code} className="absolute right-2 top-2" />
                   </div>
                 </div>
               )}
