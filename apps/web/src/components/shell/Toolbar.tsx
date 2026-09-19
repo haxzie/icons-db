@@ -55,7 +55,7 @@ export function Toolbar({
       <button
         type="button"
         onClick={onToggleFilters}
-        className={`flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium transition ${
+        className={`flex h-12 items-center gap-2 rounded-full px-5 text-base font-medium transition ${
           filtersOpen || activeFilters > 0 ? "bg-accent text-accent-fg hover:brightness-110" : "border text-fg hover:bg-bg-muted"
         }`}
       >
