@@ -88,7 +88,7 @@ export function ResultsGrid({ items, view, color, selected, onSelect, loading, c
               className={`group relative flex aspect-square flex-col items-center justify-center rounded-2xl border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 active
                   ? "border-accent bg-accent-soft"
-                  : "border-line bg-bg-elevated hover:border-accent hover:shadow-[0_1px_4px_rgba(26,115,232,.18)]"
+                  : "border-line bg-bg-elevated hover:border-accent hover:ring-1 hover:ring-accent hover:shadow-[0_2px_10px_rgba(26,115,232,.3)]"
               }`}
             >
               <IconGlyph prefix={item.prefix} name={item.name} className={layout.glyph} />

@@ -30,7 +30,7 @@ export function CollectionsOverview({ collections, onQuery }: { collections: Col
               <Link
                 key={c.prefix}
                 href={`/library/${c.prefix}`}
-                className="group rounded-2xl border bg-bg-elevated p-4 transition hover:border-accent hover:shadow-[0_1px_4px_rgba(26,115,232,.18)]"
+                className="group rounded-2xl border bg-bg-elevated p-4 transition hover:border-accent hover:ring-1 hover:ring-accent hover:shadow-[0_2px_10px_rgba(26,115,232,.3)]"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
