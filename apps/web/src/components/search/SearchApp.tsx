@@ -222,8 +222,8 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
         />
         <Toolbar filtersOpen={filtersOpen} onToggleFilters={() => setFiltersOpen(!filtersOpen)} activeFilters={activeFilters} view={view} onView={setView} />
 
-        <div className="mx-auto flex max-w-[1400px] gap-8 px-4 pb-16 pt-4 md:px-8">
-          <div className="min-w-0 flex-1">
+        <div className="mx-auto flex max-w-[1400px] items-start gap-8 px-4 pt-4 md:px-8">
+          <div className="min-w-0 flex-1 pb-16">
             <p className="mb-4 text-sm font-medium text-fg-muted">
               {showResults ? (
                 <>
