@@ -6,7 +6,7 @@ import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
 const SUGGESTIONS = ["shopping cart", "log out", "settings", "arrow right", "notification bell", "user profile", "github", "party popper"];
-const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos", emoji: "Emoji" };
+const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji" };
 
 export function CollectionsOverview({ collections, onQuery }: { collections: CollectionMeta[]; onQuery: (q: string) => void }) {
   const groups = (["icons", "brands", "emoji"] as CollectionKind[])

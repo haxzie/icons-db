@@ -22,7 +22,7 @@ const STYLES: { id: StyleBucket; label: string }[] = [
   { id: "color", label: "Color" },
 ];
 
-const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos", emoji: "Emoji sets" };
+const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji sets" };
 
 type Props = {
   collections: CollectionMeta[];

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/shell/PageHeader";
+import { TrademarkNotice } from "@/components/TrademarkNotice";
 
 export const metadata: Metadata = {
   title: "API",
-  description: "Free JSON and SVG API for 100,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
+  description: "Free JSON and SVG API for 145,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
 };
 
 const BASE = "https://iconsdb.app";
@@ -38,8 +40,13 @@ export default function ApiPage() {
       <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
       <p className="mt-2 text-fg-muted">
         Everything on this site is available as a free, CORS-enabled JSON/SVG API. No key needed; requests are rate limited per IP (120/min).
-        Icons keep their original licenses — check <code className="font-mono text-sm">/api/v1/collections</code> for attribution requirements.
+        Icons keep their original licenses — check <code className="font-mono text-sm">/api/v1/collections</code> for attribution requirements, or the{" "}
+        <Link href="/licenses" className="underline decoration-line hover:text-fg">
+          licenses page
+        </Link>
+        .
       </p>
+      <TrademarkNotice className="mt-6" />
       <div className="mt-8 space-y-6">
         {endpoints.map((e) => (
           <section key={e.path} className="rounded-xl border bg-bg-elevated p-4">

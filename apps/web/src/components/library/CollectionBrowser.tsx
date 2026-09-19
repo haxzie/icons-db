@@ -11,6 +11,7 @@ import { FilterSidebar, SidebarLabel, SidebarSection } from "../shell/FilterSide
 import { ResultsGrid, type GridItem } from "../search/ResultsGrid";
 import { IconDetail } from "../icon/IconDetail";
 import { LicenseBadge } from "../LicenseBadge";
+import { TrademarkNotice } from "../TrademarkNotice";
 import type { Selected } from "../search/SearchApp";
 
 export function CollectionBrowser({ collection, collections }: { collection: CollectionMeta; collections: CollectionMeta[] }) {
@@ -124,8 +125,12 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
             )}
             {c.version && <span className="ml-1 font-mono">v{c.version}</span>}
             <br />
-            {c.license.attribution ? "Attribution required." : "Free for commercial use, no attribution required."}
+            {c.license.attribution ? "Attribution required." : "Free for commercial use, no attribution required."}{" "}
+            <Link href="/licenses" className="underline decoration-line hover:text-fg">
+              Details
+            </Link>
           </p>
+          {c.kind === "brands" && <TrademarkNotice compact className="mt-2 border-t pt-2" />}
         </div>
         <SidebarLabel>Preview</SidebarLabel>
         <div className="mb-4 flex items-center gap-3 rounded-xl border bg-bg-elevated px-3 py-2.5">

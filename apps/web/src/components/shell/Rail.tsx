@@ -40,6 +40,17 @@ const items = [
       </svg>
     ),
   },
+  {
+    href: "/licenses",
+    label: "Licenses",
+    match: (p: string) => p === "/licenses",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9.5 10a2.5 2.5 0 1 0 0 4M16.5 10a2.5 2.5 0 1 0 0 4" />
+      </svg>
+    ),
+  },
 ];
 
 export function Rail() {

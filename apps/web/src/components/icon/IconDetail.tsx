@@ -285,7 +285,11 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
               .{" "}
               {collection.license.attribution
                 ? "Attribution to the author is required when you use these icons."
-                : "Free for personal and commercial use; no attribution required."}
+                : "Free for personal and commercial use; no attribution required."}{" "}
+              <Link href="/licenses" className="underline decoration-line hover:text-fg">
+                Details
+              </Link>
+              {collection.kind === "brands" && " Logos are trademarks of their owners; the license covers the SVG only."}
             </p>
           </Section>
         )}
