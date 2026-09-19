@@ -42,6 +42,17 @@ const items = [
     ),
   },
   {
+    href: "/blog",
+    label: "Blog",
+    match: (p: string) => p.startsWith("/blog"),
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+        <path d="M4 20.5V5.5M8 8h8M8 12h6" />
+      </svg>
+    ),
+  },
+  {
     href: "/licenses",
     label: "Licenses",
     match: (p: string) => p === "/licenses",
