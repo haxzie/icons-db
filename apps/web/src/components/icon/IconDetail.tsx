@@ -94,7 +94,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
 
   const shell =
     variant === "panel"
-      ? "fixed inset-0 z-40 flex flex-col overflow-y-auto bg-bg-elevated md:static md:sticky md:top-[7.5rem] md:z-0 md:h-[calc(100vh-8.5rem)] md:w-[400px] md:shrink-0 md:rounded-xl md:border"
+      ? "fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg-elevated md:static md:sticky md:top-24 md:z-0 md:h-[calc(100vh-7rem)] md:w-[400px] md:shrink-0 md:rounded-2xl md:border"
       : "";
 
   return (

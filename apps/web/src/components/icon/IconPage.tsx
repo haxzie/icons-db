@@ -23,10 +23,10 @@ export function IconPage({ icon, collection, svg }: { icon: IconRecord; collecti
     });
   }, [icon]);
   return (
-    <div className="grid gap-8 md:grid-cols-[1fr_420px]">
+    <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_420px]">
       <div>
         <div
-          className="flex aspect-square max-h-[420px] items-center justify-center rounded-2xl border bg-bg-elevated [&>svg]:size-40"
+          className="flex aspect-square max-h-[420px] items-center justify-center rounded-2xl border bg-bg-elevated [&>svg]:size-40 md:max-h-[520px]"
           dangerouslySetInnerHTML={{ __html: svg }}
         />
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/shell/PageHeader";
 
 export const metadata: Metadata = {
   title: "API",
-  description: "Free JSON and SVG API for 90,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
+  description: "Free JSON and SVG API for 100,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
 };
 
 const BASE = "https://iconsdb.haxzie.com";
@@ -32,8 +33,9 @@ const endpoints = [
 
 export default function ApiPage() {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
-      <h1 className="text-2xl font-semibold tracking-tight">API</h1>
+    <main className="flex-1 pb-16">
+      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="API" />
+      <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
       <p className="mt-2 text-fg-muted">
         Everything on this site is available as a free, CORS-enabled JSON/SVG API. No key needed; requests are rate limited per IP (120/min).
         Icons keep their original licenses — check <code className="font-mono text-sm">/api/v1/collections</code> for attribution requirements.
@@ -58,6 +60,7 @@ export default function ApiPage() {
 /* or as a CSS mask so it follows currentColor */
 .icon { -webkit-mask: url(${BASE}/api/v1/icon/tabler/brand-github.svg) center / contain no-repeat; background: currentColor; }`}
       </pre>
+      </div>
     </main>
   );
 }

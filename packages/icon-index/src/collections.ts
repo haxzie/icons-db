@@ -1,3 +1,5 @@
+import type { CollectionKind } from "@icons-db/core";
+
 /** Curated v1 icon sets (Iconify prefixes). All permissive licences. */
 export const PREFIXES = [
   "lucide",
@@ -20,7 +22,22 @@ export const PREFIXES = [
   "mdi",
   "solar",
   "majesticons",
+  // emoji
+  "twemoji",
+  "noto",
+  "fluent-emoji-flat",
+  "fluent-emoji-high-contrast",
+  "openmoji",
 ] as const;
+
+export const KINDS: Record<string, CollectionKind> = {
+  "simple-icons": "brands",
+  twemoji: "emoji",
+  noto: "emoji",
+  "fluent-emoji-flat": "emoji",
+  "fluent-emoji-high-contrast": "emoji",
+  openmoji: "emoji",
+};
 
 export const HOMEPAGES: Record<string, string> = {
   lucide: "https://lucide.dev",
@@ -43,4 +60,9 @@ export const HOMEPAGES: Record<string, string> = {
   mdi: "https://pictogrammers.com/library/mdi/",
   solar: "https://www.figma.com/community/file/1166831539721848736",
   majesticons: "https://www.majesticons.com",
+  twemoji: "https://github.com/jdecked/twemoji",
+  noto: "https://github.com/googlefonts/noto-emoji",
+  "fluent-emoji-flat": "https://github.com/microsoft/fluentui-emoji",
+  "fluent-emoji-high-contrast": "https://github.com/microsoft/fluentui-emoji",
+  openmoji: "https://openmoji.org",
 };

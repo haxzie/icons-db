@@ -5,9 +5,12 @@ export type License = {
   attribution: boolean;
 };
 
+export type CollectionKind = "icons" | "emoji" | "brands";
+
 export type CollectionMeta = {
   prefix: string;
   name: string;
+  kind: CollectionKind;
   total: number;
   author: { name: string; url?: string };
   license: License;

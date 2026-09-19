@@ -12,7 +12,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle theme"
-      className="grid size-8 place-items-center rounded-md text-fg-muted hover:bg-bg-muted hover:text-fg"
+      className="grid size-9 place-items-center rounded-full text-fg-muted hover:bg-bg-muted hover:text-fg"
     >
       <svg viewBox="0 0 24 24" className="hidden size-4 dark:block" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="4" />

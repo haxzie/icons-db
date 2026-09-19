@@ -1,63 +1,56 @@
 "use client";
 
 import Link from "next/link";
-import type { CollectionMeta } from "@icons-db/core";
+import type { CollectionKind, CollectionMeta } from "@icons-db/core";
 import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
-const SUGGESTIONS = ["shopping cart", "log out", "settings", "arrow right", "notification bell", "user profile", "github", "dark mode"];
+const SUGGESTIONS = ["shopping cart", "log out", "settings", "arrow right", "notification bell", "user profile", "github", "party popper"];
+const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos", emoji: "Emoji" };
 
-export function CollectionsOverview({
-  collections,
-  onQuery,
-}: {
-  collections: CollectionMeta[];
-  onPick: (prefix: string) => void;
-  onQuery: (q: string) => void;
-}) {
-  const total = collections.reduce((n, c) => n + c.total, 0);
+export function CollectionsOverview({ collections, onQuery }: { collections: CollectionMeta[]; onQuery: (q: string) => void }) {
+  const groups = (["icons", "brands", "emoji"] as CollectionKind[])
+    .map((k) => ({ kind: k, items: collections.filter((c) => c.kind === k) }))
+    .filter((g) => g.items.length > 0);
   return (
     <div className="fade-in">
       <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-fg-muted">
-        <span>Try:</span>
+        <span className="mr-1">Try</span>
         {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onQuery(s)}
-            className="rounded-md border bg-bg-elevated px-2 py-0.5 hover:border-fg-subtle hover:text-fg"
-          >
+          <button key={s} type="button" onClick={() => onQuery(s)} className="chip">
             {s}
           </button>
         ))}
       </div>
-      <h2 className="mb-3 text-sm font-medium text-fg-muted">
-        {collections.length} icon sets · {total.toLocaleString()} icons
-      </h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {collections.map((c) => (
-          <Link
-            key={c.prefix}
-            href={`/library/${c.prefix}`}
-            className="group rounded-xl border bg-bg-elevated p-4 transition hover:border-fg-subtle"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h3 className="truncate font-medium">{c.name}</h3>
-                <p className="truncate text-xs text-fg-subtle">
-                  {c.total.toLocaleString()} icons · {c.author.name}
-                </p>
-              </div>
-              <LicenseBadge license={c.license} />
-            </div>
-            <div className="mt-3 flex gap-2 text-fg-muted group-hover:text-fg">
-              {c.samples.slice(0, 6).map((s) => (
-                <IconGlyph key={s} prefix={c.prefix} name={s} className="size-6" />
-              ))}
-            </div>
-          </Link>
-        ))}
-      </div>
+      {groups.map((g) => (
+        <section key={g.kind} className="mb-10">
+          <h2 className="mb-3 text-lg font-medium">{TITLES[g.kind]}</h2>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {g.items.map((c) => (
+              <Link
+                key={c.prefix}
+                href={`/library/${c.prefix}`}
+                className="group rounded-2xl border bg-bg-elevated p-4 transition hover:border-transparent hover:shadow-[0_1px_3px_rgba(60,64,67,.3),0_4px_8px_3px_rgba(60,64,67,.15)] dark:hover:bg-bg-muted dark:hover:shadow-none"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="truncate font-medium">{c.name}</h3>
+                    <p className="truncate text-xs text-fg-muted">
+                      {c.total.toLocaleString()} icons · {c.author.name}
+                    </p>
+                  </div>
+                  <LicenseBadge license={c.license} />
+                </div>
+                <div className="mt-4 flex gap-3 text-fg">
+                  {c.samples.slice(0, 6).map((s) => (
+                    <IconGlyph key={s} prefix={c.prefix} name={s} className="size-7" />
+                  ))}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

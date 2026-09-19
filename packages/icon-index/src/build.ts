@@ -12,7 +12,7 @@ import {
   type IndexIconEntry,
   type SearchIndexData,
 } from "@icons-db/core";
-import { HOMEPAGES, PREFIXES } from "./collections";
+import { HOMEPAGES, KINDS, PREFIXES } from "./collections";
 import { DIST } from "./paths";
 
 const require = createRequire(import.meta.url);
@@ -37,12 +37,16 @@ async function loadSet(prefix: string): Promise<SetFiles> {
 }
 
 const ATTRIBUTION_SPDX = /^CC-BY/i;
+// D1 rejects statements over ~100KB, and anything this big is a poor icon anyway.
+const MAX_BODY_BYTES = 64 * 1024;
+let skippedLarge = 0;
 
 function collectionMeta(prefix: string, s: SetFiles, total: number): CollectionMeta {
   const lic = s.info.license ?? { title: "Unknown" };
   return {
     prefix,
     name: s.info.name,
+    kind: KINDS[prefix] ?? (s.info.category === "Emoji" ? "emoji" : "icons"),
     total,
     author: { name: s.info.author?.name ?? "", url: s.info.author?.url },
     license: {
@@ -98,6 +102,7 @@ function collectionRow(c: CollectionMeta): string {
   return `(${[
     sqlStr(c.prefix),
     sqlStr(c.name),
+    sqlStr(c.kind),
     c.total,
     sqlStr(c.author.name),
     sqlStr(c.author.url),
@@ -118,7 +123,7 @@ function collectionRow(c: CollectionMeta): string {
 const ICON_COLS =
   "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases)";
 const COLLECTION_COLS =
-  "(prefix,name,total,author_name,author_url,license_title,license_spdx,license_url,attribution,homepage,category,palette,height,samples,version,suffixes)";
+  "(prefix,name,kind,total,author_name,author_url,license_title,license_spdx,license_url,attribution,homepage,category,palette,height,samples,version,suffixes)";
 
 async function main() {
   await rm(DIST, { recursive: true, force: true });
@@ -196,6 +201,10 @@ async function main() {
     // Real icons first (aliases with transforms become real icons too).
     parseIconSet(set.icons, (name, data) => {
       if (!data) return;
+      if (data.body.length > MAX_BODY_BYTES) {
+        skippedLarge += 1;
+        return;
+      }
       const alias = set.icons.aliases?.[name];
       const isPureAlias =
         alias !== undefined &&
@@ -269,7 +278,7 @@ async function main() {
     `DELETE FROM collections;\nINSERT INTO collections ${COLLECTION_COLS} VALUES\n${collections.map(collectionRow).join(",\n")};\n`,
   );
 
-  console.log(`\n${totalIcons} icons, ${totalAliases} aliases, ${texts.length} unique texts, ${seedFile} seed files`);
+  console.log(`\n${totalIcons} icons, ${totalAliases} aliases, ${texts.length} unique texts, ${seedFile} seed files, ${skippedLarge} oversized icons skipped`);
 }
 
 main().catch((err) => {

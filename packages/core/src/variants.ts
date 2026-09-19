@@ -1,5 +1,14 @@
 import type { StyleBucket } from "./types";
 
+const SKIN_TONES: Record<string, string> = {
+  "": "Default",
+  "light-skin-tone": "Light skin tone",
+  "medium-light-skin-tone": "Medium-light skin tone",
+  "medium-skin-tone": "Medium skin tone",
+  "medium-dark-skin-tone": "Medium-dark skin tone",
+  "dark-skin-tone": "Dark skin tone",
+};
+
 /** Style suffixes for sets whose Iconify metadata doesn't declare them. */
 export const MANUAL_SUFFIXES: Record<string, Record<string, string>> = {
   tabler: { "": "Outline", filled: "Filled" },
@@ -13,6 +22,11 @@ export const MANUAL_SUFFIXES: Record<string, Record<string, string>> = {
   gg: { "": "Outline" },
   "radix-icons": { "": "Outline" },
   "simple-icons": { "": "Brand" },
+  twemoji: SKIN_TONES,
+  noto: SKIN_TONES,
+  "fluent-emoji-flat": SKIN_TONES,
+  "fluent-emoji-high-contrast": SKIN_TONES,
+  openmoji: SKIN_TONES,
 };
 
 export function resolveSuffixes(
@@ -49,7 +63,8 @@ export function splitVariant(
   return { family: name, style: suffixes[""] ?? "Regular", suffix: "" };
 }
 
-export function styleBucket(style: string): StyleBucket {
+export function styleBucket(style: string, palette?: boolean): StyleBucket {
+  if (palette) return "color";
   const s = style.toLowerCase();
   if (s.includes("duotone")) return "duotone";
   if (s.includes("thin") || s.includes("light")) return "light";

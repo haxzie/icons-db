@@ -1,0 +1,1 @@
+ALTER TABLE collections ADD COLUMN kind TEXT NOT NULL DEFAULT 'icons';

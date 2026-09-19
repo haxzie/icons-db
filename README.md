@@ -1,6 +1,6 @@
 # IconsDB
 
-Search 90,000+ open source icons from 20 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.haxzie.com**.
+Search 109,000+ open source icons and emoji from 25 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.haxzie.com**.
 
 ## How it works
 
@@ -47,4 +47,4 @@ pnpm ship                             # opennextjs-cloudflare build && deploy
 
 ## API
 
-See https://iconsdb.haxzie.com/api. Icons keep their original licenses (all MIT/Apache-2.0/ISC/CC0, Solar is CC-BY-4.0).
+See https://iconsdb.haxzie.com/api. Icons keep their original licenses (all MIT/Apache-2.0/ISC/CC0; Solar and Twemoji are CC-BY-4.0, OpenMoji is CC-BY-SA-4.0).

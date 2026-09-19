@@ -4,28 +4,28 @@ import { useEffect, useRef, useState } from "react";
 import type { CollectionMeta } from "@icons-db/core";
 import { IconGlyph } from "../IconGlyph";
 import type { Selected } from "./SearchApp";
+import type { ViewMode } from "../shell/Toolbar";
 
 export type GridItem = { prefix: string; name: string; family: string; variants: number };
 
 const PAGE = 144;
-const SIZES: Record<number, string> = {
-  1: "grid-cols-[repeat(auto-fill,minmax(56px,1fr))]",
-  2: "grid-cols-[repeat(auto-fill,minmax(72px,1fr))]",
-  3: "grid-cols-[repeat(auto-fill,minmax(96px,1fr))]",
-  4: "grid-cols-[repeat(auto-fill,minmax(128px,1fr))]",
+const LAYOUT: Record<ViewMode, { grid: string; glyph: string; label: boolean }> = {
+  compact: { grid: "grid-cols-[repeat(auto-fill,minmax(64px,1fr))] gap-1.5", glyph: "size-7", label: false },
+  grid: { grid: "grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3", glyph: "size-9", label: true },
+  large: { grid: "grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4", glyph: "size-14", label: true },
 };
-const GLYPH: Record<number, string> = { 1: "size-6", 2: "size-7", 3: "size-9", 4: "size-12" };
 
 type Props = {
   items: GridItem[];
-  cellSize: number;
+  view: ViewMode;
+  color?: string;
   selected: Selected;
   onSelect: (item: GridItem) => void;
   loading: boolean;
   collectionByPrefix: Map<string, CollectionMeta>;
 };
 
-export function ResultsGrid({ items, cellSize, selected, onSelect, loading, collectionByPrefix }: Props) {
+export function ResultsGrid({ items, view, color, selected, onSelect, loading, collectionByPrefix }: Props) {
   const [limit, setLimit] = useState(PAGE);
   const [prevItems, setPrevItems] = useState(items);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -65,36 +65,41 @@ export function ResultsGrid({ items, cellSize, selected, onSelect, loading, coll
     return (
       <div className="py-20 text-center">
         <p className="text-fg-muted">No icons matched.</p>
-        <p className="mt-1 text-sm text-fg-subtle">Try a different phrase, or clear the set / style filters.</p>
+        <p className="mt-1 text-sm text-fg-subtle">Try a different phrase, or clear the filters.</p>
       </div>
     );
   }
 
+  const layout = LAYOUT[view];
   const visible = items.slice(0, limit);
   return (
-    <div>
-      <div ref={grid} onKeyDown={onKeyDown} className={`grid gap-1 ${SIZES[cellSize] ?? SIZES[2]}`}>
+    <div style={{ color: color || undefined }}>
+      <div ref={grid} onKeyDown={onKeyDown} className={`grid ${layout.grid}`}>
         {visible.map((item) => {
           const active = selected?.prefix === item.prefix && selected?.name === item.name;
+          const set = collectionByPrefix.get(item.prefix)?.name ?? item.prefix;
           return (
             <button
               key={`${item.prefix}:${item.name}`}
               type="button"
               data-cell
               onClick={() => onSelect(item)}
-              title={`${collectionByPrefix.get(item.prefix)?.name ?? item.prefix} · ${item.name}`}
-              className={`icon-cell group relative flex aspect-square flex-col items-center justify-center rounded-lg border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                active ? "border-accent bg-accent/10" : "border-transparent hover:border-line hover:bg-bg-elevated"
+              title={`${set} · ${item.name}`}
+              className={`group relative flex aspect-square flex-col items-center justify-center rounded-2xl border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                active
+                  ? "border-accent bg-accent-soft"
+                  : "border-line bg-bg-elevated hover:border-transparent hover:shadow-[0_1px_3px_rgba(60,64,67,.3),0_4px_8px_3px_rgba(60,64,67,.15)] dark:hover:bg-bg-muted dark:hover:shadow-none"
               }`}
             >
-              <IconGlyph prefix={item.prefix} name={item.name} className={GLYPH[cellSize] ?? GLYPH[2]} />
-              {cellSize >= 3 && (
-                <span className="mt-1.5 w-full truncate px-1 text-center text-[10px] leading-tight text-fg-subtle group-hover:text-fg-muted">
-                  {item.name}
+              <IconGlyph prefix={item.prefix} name={item.name} className={layout.glyph} />
+              {layout.label && (
+                <span className="absolute inset-x-2 bottom-2 truncate text-center text-[11px] leading-tight text-fg-muted">
+                  <span className="block truncate text-fg">{item.name}</span>
+                  {view === "large" && <span className="block truncate text-fg-subtle">{set}</span>}
                 </span>
               )}
               {item.variants > 1 && (
-                <span className="absolute right-1 top-1 rounded-full bg-bg-muted px-1 text-[9px] leading-4 text-fg-subtle tabular-nums">
+                <span className="absolute right-2 top-2 rounded-full bg-bg-muted px-1.5 text-[10px] leading-4 text-fg-muted tabular-nums">
                   {item.variants}
                 </span>
               )}

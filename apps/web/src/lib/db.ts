@@ -22,6 +22,7 @@ type IconRow = {
 type CollectionRow = {
   prefix: string;
   name: string;
+  kind: string;
   total: number;
   author_name: string | null;
   author_url: string | null;
@@ -62,6 +63,7 @@ function toCollection(r: CollectionRow): CollectionMeta {
   return {
     prefix: r.prefix,
     name: r.name,
+    kind: (r.kind as CollectionMeta["kind"]) ?? "icons",
     total: r.total,
     author: { name: r.author_name ?? "", url: r.author_url ?? undefined },
     license: {

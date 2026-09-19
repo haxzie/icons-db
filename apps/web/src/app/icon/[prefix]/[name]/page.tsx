@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PageHeader } from "@/components/shell/PageHeader";
 import { notFound } from "next/navigation";
 import { renderSVG, toIconifyIcon } from "@icons-db/core";
 import { getCollection, getIcon } from "@/lib/db";
@@ -27,15 +27,18 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   if (!icon || !collection) notFound();
   const svg = renderSVG(toIconifyIcon(icon), { width: "1em", height: "1em" });
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-      <nav className="mb-6 text-sm text-fg-muted">
-        <Link href="/" className="hover:text-fg">Search</Link> / <Link href="/library" className="hover:text-fg">Library</Link> /{" "}
-        <Link href={`/library/${prefix}`} className="hover:text-fg">{collection.name}</Link> / <span className="text-fg">{icon.name}</span>
-      </nav>
-      <h1 className="sr-only">
-        {icon.name} icon from {collection.name}
-      </h1>
-      <IconPage icon={icon} collection={collection} svg={svg} />
+    <main className="flex-1 pb-16">
+      <PageHeader
+        crumbs={[
+          { href: "/", label: "Search" },
+          { href: "/library", label: "Library" },
+          { href: `/library/${prefix}`, label: collection.name },
+        ]}
+        title={icon.name}
+      />
+      <div className="mx-auto w-full max-w-[1400px] px-4 pt-4 md:px-8">
+        <IconPage icon={icon} collection={collection} svg={svg} />
+      </div>
     </main>
   );
 }
