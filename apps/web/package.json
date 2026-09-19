@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/sync-data.mjs && next dev",
-    "build": "node scripts/sync-data.mjs && next build",
+    "dev": "node scripts/sync-data.mjs && node scripts/build-blog.mjs && next dev",
+    "build": "node scripts/sync-data.mjs && node scripts/build-blog.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -12,12 +12,14 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "sync-data": "node scripts/sync-data.mjs",
-    "ship": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "ship": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "build-blog": "node scripts/build-blog.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.3.0",
     "@iconify/types": "^2.0.0",
     "@icons-db/core": "workspace:*",
+    "@next/third-parties": "16.3.5",
     "@opennextjs/cloudflare": "^1.20.6",
     "next": "16.3.5",
     "react": "19.2.8",
@@ -30,6 +32,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.13",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4",

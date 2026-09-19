@@ -14,7 +14,17 @@ import { LicenseBadge } from "../LicenseBadge";
 import { TrademarkNotice } from "../TrademarkNotice";
 import type { Selected } from "../search/SearchApp";
 
-export function CollectionBrowser({ collection, collections }: { collection: CollectionMeta; collections: CollectionMeta[] }) {
+export function CollectionBrowser({
+  collection,
+  collections,
+  initialIcons = [],
+  children,
+}: {
+  collection: CollectionMeta;
+  collections: CollectionMeta[];
+  initialIcons?: string[];
+  children?: React.ReactNode;
+}) {
   const index = useKeywordIndex();
   const [query, setQuery] = useState("");
   const [style, setStyle] = useState<string | null>(null);
@@ -42,7 +52,9 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
   }, [index, prefixIdx, collection.suffixes]);
 
   const items = useMemo<GridItem[]>(() => {
-    if (!index || prefixIdx < 0) return [];
+    if (!index || prefixIdx < 0) {
+      return initialIcons.map((name) => ({ prefix: collection.prefix, name, family: splitVariant(name, collection.suffixes).family, variants: 1 }));
+    }
     const q = query.trim();
     const order = q ? searchKeyword(index, q, { limit: 5000 }).filter((h) => h.prefix === collection.prefix).map((h) => h.idx) : null;
     const out: GridItem[] = [];
@@ -69,7 +81,7 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
     }
     if (!q || sort === "name") out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
-  }, [index, prefixIdx, query, style, category, groupVariants, sort, collection.prefix, collection.suffixes]);
+  }, [index, prefixIdx, query, style, category, groupVariants, sort, collection.prefix, collection.suffixes, initialIcons]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -207,9 +219,10 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
               color={color}
               selected={selected}
               onSelect={(item) => setSelected({ prefix: item.prefix, name: item.name })}
-              loading={!index}
+              loading={!index && initialIcons.length === 0}
               collectionByPrefix={collectionByPrefix}
             />
+            {children}
           </div>
           {selected && index && (
             <IconDetail

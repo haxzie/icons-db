@@ -56,7 +56,11 @@ export function Toolbar({
         type="button"
         onClick={onToggleFilters}
         className={`flex h-12 items-center gap-2 rounded-full px-5 text-sm font-medium transition ${
-          filtersOpen ? "bg-accent-soft text-accent dark:text-[#d2e3fc]" : "border text-fg hover:bg-bg-muted"
+          activeFilters > 0
+            ? "bg-accent text-accent-fg hover:brightness-110"
+            : filtersOpen
+              ? "bg-accent-soft text-accent dark:text-[#d2e3fc]"
+              : "border text-fg hover:bg-bg-muted"
         }`}
       >
         {filtersOpen ? (
@@ -70,7 +74,7 @@ export function Toolbar({
         )}
         Filters
         {activeFilters > 0 && (
-          <span className="grid size-5 place-items-center rounded-full bg-accent text-[11px] text-accent-fg">{activeFilters}</span>
+          <span className="grid size-5 place-items-center rounded-full bg-accent-fg/20 text-[11px] font-semibold text-accent-fg">{activeFilters}</span>
         )}
       </button>
       {children}

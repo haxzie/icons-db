@@ -25,12 +25,14 @@ type Props = {
   onClose?: () => void;
   onSelect: (prefix: string, name: string) => void;
   variant?: "panel" | "page";
+  /** Pre-computed variants (server-rendered pages); otherwise derived from the client index. */
+  variants?: { name: string; style: string }[];
 };
 
 const PREVIEW_SIZES = [16, 24, 32, 48, 96];
 const PNG_SIZES = [64, 128, 256, 512, 1024];
 
-export function IconDetail({ prefix, name, index, collection, onClose, onSelect, variant = "panel" }: Props) {
+export function IconDetail({ prefix, name, index, collection, onClose, onSelect, variant = "panel", variants: givenVariants }: Props) {
   const icon = useIcon(prefix, name);
   const { copied, copy } = useCopy();
   const [color, setColor] = useState<string>("");
@@ -46,6 +48,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
   const { family, style } = useMemo(() => splitVariant(name, suffixes), [name, suffixes]);
 
   const variants = useMemo(() => {
+    if (givenVariants) return givenVariants;
     if (!index) return [];
     const pi = index.data.prefixes.findIndex((p) => p.prefix === prefix);
     const out: { name: string; style: string }[] = [];
@@ -55,7 +58,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
       if (v.family === family) out.push({ name: e[1], style: v.style });
     }
     return out.sort((a, b) => a.name.localeCompare(b.name));
-  }, [index, prefix, family, suffixes]);
+  }, [index, prefix, family, suffixes, givenVariants]);
 
   useEffect(() => {
     const ctrl = new AbortController();

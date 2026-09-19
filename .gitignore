@@ -12,3 +12,4 @@ next-env.d.ts
 .wrangler
 cloudflare-env.d.ts
 *.log
+apps/web/src/generated/

@@ -4,12 +4,20 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import type { CollectionMeta, IconRecord } from "@icons-db/core";
 import { primeIcon } from "@/lib/icon-store";
-import { useKeywordIndex } from "@/lib/use-search-index";
 import { IconDetail } from "./IconDetail";
 
-export function IconPage({ icon, collection, svg }: { icon: IconRecord; collection: CollectionMeta; svg: string }) {
+export function IconPage({
+  icon,
+  collection,
+  svg,
+  variants,
+}: {
+  icon: IconRecord;
+  collection: CollectionMeta;
+  svg: string;
+  variants: { name: string; style: string }[];
+}) {
   const router = useRouter();
-  const index = useKeywordIndex();
   useEffect(() => {
     primeIcon(icon.prefix, icon.name, {
       body: icon.body,
@@ -60,7 +68,8 @@ export function IconPage({ icon, collection, svg }: { icon: IconRecord; collecti
         variant="page"
         prefix={icon.prefix}
         name={icon.name}
-        index={index}
+        index={null}
+        variants={variants}
         collection={collection}
         onSelect={(p, n) => router.push(`/icon/${p}/${n}`)}
       />

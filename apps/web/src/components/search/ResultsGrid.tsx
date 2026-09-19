@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CollectionMeta } from "@icons-db/core";
 import { IconGlyph } from "../IconGlyph";
@@ -47,8 +48,8 @@ export function ResultsGrid({ items, view, color, selected, onSelect, loading, c
   }, [items.length]);
 
   function onKeyDown(e: React.KeyboardEvent) {
-    const cells = Array.from(grid.current?.querySelectorAll<HTMLButtonElement>("button[data-cell]") ?? []);
-    const i = cells.indexOf(document.activeElement as HTMLButtonElement);
+    const cells = Array.from(grid.current?.querySelectorAll<HTMLAnchorElement>("a[data-cell]") ?? []);
+    const i = cells.indexOf(document.activeElement as HTMLAnchorElement);
     if (i < 0) return;
     const cols = getComputedStyle(grid.current!).gridTemplateColumns.split(" ").length;
     const map: Record<string, number> = { ArrowRight: i + 1, ArrowLeft: i - 1, ArrowDown: i + cols, ArrowUp: i - cols };
@@ -79,11 +80,16 @@ export function ResultsGrid({ items, view, color, selected, onSelect, loading, c
           const active = selected?.prefix === item.prefix && selected?.name === item.name;
           const set = collectionByPrefix.get(item.prefix)?.name ?? item.prefix;
           return (
-            <button
+            <Link
               key={`${item.prefix}:${item.name}`}
-              type="button"
+              href={`/icon/${item.prefix}/${item.name}`}
               data-cell
-              onClick={() => onSelect(item)}
+              prefetch={false}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                e.preventDefault();
+                onSelect(item);
+              }}
               title={`${set} · ${item.name}`}
               className={`group relative flex aspect-square flex-col items-center justify-center rounded-2xl border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 active
@@ -103,7 +109,7 @@ export function ResultsGrid({ items, view, color, selected, onSelect, loading, c
                   {item.variants}
                 </span>
               )}
-            </button>
+            </Link>
           );
         })}
       </div>

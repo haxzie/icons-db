@@ -176,3 +176,78 @@ export async function getCollectionFacets(prefix: string): Promise<{ categories:
     .all<{ style: string }>();
   return { categories: cats.results.map((r) => r.category), styles: styles.results.map((r) => r.style) };
 }
+
+export type IconLink = Pick<IconRecord, "prefix" | "name" | "body" | "width" | "height" | "left" | "top" | "rotate" | "hFlip" | "vFlip">;
+
+const LINK_COLS = "prefix, name, body, width, height, ox, oy, rotate, hflip, vflip";
+type LinkRow = Pick<IconRow, "prefix" | "name" | "body" | "width" | "height" | "ox" | "oy" | "rotate" | "hflip" | "vflip">;
+const toLink = (r: LinkRow): IconLink => ({
+  prefix: r.prefix,
+  name: r.name,
+  body: r.body,
+  width: r.width,
+  height: r.height,
+  left: r.ox,
+  top: r.oy,
+  rotate: r.rotate,
+  hFlip: r.hflip === 1,
+  vFlip: r.vflip === 1,
+});
+
+/** Same family name in other sets — the cheapest "similar icons" signal, no embeddings needed. */
+export async function getSameFamilyAcrossSets(prefix: string, family: string, limit = 24): Promise<IconLink[]> {
+  const { DB } = await getEnv();
+  const { results } = await DB.prepare(
+    `SELECT ${LINK_COLS} FROM icons WHERE family = ?1 AND prefix != ?2 GROUP BY prefix ORDER BY prefix LIMIT ?3`,
+  )
+    .bind(family, prefix, limit)
+    .all<LinkRow>();
+  return results.map(toLink);
+}
+
+export async function getRelatedInSet(prefix: string, family: string, category: string | null, limit = 24): Promise<IconLink[]> {
+  const { DB } = await getEnv();
+  const stem = family.split("-")[0];
+  const stmt = category
+    ? DB.prepare(
+        `SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 AND family != ?2 AND (category = ?3 OR family LIKE ?4) GROUP BY family ORDER BY (category = ?3) DESC, name LIMIT ?5`,
+      ).bind(prefix, family, category, `${stem}-%`, limit)
+    : DB.prepare(
+        `SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 AND family != ?2 AND family LIKE ?3 GROUP BY family ORDER BY name LIMIT ?4`,
+      ).bind(prefix, family, `${stem}-%`, limit);
+  const { results } = await stmt.all<LinkRow>();
+  return results.map(toLink);
+}
+
+export async function listCollectionPage(prefix: string, page: number, perPage: number): Promise<{ icons: IconLink[]; total: number }> {
+  const { DB } = await getEnv();
+  const total = await DB.prepare("SELECT COUNT(*) AS n FROM icons WHERE prefix = ?1").bind(prefix).first<{ n: number }>();
+  const { results } = await DB.prepare(`SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 ORDER BY name LIMIT ?2 OFFSET ?3`)
+    .bind(prefix, perPage, (page - 1) * perPage)
+    .all<LinkRow>();
+  return { icons: results.map(toLink), total: total?.n ?? 0 };
+}
+
+export async function listIconNames(prefix: string): Promise<string[]> {
+  const { DB } = await getEnv();
+  const out: string[] = [];
+  let cursor = "";
+  // page through in chunks to stay under D1's per-query row cap
+  for (;;) {
+    const { results } = await DB.prepare("SELECT name FROM icons WHERE prefix = ?1 AND name > ?2 ORDER BY name LIMIT 5000")
+      .bind(prefix, cursor)
+      .all<{ name: string }>();
+    for (const r of results) out.push(r.name);
+    if (results.length < 5000) break;
+    cursor = results[results.length - 1].name;
+  }
+  return out;
+}
+
+export async function getAliasParent(prefix: string, alias: string): Promise<string | null> {
+  const { DB } = await getEnv();
+  const row = await DB.prepare("SELECT name FROM icons WHERE prefix = ?1 AND aliases LIKE ?2 LIMIT 1")
+    .bind(prefix, `%"${alias}"%`)
+    .first<{ name: string }>();
+  return row?.name ?? null;
+}
