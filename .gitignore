@@ -1,0 +1,14 @@
+node_modules
+.turbo
+.next
+.open-next
+dist
+coverage
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+.env*
+.dev.vars
+.wrangler
+cloudflare-env.d.ts
+*.log

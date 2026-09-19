@@ -1,0 +1,45 @@
+{
+  "name": "@icons-db/icon-index",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "embed": "tsx src/embed.ts",
+    "seed": "tsx src/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
+    "@icons-db/core": "workspace:*",
+    "@iconify/utils": "^3.1.7",
+    "@iconify-json/akar-icons": "latest",
+    "@iconify-json/bi": "latest",
+    "@iconify-json/carbon": "latest",
+    "@iconify-json/fluent": "latest",
+    "@iconify-json/gg": "latest",
+    "@iconify-json/heroicons": "latest",
+    "@iconify-json/iconoir": "latest",
+    "@iconify-json/ion": "latest",
+    "@iconify-json/lucide": "latest",
+    "@iconify-json/majesticons": "latest",
+    "@iconify-json/material-symbols": "latest",
+    "@iconify-json/mdi": "latest",
+    "@iconify-json/octicon": "latest",
+    "@iconify-json/ph": "latest",
+    "@iconify-json/radix-icons": "latest",
+    "@iconify-json/ri": "latest",
+    "@iconify-json/simple-icons": "latest",
+    "@iconify-json/solar": "latest",
+    "@iconify-json/tabler": "latest",
+    "@iconify-json/teenyicons": "latest"
+  },
+  "devDependencies": {
+    "@iconify/types": "^2.0.0",
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vitest": "^4"
+  }
+}

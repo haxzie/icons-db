@@ -1,0 +1,51 @@
+import {
+  expandTextHits,
+  mergeHits,
+  normalize,
+  prefixWeight,
+  searchKeyword,
+  topTexts,
+  type IconHit,
+} from "@icons-db/core";
+import { getEnv } from "./env";
+import { loadSearchIndex } from "./search-index.server";
+
+const EMBED_MODEL = "@cf/baai/bge-small-en-v1.5";
+
+export async function embedQuery(text: string): Promise<Float32Array> {
+  const { AI } = await getEnv();
+  const res = (await AI.run(EMBED_MODEL, { text: [text] })) as { data: number[][] };
+  return normalize(res.data[0]);
+}
+
+export type SearchMode = "keyword" | "semantic" | "hybrid";
+
+export async function search(
+  origin: string,
+  query: string,
+  opts: { mode?: SearchMode; limit?: number; prefixes?: string[] } = {},
+): Promise<{ hits: IconHit[]; mode: SearchMode }> {
+  const mode = opts.mode ?? "hybrid";
+  const limit = opts.limit ?? 120;
+  const idx = await loadSearchIndex(origin);
+  const allow = opts.prefixes?.length ? new Set(opts.prefixes) : null;
+  const filter = (h: IconHit) => !allow || allow.has(h.prefix);
+
+  const keyword =
+    mode === "semantic" ? [] : searchKeyword(idx.keyword, query, { limit: 300, prefixWeight }).filter(filter);
+
+  if (mode === "keyword") return { hits: keyword.slice(0, limit), mode };
+
+  let semantic: ReturnType<typeof expandTextHits> = [];
+  try {
+    const vec = await embedQuery(query);
+    const texts = topTexts(idx.embeddings, vec, 60);
+    // bge cosine scores compress into ~0.6-1.0, so cut relative to the best match.
+    const floor = Math.max(0.72, (texts[0]?.score ?? 0) - 0.22);
+    semantic = expandTextHits(idx.data, idx.textMap, texts, 400, floor).filter(filter);
+  } catch (err) {
+    console.error("semantic search failed", err);
+  }
+  if (mode === "semantic") return { hits: semantic.slice(0, limit).map((s) => ({ ...s })), mode };
+  return { hits: mergeHits(keyword, semantic, { limit }), mode };
+}

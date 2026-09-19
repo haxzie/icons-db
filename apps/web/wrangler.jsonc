@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "icons-db",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-16",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "routes": [{ "pattern": "iconsdb.haxzie.com", "custom_domain": true }],
+  "observability": { "enabled": true },
+  "upload_source_maps": true,
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "icons-db" }],
+  "kv_namespaces": [
+    { "binding": "NEXT_INC_CACHE_KV", "id": "1b3f7d5c394d4e669ce525705ee63516" }
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "icons-db", "database_id": "b23a013e-9752-4064-8c4f-f5e20c89985f", "remote": true }
+  ],
+  "ai": { "binding": "AI" },
+  "ratelimits": [
+    { "name": "API_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } }
+  ]
+}
