@@ -9,6 +9,7 @@ export type Post = {
   tags: string[];
   category: string;
   html: string;
+  toc: { id: string; text: string; level: 2 | 3 }[];
   readingMinutes: number;
 };
 

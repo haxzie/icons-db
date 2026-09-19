@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/shell/PageHeader";
+import Link from "next/link";
+import { PostSidebar } from "@/components/blog/PostSidebar";
 import { categoryLabel, getPost, getPosts } from "@/lib/blog";
 import { JsonLd, SITE } from "@/lib/seo";
 
@@ -24,30 +25,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
   if (!post) notFound();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    author: { "@type": "Person", name: post.author },
+    publisher: { "@type": "Organization", name: "IconsDB", url: SITE },
+    mainEntityOfPage: `${SITE}/blog/${post.slug}`,
+  };
   return (
-    <main className="flex-1 pb-16">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          headline: post.title,
-          description: post.description,
-          datePublished: post.date,
-          author: { "@type": "Person", name: post.author },
-          publisher: { "@type": "Organization", name: "IconsDB", url: SITE },
-          mainEntityOfPage: `${SITE}/blog/${post.slug}`,
-        }}
-      />
-      <PageHeader crumbs={[
-          { href: "/blog", label: "Blog" },
-          { href: `/blog/category/${post.category}`, label: categoryLabel(post.category) },
-        ]} title={post.title} width="max-w-3xl" />
-      <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
-        <p className="text-sm text-fg-subtle">
-          {post.author} · {new Date(post.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {post.readingMinutes} min read
-        </p>
-        <article className="prose mt-6" dangerouslySetInnerHTML={{ __html: post.html }} />
-      </div>
-    </main>
+    <div className="flex flex-1">
+      <JsonLd data={jsonLd} />
+      <PostSidebar toc={post.toc} backHref="/blog" backLabel="All posts" />
+      <main className="min-w-0 flex-1 pb-16">
+        <div className="mx-auto w-full max-w-3xl px-4 pt-8 md:px-8">
+          <Link href={`/blog/category/${post.category}`} className="text-sm font-medium text-accent hover:underline">
+            {categoryLabel(post.category)}
+          </Link>
+          <h1 className="mt-2 text-[32px] font-semibold leading-tight tracking-tight">{post.title}</h1>
+          <p className="mt-3 text-sm font-medium text-fg-subtle">
+            {post.author} · {new Date(post.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {post.readingMinutes} min read
+          </p>
+          <div className="mt-6 md:hidden">
+            <PostSidebar toc={post.toc} backHref="/blog" backLabel="All posts" variant="inline" />
+          </div>
+          <article className="prose mt-6 scroll-mt-24 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24" dangerouslySetInnerHTML={{ __html: post.html }} />
+        </div>
+      </main>
+    </div>
   );
 }
