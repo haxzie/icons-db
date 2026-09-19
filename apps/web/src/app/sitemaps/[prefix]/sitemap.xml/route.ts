@@ -21,7 +21,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ prefix: string
 
   if (prefix === "pages") {
     const posts = await getPosts();
-    const staticPages = ["", "/library", "/api", "/docs/mcp", "/licenses", "/blog"].map((p) => `  <url><loc>${SITE}${p}</loc><changefreq>weekly</changefreq></url>`);
+    const staticPages = ["", "/library", "/install", "/licenses", "/blog"].map((p) => `  <url><loc>${SITE}${p}</loc><changefreq>weekly</changefreq></url>`);
     const setPages = collections.flatMap((c) => {
       const pages = Math.ceil(c.total / PER_PAGE);
       return [

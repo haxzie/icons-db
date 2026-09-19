@@ -36,7 +36,7 @@ function isBrowserNavigation(req: Request) {
 }
 
 async function handle(req: Request) {
-  if (isBrowserNavigation(req)) return Response.redirect(new URL("/docs/mcp", req.url), 302);
+  if (isBrowserNavigation(req)) return Response.redirect(new URL("/install", req.url), 302);
   const limited = await rateLimited(req);
   if (limited) return limited;
   const res = await handlerFor(new URL(req.url).origin).fetch(req);

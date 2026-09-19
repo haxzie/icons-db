@@ -31,30 +31,9 @@ const items = [
     ),
   },
   {
-    href: "/api",
-    label: "API",
-    match: (p: string) => p === "/api",
-    icon: (
-      <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 4l-4 16" />
-      </svg>
-    ),
-  },
-  {
-    href: "/blog",
-    label: "Blog",
-    match: (p: string) => p.startsWith("/blog"),
-    icon: (
-      <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
-        <path d="M14 3v5h5M8 13h8M8 17h5" />
-      </svg>
-    ),
-  },
-  {
-    href: "/docs/mcp",
+    href: "/install",
     label: "MCP",
-    match: (p: string) => p === "/docs/mcp",
+    match: (p: string) => p === "/install",
     icon: (
       <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
