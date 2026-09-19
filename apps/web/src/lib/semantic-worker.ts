@@ -4,7 +4,7 @@
 // but runs entirely in the browser: same model family, same int8 index, no
 // round trip to the edge for semantic queries.
 
-import { env, pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
+import type { FeatureExtractionPipeline } from "@huggingface/transformers";
 import {
   buildTextMap,
   decodeEmbeddings,
@@ -15,20 +15,31 @@ import {
 } from "@icons-db/core";
 import type { WorkerRequest, WorkerResponse } from "./semantic-types";
 
-// We only need the WASM CPU backend (the model is 6 layers, WebGPU dispatch
-// overhead isn't worth it) so point at the plain onnxruntime-web build
-// instead of the heavier "asyncify" one transformers.js defaults to.
-{
-  const ort = env.backends.onnx!;
-  const base = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ort.versions!.web}/dist/`;
-  ort.wasm!.wasmPaths = { mjs: `${base}ort-wasm-simd-threaded.mjs`, wasm: `${base}ort-wasm-simd-threaded.wasm` };
-}
+type Transformers = typeof import("@huggingface/transformers");
 
-// Model files are vendored under public/models (see scripts/fetch-model.mjs)
-// so this never depends on huggingface.co at runtime.
-env.allowLocalModels = true;
-env.allowRemoteModels = false;
-env.localModelPath = "/models/";
+// transformers.js is loaded from a CDN at runtime rather than bundled: its
+// onnxruntime wasm (25MB+) and the quantised model (32MB) both exceed the
+// 25MiB static-asset limit on Cloudflare Workers. The Function wrapper keeps
+// the bundler from trying to resolve the URL.
+const TRANSFORMERS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/dist/transformers.min.js";
+const importUrl = new Function("u", "return import(u)") as (u: string) => Promise<Transformers>;
+
+let transformers: Promise<Transformers> | null = null;
+function loadTransformers(): Promise<Transformers> {
+  if (!transformers) {
+    transformers = importUrl(TRANSFORMERS_URL).then((t) => {
+      // Only the WASM CPU backend is needed (6-layer model); point at the plain
+      // onnxruntime-web build instead of the heavier "asyncify" default.
+      const ort = t.env.backends.onnx!;
+      const base = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ort.versions!.web}/dist/`;
+      ort.wasm!.wasmPaths = { mjs: `${base}ort-wasm-simd-threaded.mjs`, wasm: `${base}ort-wasm-simd-threaded.wasm` };
+      t.env.allowLocalModels = false;
+      t.env.allowRemoteModels = true;
+      return t;
+    });
+  }
+  return transformers;
+}
 
 let encode: FeatureExtractionPipeline | null = null;
 let data: SearchIndexData | null = null;
@@ -52,14 +63,16 @@ async function init(req: Extract<WorkerRequest, { type: "init" }>) {
         if (!r.ok) throw new Error(`embeddings fetch failed: ${r.status}`);
         return r.arrayBuffer();
       }),
-      pipeline("feature-extraction", req.model, {
+      loadTransformers().then((t) =>
+        t.pipeline("feature-extraction", req.model, {
         dtype: "q8", // quantised weights keep the download small (~30MB vs ~130MB fp32)
         progress_callback: (info) => {
           if (info.status === "progress_total") {
             post({ type: "status", state: "loading", progress: info.progress });
           }
         },
-      }),
+        }),
+      ),
     ]);
     data = dataRes;
     textMap = buildTextMap(data);
