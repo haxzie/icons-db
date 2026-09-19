@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://iconsdb.haxzie.com"),
+  metadataBase: new URL("https://iconsdb.app"),
   title: { default: "IconsDB — search 100,000+ open source icons & emoji", template: "%s · IconsDB" },
   description:
     "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Twemoji, Noto Emoji and 18 more open source sets. Copy as SVG, React, Vue or CSS.",

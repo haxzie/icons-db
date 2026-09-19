@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Free JSON and SVG API for 100,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
 };
 
-const BASE = "https://iconsdb.haxzie.com";
+const BASE = "https://iconsdb.app";
 
 const endpoints = [
   {

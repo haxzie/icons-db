@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { collections } from "@/lib/collections";
 
-const BASE = "https://iconsdb.haxzie.com";
+const BASE = "https://iconsdb.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     return [

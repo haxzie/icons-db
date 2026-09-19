@@ -8,7 +8,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "routes": [{ "pattern": "iconsdb.haxzie.com", "custom_domain": true }],
+  "routes": [
+    { "pattern": "iconsdb.app", "custom_domain": true },
+    { "pattern": "www.iconsdb.app", "custom_domain": true },
+    { "pattern": "iconsdb.haxzie.com", "custom_domain": true }
+  ],
   "observability": { "enabled": true },
   "upload_source_maps": true,
   "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "icons-db" }],
