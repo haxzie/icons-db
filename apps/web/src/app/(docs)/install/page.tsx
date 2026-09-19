@@ -121,13 +121,13 @@ get_icons({ ids: ["lucide:house", "lucide:settings", "lucide:log-out"], format: 
     License: ISC — free for commercial use, no attribution`;
 
 const AGENT_LOGOS = [
-  { id: "claude", name: "Claude Code" },
-  { id: "cursor", name: "Cursor" },
-  { id: "openai", name: "Codex" },
-  { id: "visualstudiocode", name: "VS Code" },
-  { id: "windsurf", name: "Windsurf" },
-  { id: "googlegemini", name: "Gemini CLI" },
-  { id: "zedindustries", name: "Zed" },
+  { prefix: "logos", id: "claude-icon", name: "Claude Code" },
+  { prefix: "logos", id: "cursor-icon", name: "Cursor" },
+  { prefix: "logos", id: "openai-icon", name: "Codex" },
+  { prefix: "logos", id: "visual-studio-code", name: "VS Code" },
+  { prefix: "simple-icons", id: "windsurf", name: "Windsurf" },
+  { prefix: "logos", id: "google-gemini-icon", name: "Gemini CLI" },
+  { prefix: "simple-icons", id: "zedindustries", name: "Zed" },
 ];
 
 export default function InstallPage() {
@@ -137,7 +137,7 @@ export default function InstallPage() {
         <div className="flex items-center gap-2">
           {AGENT_LOGOS.map((a) => (
             <span key={a.id} title={a.name} className="grid size-11 place-items-center rounded-full border bg-bg-elevated text-fg">
-              <IconGlyph prefix="simple-icons" name={a.id} className="size-5" />
+              <IconGlyph prefix={a.prefix} name={a.id} className="size-5" />
             </span>
           ))}
         </div>
