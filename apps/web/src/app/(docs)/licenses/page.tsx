@@ -20,7 +20,7 @@ export default function LicensesPage() {
   const attribution = collections.filter((c) => c.license.attribution);
   return (
     <main className="flex-1 pb-16">
-      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Licenses & attribution" />
+      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Licenses & attribution" width="max-w-4xl" />
       <div className="mx-auto w-full max-w-4xl px-4 md:px-8">
         <p className="text-fg-muted">
           IconsDB redistributes open source icon sets in the normalised format published by{" "}

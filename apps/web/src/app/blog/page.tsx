@@ -13,7 +13,7 @@ export default async function BlogIndex() {
   const posts = await getPosts();
   return (
     <main className="flex-1 pb-16">
-      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Blog" />
+      <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Blog" width="max-w-3xl" />
       <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
         <ul className="divide-y">
           {posts.map((p) => (

@@ -38,7 +38,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           mainEntityOfPage: `${SITE}/blog/${post.slug}`,
         }}
       />
-      <PageHeader crumbs={[{ href: "/blog", label: "Blog" }]} title={post.title} />
+      <PageHeader crumbs={[{ href: "/blog", label: "Blog" }]} title={post.title} width="max-w-3xl" />
       <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
         <p className="text-sm text-fg-subtle">
           {post.author} · {new Date(post.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {post.readingMinutes} min read
