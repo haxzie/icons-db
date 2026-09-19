@@ -6,6 +6,8 @@ import { TrademarkNotice } from "@/components/TrademarkNotice";
 export const metadata: Metadata = {
   title: "API",
   description: "Free JSON and SVG API for 145,000+ open source icons: search, fetch icon data, and render SVGs on the fly.",
+  alternates: { canonical: "/api" },
+  openGraph: { url: "/api" },
 };
 
 const BASE = "https://iconsdb.app";

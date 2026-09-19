@@ -5,10 +5,14 @@ export const SITE = "https://iconsdb.app";
 
 const KIND_NOUN = { icons: "icon", brands: "logo", emoji: "emoji" } as const;
 
+function titleCase(s: string): string {
+  return s.replace(/\b[a-z]/g, (ch) => ch.toUpperCase());
+}
+
 export function iconTitle(icon: IconRecord, c: CollectionMeta): string {
   const noun = KIND_NOUN[c.kind];
   const style = c.kind === "icons" && icon.style && icon.style !== "Regular" ? ` ${icon.style.toLowerCase()}` : "";
-  return `${humanize(icon.family)}${style} ${noun} — ${c.name}`;
+  return `${titleCase(humanize(icon.family))}${style} ${noun} — ${c.name}`;
 }
 
 export function iconDescription(icon: IconRecord, c: CollectionMeta): string {

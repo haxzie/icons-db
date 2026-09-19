@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   description:
     "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Font Awesome, Twemoji, Noto Emoji and 50 more open source sets. Copy as SVG, React, Vue or CSS.",
   openGraph: { type: "website", siteName: "IconsDB", images: ["/logo.png"] },
+  twitter: { card: "summary", images: ["/logo.png"] },
   icons: { icon: "/logo.svg", apple: "/logo.png" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };
 
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="dark";if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;

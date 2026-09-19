@@ -6,6 +6,8 @@ import { collections } from "@/lib/collections";
 export const metadata: Metadata = {
   title: "Icon sets",
   description: "Browse every open source icon set in IconsDB with licence details, authors and icon counts.",
+  alternates: { canonical: "/library" },
+  openGraph: { url: "/library" },
 };
 
 export default function LibraryPage() {
