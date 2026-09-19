@@ -1,13 +1,43 @@
 import Link from "next/link";
 import { CATEGORIES, type Post } from "@/lib/blog";
 
-type Item = { slug: string; label: string; href: string; count: number; description?: string };
+type Item = { slug: string; label: string; href: string; count: number };
+
+const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+const ICONS: Record<string, React.ReactNode> = {
+  all: (
+    <svg viewBox="0 0 24 24" className="size-5" {...stroke}>
+      <path d="M4 6h16M4 12h16M4 18h10" />
+    </svg>
+  ),
+  announcements: (
+    <svg viewBox="0 0 24 24" className="size-5" {...stroke}>
+      <path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1ZM15 9a3.5 3.5 0 0 1 0 6M18 6a7 7 0 0 1 0 12" />
+    </svg>
+  ),
+  showcase: (
+    <svg viewBox="0 0 24 24" className="size-5" {...stroke}>
+      <path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9Z" />
+    </svg>
+  ),
+  tips: (
+    <svg viewBox="0 0 24 24" className="size-5" {...stroke}>
+      <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.6 1 1.3 1 2.5h6c0-1.2.3-1.9 1-2.5A6 6 0 0 0 12 3Z" />
+    </svg>
+  ),
+  guides: (
+    <svg viewBox="0 0 24 24" className="size-5" {...stroke}>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+      <path d="M4 20.5V5.5M8 8h8M8 12h6" />
+    </svg>
+  ),
+};
 
 export function BlogLayout({ active, counts, title, children }: { active: string; counts: Record<string, number>; title: string; children: React.ReactNode }) {
   const total = Object.values(counts).reduce((n, c) => n + c, 0);
   const items: Item[] = [
     { slug: "all", label: "All posts", href: "/blog", count: total },
-    ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label, href: `/blog/category/${c.slug}`, count: counts[c.slug] ?? 0, description: c.description })),
+    ...CATEGORIES.map((c) => ({ slug: c.slug, label: c.label, href: `/blog/category/${c.slug}`, count: counts[c.slug] ?? 0 })),
   ];
   return (
     <div className="flex flex-1">
@@ -33,13 +63,8 @@ export function BlogLayout({ active, counts, title, children }: { active: string
                       aria-current={on ? "page" : undefined}
                       className={`flex items-center gap-3 rounded-lg px-2 py-2.5 text-[15px] font-medium transition ${on ? "bg-accent-soft text-fg" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
                     >
-                      <span className={`grid size-4 shrink-0 place-items-center rounded-full border ${on ? "border-accent" : "border-fg-subtle"}`}>
-                        {on && <span className="size-2 rounded-full bg-accent" />}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">{it.label}</span>
-                        {it.description && <span className="block truncate text-[13px] font-normal text-fg-muted">{it.description}</span>}
-                      </span>
+                      <span className={`grid size-6 shrink-0 place-items-center ${on ? "text-accent dark:text-[#d2e3fc]" : "text-fg-muted"}`}>{ICONS[it.slug]}</span>
+                      <span className="min-w-0 flex-1 truncate">{it.label}</span>
                       <span className="text-sm font-medium tabular-nums text-fg-subtle">{it.count}</span>
                     </Link>
                   </li>
