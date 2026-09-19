@@ -22,6 +22,7 @@ for (const file of files) {
     date: String(data.date ?? ""),
     author: String(data.author ?? "IconsDB"),
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+    category: String(data.category ?? "guides"),
     html: await marked.parse(content, { gfm: true }),
     readingMinutes: Math.max(1, Math.round(content.split(/\s+/).length / 220)),
   });

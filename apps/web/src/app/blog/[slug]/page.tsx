@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/shell/PageHeader";
-import { getPost, getPosts } from "@/lib/blog";
+import { categoryLabel, getPost, getPosts } from "@/lib/blog";
 import { JsonLd, SITE } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -38,7 +38,10 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           mainEntityOfPage: `${SITE}/blog/${post.slug}`,
         }}
       />
-      <PageHeader crumbs={[{ href: "/blog", label: "Blog" }]} title={post.title} width="max-w-3xl" />
+      <PageHeader crumbs={[
+          { href: "/blog", label: "Blog" },
+          { href: `/blog/category/${post.category}`, label: categoryLabel(post.category) },
+        ]} title={post.title} width="max-w-3xl" />
       <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
         <p className="text-sm text-fg-subtle">
           {post.author} · {new Date(post.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {post.readingMinutes} min read
