@@ -15,7 +15,6 @@ export function proxy(req: NextRequest) {
   if (pathname === "/api" || pathname === "/docs/mcp") {
     const url = req.nextUrl.clone();
     url.pathname = "/install";
-    if (pathname === "/api") url.hash = "api";
     return NextResponse.redirect(url, 308);
   }
   return NextResponse.next();

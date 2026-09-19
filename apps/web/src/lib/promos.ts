@@ -13,6 +13,5 @@ export const PROMOS: Promo[] = [
   { id: "genmotion", title: "GenMotion", tagline: "Create viral launch videos using Claude Code", href: "https://genmotion.dev?ref=iconsdb", icon: "lucide:sparkles", sponsored: true },
   { id: "advertise", title: "Advertise with us", tagline: "Reach developers and designers searching for icons", href: "mailto:musthu.gm@gmail.com?subject=Advertise%20on%20IconsDB", icon: "lucide:megaphone" },
   { id: "mcp", title: "MCP for coding agents", tagline: "Claude Code, Cursor & Codex search icons by intent", href: "/install", icon: "lucide:bot" },
-  { id: "api", title: "IconsDB API", tagline: "Search & render icons from your app", href: "/install#api", icon: "lucide:webhook" },
   { id: "licenses", title: "Licenses", tagline: "What attribution each set needs", href: "/licenses", icon: "lucide:scale" },
 ];

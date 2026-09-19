@@ -5,9 +5,9 @@ import { TrademarkNotice } from "@/components/TrademarkNotice";
 import { AgentTabs, type AgentGuide } from "@/components/install/AgentTabs";
 
 export const metadata: Metadata = {
-  title: "Install — MCP server & API for coding agents",
+  title: "Install — MCP server for coding agents",
   description:
-    "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 146,000 open source icons. Remote MCP server with semantic search and paste-ready imports, plus a free JSON/SVG API.",
+    "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 146,000 open source icons. Remote MCP server with semantic search and paste-ready imports.",
   alternates: { canonical: "/install" },
   openGraph: { url: "/install" },
 };
@@ -104,19 +104,6 @@ const TOOLS: { name: string; when: string; args: string }[] = [
   { name: "list_icon_sets", when: "All 57 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
 ];
 
-const ENDPOINTS = [
-  {
-    path: "/api/v1/search?q=shopping+cart&mode=hybrid&limit=50&prefixes=lucide,tabler",
-    desc: "Search icons. mode is hybrid (default), keyword or semantic. prefixes optionally restricts to a comma separated list of sets. Returns { icons: [{ prefix, name, score }] }.",
-  },
-  {
-    path: "/api/v1/icon/lucide/shopping-cart.svg?color=%23ff0000&size=48",
-    desc: "Render an icon as SVG. Optional color (hex/name), width/height/size, and download (sends Content-Disposition). Cached at the edge for a year.",
-  },
-  { path: "/api/v1/icons/lucide?icons=house,check,award", desc: "Raw icon data (Iconify format: body, width, height, transforms) for up to 200 icons from one set in a single request." },
-  { path: "/api/v1/collections", desc: "List all icon sets with author, license (SPDX), homepage, style suffixes and sample icons." },
-];
-
 export default function InstallPage() {
   return (
     <main className="flex-1 pb-16">
@@ -188,29 +175,13 @@ get_icons({ ids: ["lucide:house", "lucide:settings", "lucide:log-out"], format: 
     import { LogOut } from "lucide-react";
     License: ISC — free for commercial use, no attribution`}</pre>
 
-        <h2 id="api" className="mt-14 text-lg font-medium">
-          REST API
-        </h2>
-        <p className="mt-2 text-fg-muted">
-          The same search and rendering as a free, CORS-enabled JSON/SVG API. No key; rate limited per IP (120/min). Icons keep their original licences — see{" "}
+        <p className="mt-10 text-sm text-fg-muted">
+          Icons keep their original licences — see{" "}
           <Link href="/licenses" className="underline decoration-line hover:text-fg">
             licenses
           </Link>
           .
         </p>
-        <div className="mt-6 space-y-6">
-          {ENDPOINTS.map((e) => (
-            <div key={e.path}>
-              <code className="block break-all font-mono text-sm">
-                <span className="mr-2 rounded bg-accent-soft px-1.5 py-0.5 text-xs font-medium text-accent dark:text-[#d2e3fc]">GET</span>
-                <a href={e.path} className="hover:underline">
-                  {e.path}
-                </a>
-              </code>
-              <p className="mt-1.5 text-sm text-fg-muted">{e.desc}</p>
-            </div>
-          ))}
-        </div>
         <TrademarkNotice className="mt-10" />
       </div>
     </main>
