@@ -95,9 +95,9 @@ export function BlogLayout({ active, counts, title, children }: { active: string
 export function PostList({ posts }: { posts: Post[] }) {
   if (posts.length === 0) return <p className="py-12 text-fg-muted">Nothing here yet.</p>;
   return (
-    <ul className="divide-y">
+    <ul className="space-y-2">
       {posts.map((p) => (
-        <li key={p.slug} className="py-8 first:pt-0">
+        <li key={p.slug} className="py-6 first:pt-0">
           <Link href={`/blog/${p.slug}`} className="group block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
