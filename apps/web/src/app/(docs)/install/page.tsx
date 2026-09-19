@@ -139,7 +139,7 @@ export default function InstallPage() {
             <span
               key={a.id}
               title={a.name}
-              className="grid size-12 place-items-center rounded-full border-2 border-bg bg-bg-elevated text-fg shadow-[0_1px_3px_rgba(60,64,67,.3)] transition hover:z-10 hover:-translate-y-1"
+              className="grid size-12 place-items-center rounded-full border-2 border-bg bg-bg-elevated text-fg transition hover:z-10 hover:-translate-y-1"
               style={{ marginLeft: i ? -10 : 0, zIndex: AGENT_LOGOS.length - i }}
             >
               <IconGlyph prefix={a.prefix} name={a.id} className="size-5" />
