@@ -134,15 +134,20 @@ export default function InstallPage() {
   return (
     <main className="flex-1 pb-16">
       <div className="mx-auto w-full max-w-3xl px-4 pt-12 md:px-8">
-        <div className="flex items-center gap-2">
-          {AGENT_LOGOS.map((a) => (
-            <span key={a.id} title={a.name} className="grid size-11 place-items-center rounded-full border bg-bg-elevated text-fg">
+        <div className="flex justify-center">
+          {AGENT_LOGOS.map((a, i) => (
+            <span
+              key={a.id}
+              title={a.name}
+              className="grid size-12 place-items-center rounded-full border-2 border-bg bg-bg-elevated text-fg shadow-[0_1px_3px_rgba(60,64,67,.3)] transition hover:z-10 hover:-translate-y-1"
+              style={{ marginLeft: i ? -10 : 0, zIndex: AGENT_LOGOS.length - i }}
+            >
               <IconGlyph prefix={a.prefix} name={a.id} className="size-5" />
             </span>
           ))}
         </div>
-        <h1 className="mt-5 text-[32px] font-medium leading-tight tracking-tight">Install IconsDB for your agents</h1>
-        <p className="mt-3 text-fg-muted">
+        <h1 className="mt-6 text-center text-[32px] font-medium leading-tight tracking-tight">Install IconsDB for your agents</h1>
+        <p className="mx-auto mt-3 max-w-xl text-center text-fg-muted">
           Give your coding agent 146,000 open source icons. The IconsDB{" "}
           <a href="https://modelcontextprotocol.io" className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
             MCP
