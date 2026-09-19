@@ -57,7 +57,7 @@ export function SearchFilters(p: Props) {
   return (
     <div>
       <SidebarLabel>Preview</SidebarLabel>
-      <div className="mb-4 flex items-center gap-3 rounded-xl border px-3 py-2.5">
+      <div className="mb-4 flex items-center gap-3 rounded-xl border bg-bg-elevated px-3 py-2.5">
         <label className="relative grid size-8 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border" style={{ background: p.color || "var(--fg)" }}>
           <input type="color" value={p.color || "#202124"} onChange={(e) => p.onColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />
         </label>
@@ -71,7 +71,7 @@ export function SearchFilters(p: Props) {
           </button>
         )}
       </div>
-      <label className="mb-5 flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5 text-sm">
+      <label className="mb-5 flex cursor-pointer items-center justify-between rounded-xl border bg-bg-elevated px-3 py-2.5 text-sm">
         <span>
           <span className="font-medium">Group variants</span>
           <span className="block text-xs text-fg-muted">One tile per icon family</span>
@@ -118,7 +118,7 @@ export function SearchFilters(p: Props) {
             value={setQuery}
             onChange={(e) => setSetQuery(e.target.value)}
             placeholder="Find a set"
-            className="h-9 min-w-0 flex-1 rounded-full border bg-bg px-3 text-sm outline-none focus:border-accent"
+            className="h-9 min-w-0 flex-1 rounded-full border bg-bg-elevated px-3 text-sm outline-none focus:border-accent"
           />
           {p.sets.length > 0 && (
             <button type="button" onClick={() => p.onSets([])} className="shrink-0 text-xs text-accent hover:underline">
@@ -136,7 +136,7 @@ export function SearchFilters(p: Props) {
               return (
                 <label
                   key={c.prefix}
-                  className={`flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1.5 text-sm hover:bg-bg-muted ${dim ? "opacity-40" : ""}`}
+                  className={`flex cursor-pointer items-center gap-3 rounded-lg px-1 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 ${dim ? "opacity-40" : ""}`}
                 >
                   <input type="checkbox" checked={checked} onChange={() => p.onToggleSet(c.prefix)} className="size-4 accent-accent" />
                   <span className="min-w-0 flex-1 truncate">{c.name}</span>

@@ -100,7 +100,7 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
         }}
       >
         <SidebarLabel>About</SidebarLabel>
-        <div className="mb-5 rounded-xl border p-3 text-sm">
+        <div className="mb-5 rounded-xl border bg-bg-elevated p-3 text-sm">
           <div className="flex items-center justify-between gap-2">
             <span className="font-medium">{c.name}</span>
             <LicenseBadge license={c.license} withLink />
@@ -128,7 +128,7 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
           </p>
         </div>
         <SidebarLabel>Preview</SidebarLabel>
-        <div className="mb-4 flex items-center gap-3 rounded-xl border px-3 py-2.5">
+        <div className="mb-4 flex items-center gap-3 rounded-xl border bg-bg-elevated px-3 py-2.5">
           <label className="relative grid size-8 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border" style={{ background: color || "var(--fg)" }}>
             <input type="color" value={color || "#202124"} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />
           </label>
@@ -142,7 +142,7 @@ export function CollectionBrowser({ collection, collections }: { collection: Col
             </button>
           )}
         </div>
-        <label className="mb-5 flex cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5 text-sm">
+        <label className="mb-5 flex cursor-pointer items-center justify-between rounded-xl border bg-bg-elevated px-3 py-2.5 text-sm">
           <span className="font-medium">Group variants</span>
           <input type="checkbox" checked={groupVariants} onChange={(e) => setGroupVariants(e.target.checked)} className="size-4 accent-accent" />
         </label>
