@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "../ThemeToggle";
@@ -45,10 +46,8 @@ export function Rail() {
   const pathname = usePathname();
   return (
     <nav className="sticky top-0 z-40 flex h-screen w-[72px] shrink-0 flex-col items-center border-r bg-bg py-3 max-md:hidden">
-      <Link href="/" className="mb-4 grid size-10 place-items-center rounded-xl bg-accent text-accent-fg" aria-label="IconsDB home">
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 7h16M4 12h10M4 17h7" />
-        </svg>
+      <Link href="/" className="mb-4" aria-label="IconsDB home">
+        <Image src="/logo.png" alt="IconsDB" width={40} height={40} priority className="size-10 rounded-xl" />
       </Link>
       {items.map((it) => {
         const active = it.match(pathname);

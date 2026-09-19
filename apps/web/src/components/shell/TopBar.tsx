@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { forwardRef } from "react";
 
@@ -25,11 +26,7 @@ export const TopBar = forwardRef<HTMLInputElement, Props>(function TopBar(
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 md:px-8">
         {title ?? (
           <Link href="/" className="flex shrink-0 items-center gap-2 text-[22px] font-medium tracking-tight max-sm:hidden">
-            <span className="grid size-7 place-items-center rounded-lg bg-accent text-accent-fg md:hidden">
-              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 7h16M4 12h10M4 17h7" />
-              </svg>
-            </span>
+            <Image src="/logo.png" alt="" width={28} height={28} className="size-7 rounded-lg md:hidden" />
             IconsDB
           </Link>
         )}

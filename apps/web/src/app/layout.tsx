@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   title: { default: "IconsDB — search 100,000+ open source icons & emoji", template: "%s · IconsDB" },
   description:
     "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Twemoji, Noto Emoji and 18 more open source sets. Copy as SVG, React, Vue or CSS.",
-  openGraph: { type: "website", siteName: "IconsDB" },
+  openGraph: { type: "website", siteName: "IconsDB", images: ["/logo.png"] },
+  icons: { apple: "/logo.png" },
 };
 
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="dark";if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
