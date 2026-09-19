@@ -97,8 +97,17 @@ export function PostList({ posts }: { posts: Post[] }) {
   return (
     <ul className="divide-y">
       {posts.map((p) => (
-        <li key={p.slug} className="py-6 first:pt-0">
+        <li key={p.slug} className="py-8 first:pt-0">
           <Link href={`/blog/${p.slug}`} className="group block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/blog/covers/${p.slug}.svg`}
+              alt=""
+              width={1600}
+              height={900}
+              loading="lazy"
+              className="mb-5 aspect-video w-full rounded-2xl border object-cover transition group-hover:border-accent"
+            />
             <h2 className="text-2xl font-semibold leading-snug group-hover:underline">{p.title}</h2>
             <p className="mt-2 text-[17px] leading-relaxed text-fg-muted">{p.description}</p>
             <p className="mt-3 text-sm font-medium text-fg-subtle">

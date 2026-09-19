@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: post.title,
     description: post.description,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { type: "article", title: post.title, description: post.description, publishedTime: post.date, url: `/blog/${post.slug}` },
+    openGraph: { type: "article", title: post.title, description: post.description, publishedTime: post.date, url: `/blog/${post.slug}`, images: [`/blog/${post.slug}/opengraph-image`] },
   };
 }
 
@@ -48,6 +48,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           <p className="mt-3 text-sm font-medium text-fg-subtle">
             {post.author} · {new Date(post.date).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })} · {post.readingMinutes} min read
           </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/blog/covers/${post.slug}.svg`} alt="" width={1600} height={900} className="mt-6 aspect-video w-full rounded-2xl border object-cover" />
           <div className="mt-6 md:hidden">
             <PostSidebar toc={post.toc} backHref="/blog" backLabel="All posts" variant="inline" />
           </div>
