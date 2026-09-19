@@ -1,6 +1,6 @@
 # IconsDB
 
-Search 146,000+ open source icons, logos and emoji from 57 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
+Search 200,000+ open source icons, logos and emoji from 57 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
 
 ## How it works
 

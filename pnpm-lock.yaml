@@ -115,6 +115,9 @@ importers:
       '@iconify-json/akar-icons':
         specifier: latest
         version: 1.2.7
+      '@iconify-json/ant-design':
+        specifier: ^1.2.9
+        version: 1.2.9
       '@iconify-json/bi':
         specifier: latest
         version: 1.2.7
@@ -133,15 +136,24 @@ importers:
       '@iconify-json/catppuccin':
         specifier: ^1.2.17
         version: 1.2.17
+      '@iconify-json/cib':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@iconify-json/circle-flags':
         specifier: ^1.2.11
         version: 1.2.11
+      '@iconify-json/codicon':
+        specifier: ^1.2.73
+        version: 1.2.73
       '@iconify-json/devicon':
         specifier: ^1.2.65
         version: 1.2.65
       '@iconify-json/emojione':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/ep':
+        specifier: ^1.2.4
+        version: 1.2.4
       '@iconify-json/eva':
         specifier: ^1.2.3
         version: 1.2.3
@@ -157,6 +169,15 @@ importers:
       '@iconify-json/fa6-solid':
         specifier: ^1.2.4
         version: 1.2.4
+      '@iconify-json/fa7-brands':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/fa7-regular':
+        specifier: ^1.2.3
+        version: 1.2.3
+      '@iconify-json/fa7-solid':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@iconify-json/feather':
         specifier: ^1.2.1
         version: 1.2.1
@@ -166,9 +187,15 @@ importers:
       '@iconify-json/flagpack':
         specifier: ^1.2.8
         version: 1.2.8
+      '@iconify-json/flowbite':
+        specifier: ^1.2.7
+        version: 1.2.7
       '@iconify-json/fluent':
         specifier: latest
         version: 1.2.58
+      '@iconify-json/fluent-color':
+        specifier: ^1.2.21
+        version: 1.2.21
       '@iconify-json/fluent-emoji':
         specifier: ^1.2.7
         version: 1.2.7
@@ -178,9 +205,15 @@ importers:
       '@iconify-json/fluent-emoji-high-contrast':
         specifier: ^1.2.6
         version: 1.2.6
+      '@iconify-json/fxemoji':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@iconify-json/gg':
         specifier: latest
         version: 1.2.2
+      '@iconify-json/healthicons':
+        specifier: ^1.2.13
+        version: 1.2.13
       '@iconify-json/heroicons':
         specifier: latest
         version: 1.2.3
@@ -190,6 +223,21 @@ importers:
       '@iconify-json/humbleicons':
         specifier: ^1.2.20
         version: 1.2.20
+      '@iconify-json/ic':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/icon-park':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/icon-park-outline':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/icon-park-solid':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/icon-park-twotone':
+        specifier: ^1.2.4
+        version: 1.2.4
       '@iconify-json/iconoir':
         specifier: latest
         version: 1.2.11
@@ -211,21 +259,33 @@ importers:
       '@iconify-json/lucide':
         specifier: latest
         version: 1.2.134
+      '@iconify-json/lucide-lab':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@iconify-json/mage':
         specifier: ^1.2.4
         version: 1.2.4
       '@iconify-json/majesticons':
         specifier: latest
         version: 1.2.5
+      '@iconify-json/material-icon-theme':
+        specifier: ^1.2.70
+        version: 1.2.70
       '@iconify-json/material-symbols':
         specifier: latest
         version: 1.2.92
+      '@iconify-json/material-symbols-light':
+        specifier: ^1.2.93
+        version: 1.2.93
       '@iconify-json/mdi':
         specifier: latest
         version: 1.2.3
       '@iconify-json/mingcute':
         specifier: ^1.2.8
         version: 1.2.8
+      '@iconify-json/mynaui':
+        specifier: ^1.2.19
+        version: 1.2.19
       '@iconify-json/noto':
         specifier: ^1.2.8
         version: 1.2.8
@@ -241,6 +301,9 @@ importers:
       '@iconify-json/pixelarticons':
         specifier: ^1.2.9
         version: 1.2.9
+      '@iconify-json/prime':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@iconify-json/radix-icons':
         specifier: latest
         version: 1.2.6
@@ -262,9 +325,18 @@ importers:
       '@iconify-json/tabler':
         specifier: latest
         version: 1.2.38
+      '@iconify-json/tdesign':
+        specifier: ^1.2.18
+        version: 1.2.18
       '@iconify-json/teenyicons':
         specifier: latest
         version: 1.2.2
+      '@iconify-json/token':
+        specifier: ^1.2.41
+        version: 1.2.41
+      '@iconify-json/token-branded':
+        specifier: ^1.2.45
+        version: 1.2.45
       '@iconify-json/twemoji':
         specifier: ^1.2.5
         version: 1.2.5
@@ -1234,6 +1306,9 @@ packages:
   '@iconify-json/akar-icons@1.2.7':
     resolution: {integrity: sha512-cw44dCnZgGhm6Tywxm0WALAnDB9AyGkDk7kiLMo2B/Ayt7duZu/uyrsqb55weWUN8Ge2sQAOl8MRtT6bFcLzPg==}
 
+  '@iconify-json/ant-design@1.2.9':
+    resolution: {integrity: sha512-cAP5tQXUj05Hb0o3nyjEzYofuU5luRm6IV4FNZ3KQkG2cfzvmM34WYJuNLA3/sWqfE0cHSaaaEGvIdAUq+bN2Q==}
+
   '@iconify-json/bi@1.2.7':
     resolution: {integrity: sha512-IPz8WNxmLkH1I9msl+0Q4OnmjjvP4uU0Z61a4i4sqonB6vKSbMGUWuGn8/YuuszlReVj8rf+3gNv5JU8Xoljyg==}
 
@@ -1252,14 +1327,23 @@ packages:
   '@iconify-json/catppuccin@1.2.17':
     resolution: {integrity: sha512-l1pFOADEUlw+j7V+yfFzBowdE4deeMuI4amqfKaN+7uTI9B0Ho24C86DitQk5zb62NkEM9poOyfuG7WS2bw6jg==}
 
+  '@iconify-json/cib@1.2.3':
+    resolution: {integrity: sha512-MMvRXVTHt82z3bYN19JDAjv/X8OBNC/1B3I334SV/1nyhdPeeyvJZVoI1cGuNqYznBjMnWxKPtIhhiVgGQ1CzQ==}
+
   '@iconify-json/circle-flags@1.2.11':
     resolution: {integrity: sha512-vrx2btOkTQ4/P75ElEDnjXShmNTwInXuhhpIQQ6U6YUTdxfWyvm/4ijNG8FX8iWFr+sqqQRCvXpm2RfRtjVXfg==}
+
+  '@iconify-json/codicon@1.2.73':
+    resolution: {integrity: sha512-YYlnAc+t4TbT94YKP1Mf/kCWnkrc+MqpZfHYuJ6BSQpb3e8mcwjwF8snCDVG6+YWGlwYCo5W91bizON74sXVLA==}
 
   '@iconify-json/devicon@1.2.65':
     resolution: {integrity: sha512-qypMkudbbFv+7od8ZTQHZ17rbZgaah355g4rk2+cGIlZjKWpGK8ysbs6anWBi8ljj3DWAEhb8ud3BSzLtlJvrw==}
 
   '@iconify-json/emojione@1.2.3':
     resolution: {integrity: sha512-T9+T3HIbJNLKKsmxYKlaYhvnHYkz/HNYTV7SHCXVZPfeUi4FqskY70YeN8yYAZT8cCv7w5vJxS4Q1m8zb9CMMg==}
+
+  '@iconify-json/ep@1.2.4':
+    resolution: {integrity: sha512-dtKOueYp1CRxAUW+GayIiuHqOlELfO0W3QiHOH4NjvKtBn2uxZbByIKQ+7B1Hj+AgZrhWTie3QKYkZn+VQVZrw==}
 
   '@iconify-json/eva@1.2.3':
     resolution: {integrity: sha512-67nZvxOHdoV2SaTLBw+seq+pbfB8OFRB7CVNI5gGJCGPXJKniPo/x9H/dYGovxq7q+GU0NwKrPxBcHyEFDwSUw==}
@@ -1276,6 +1360,15 @@ packages:
   '@iconify-json/fa6-solid@1.2.4':
     resolution: {integrity: sha512-LmDNNdJVyvF5mPm1yxWvL8KjCc/E8LzoqnF1LNTVpyY2ZJRUlGOWuPIThdbuFBF2IovgttkIyumhyqfmlHdwKg==}
 
+  '@iconify-json/fa7-brands@1.2.4':
+    resolution: {integrity: sha512-60acXyxhQl1lddBH5YGzfQLkzlP9jqNcblFmgel7lJpgsVx/4QmrXAL90ARb8XhHX7dFMGRDmlqER9mq8aaz2g==}
+
+  '@iconify-json/fa7-regular@1.2.3':
+    resolution: {integrity: sha512-j+3awnyNH2fpMaxqShVWT1JzaG7HR1N3SkKrMXYeonB3XRdW0SJuMaXqwzl1yPAdcqSO5bmCRIznPJ1j/PDi8w==}
+
+  '@iconify-json/fa7-solid@1.2.5':
+    resolution: {integrity: sha512-e9EOtXuvDhiv6gBjbuW1q4bSR2tU5HmsDxqbLElQt2w2dR1Byh2mXfPLdRgEVwEr50uQV5tKxE3YAL6LTa+1fA==}
+
   '@iconify-json/feather@1.2.1':
     resolution: {integrity: sha512-gURNg2TJYuO1U7DoOGCylm9TwkMfzjOH2BHdWsE0IXLXj/MNkFIJu56Wu1xRws27M8hzDzUDt/biGUa/LfAjdg==}
 
@@ -1284,6 +1377,12 @@ packages:
 
   '@iconify-json/flagpack@1.2.8':
     resolution: {integrity: sha512-fWiMOWi6pHf757xK4OfHrqOfUpnJ4oTwu4rlzt4twJyNO9V34ui0cMj7qrCP/yI0mS/k1zZ3In/lOZWyjgfMjw==}
+
+  '@iconify-json/flowbite@1.2.7':
+    resolution: {integrity: sha512-YmjHMSe6zBWI6XMZ35OGxgkX9k0lMiKmJIYOOymhc8rEiVbtZnnujJnGrfTider1JOoArQcCJzhHH6hUoXgiYA==}
+
+  '@iconify-json/fluent-color@1.2.21':
+    resolution: {integrity: sha512-VETjGx7BMpVsCR3HV5g5t6oBGZ92XKzIRClS5xUvDn1YHAkQTF9OyF/aFdtxYOC8JROoI1SNO/Ql6jZeK7mroA==}
 
   '@iconify-json/fluent-emoji-flat@1.2.6':
     resolution: {integrity: sha512-RY47RgPb47fYUiyrA64sIOL0+UU02s29sXpNBbIQRBUlPlfNFTKUmZDERGuxDs/7yNGWqQYvuaSYM1M4fRXlUw==}
@@ -1297,8 +1396,14 @@ packages:
   '@iconify-json/fluent@1.2.58':
     resolution: {integrity: sha512-KiWNF3LXZ4rvicH2MR8FKVN49MB++400rSiDpjVSP4V0GjsGViSPw5PJQ3pKDNPohL5wBW/ZDpo+rCYYFbmFkA==}
 
+  '@iconify-json/fxemoji@1.2.2':
+    resolution: {integrity: sha512-UAasRaxzFUKfIGSmLwnoarsssA4LX0VLLuEmplIqM6ZNQqIQRtav8tZ4H1neTlBreXuMQyAifr5jP4kn78DpiQ==}
+
   '@iconify-json/gg@1.2.2':
     resolution: {integrity: sha512-8iQh8+Tdb/0jakNYy0+t2GVubjhbaJbuYoPsRhFw8IAs00IQV2BjE9GoB2kGF/UObaJCqvCelB3qRaUdizkrmg==}
+
+  '@iconify-json/healthicons@1.2.13':
+    resolution: {integrity: sha512-1c6nzjXoYBHwFqckX4Jb0PIReOzm3FZ4hWHNz/YYw1yL7QRBTeolh+S4kWpjWVa8hn9oJjgdFv0fyd8ERcRiEA==}
 
   '@iconify-json/heroicons@1.2.3':
     resolution: {integrity: sha512-n+vmCEgTesRsOpp5AB5ILB6srsgsYK+bieoQBNlafvoEhjVXLq8nIGN4B0v/s4DUfa0dOrjwE/cKJgIKdJXOEg==}
@@ -1308,6 +1413,21 @@ packages:
 
   '@iconify-json/humbleicons@1.2.20':
     resolution: {integrity: sha512-7OPG7mKu1GtEiMr68d8dWqADCavmFawZ0Wv1Dbi2g8UE2m1e/AtA0ryx2IAEf5YUFGwJ9Bx8qs8719mXdAzCkw==}
+
+  '@iconify-json/ic@1.2.4':
+    resolution: {integrity: sha512-pzPMmrZrBQuwT7nmtrYdkttun8KalRGgZPIL1Ny9KpF2zjRGIUPN+npTfuD3lrgO/OnSwAoJWuekQwBpt/Cqrw==}
+
+  '@iconify-json/icon-park-outline@1.2.4':
+    resolution: {integrity: sha512-NyZxXe2gD2TbTOyoRRMdtEJhr6i2KQCdDlYYoOn5oZLndQjwpIhw79hzeFhXvP38/o40D3gQ+l+IaSJgbB+0TQ==}
+
+  '@iconify-json/icon-park-solid@1.2.4':
+    resolution: {integrity: sha512-030MChSP6lCY7N+U5J5R7YguHTGcm7qQEI/ivBjk77El/i8yJatoj568cwwXGM8c6HEU/kIxEE4m3O/6w0WBGg==}
+
+  '@iconify-json/icon-park-twotone@1.2.4':
+    resolution: {integrity: sha512-AhnGngG6DxuIZMsz4FMrv0QWTRM/CZ3NnEeaceV6psKSgt/axW+hft7oQ6pIAFN9KB95Kp3hbJuhlhG3ao60eQ==}
+
+  '@iconify-json/icon-park@1.2.4':
+    resolution: {integrity: sha512-S8fVl49LG/M9hvwb7ruFGInK21AHMv3IJehOJRJgXPLE39OOCP3wbfTWjro/XzsjxRwdvX/lYdGetFOZI0TaJQ==}
 
   '@iconify-json/iconoir@1.2.11':
     resolution: {integrity: sha512-clBrCsZPkmdksYOkufVp7aoAU1j1hFQPrLUooWWmoYIMvKskUHQ+IDnwV7agTR+tGYHbud7OP2SRfYEpnqFDNw==}
@@ -1327,6 +1447,9 @@ packages:
   '@iconify-json/logos@1.2.14':
     resolution: {integrity: sha512-O36DicXkgAMT6NAsH7MTWlOql8NktHz9fBCItTjz6L/9gyRXw4vQj6qTeVgww5UZWiVugUV1MhVFA/g9HWIkBw==}
 
+  '@iconify-json/lucide-lab@1.2.3':
+    resolution: {integrity: sha512-N+8vnVt4IY/6FZi81f6nh5VhJSMYrs5KTVsT2Z/E0Wn7Lu4jJKO5fOfiTVX1YWVI4FFwQ1zVXPFb8kLAwskrjA==}
+
   '@iconify-json/lucide@1.2.134':
     resolution: {integrity: sha512-MXzwT7H8Ii/aGN6NLtMbMLDaxLYsOxCKEdW0F5h3MemNUaUBqAxr9nz0mPlXzozd/piQyrdSiUyk0t5b5ErADg==}
 
@@ -1336,6 +1459,12 @@ packages:
   '@iconify-json/majesticons@1.2.5':
     resolution: {integrity: sha512-tj0ZTiYOkz8HC365x7Pj8vXCsHCjVuFXcwoFG0iuMlvLrHslVlFhSTLjt/x/5r0ciCrtA5tLGpbV1uG0fdC56g==}
 
+  '@iconify-json/material-icon-theme@1.2.70':
+    resolution: {integrity: sha512-pctYpp6/3f0TfNoX+yqiC1HRBDxL7+ybOe70MrdyvUa4KcGdtpbsyc4E1qHQTkPIkpU7+0kfP2MYU2C7BfmNrw==}
+
+  '@iconify-json/material-symbols-light@1.2.93':
+    resolution: {integrity: sha512-vwZS6Tf8+yczyLIP4SwkUSBy6fJZDSZNX4mZb7Q5VLGz1aq+uW7eWj9BsYBeWymtbT7ZgJ16rH371yD7WWJQ1A==}
+
   '@iconify-json/material-symbols@1.2.92':
     resolution: {integrity: sha512-8DQClJc/77mpdlpNiWyjGXpx81YZuoNklrWNe/6K2rJtLTPU/7kRA7F/F8l5Q0a5yFvNlWuMReGB0m4CQ8cepA==}
 
@@ -1344,6 +1473,9 @@ packages:
 
   '@iconify-json/mingcute@1.2.8':
     resolution: {integrity: sha512-J8VXpRwTpx5yzOzyhx3T4IXnfXIKTWFl3rZ9okcW4c+NMMuwkLvdmM4rkjB83tnYIhg5+kkeMpmw8tvSnxd4rQ==}
+
+  '@iconify-json/mynaui@1.2.19':
+    resolution: {integrity: sha512-Nsoo0jaZLM7Ws45TDiSxBDGgWdbpwhLfgRil/5tQeDJykdtmS5ILZsJ6fkCS1iNXURghhAiLipb15A1d7IQcEQ==}
 
   '@iconify-json/noto@1.2.8':
     resolution: {integrity: sha512-9cy5AJZ0lmSwrRJ66NGtOtAiSllcEHWjDoa0fk5X3HR0TBiGEcoXiyykjp3kIpqjGBHXJnTdhdeBNK85XD1Apg==}
@@ -1359,6 +1491,9 @@ packages:
 
   '@iconify-json/pixelarticons@1.2.9':
     resolution: {integrity: sha512-euvs0Lwcoo5CAz5VicRlxWxO/Aqk/nOxbUhPkXCqWl3ua79H6XVrtWWGVIwugecCBwMrxltf2ArD5O41MNRGSw==}
+
+  '@iconify-json/prime@1.2.5':
+    resolution: {integrity: sha512-5eiiFlr5dx/IDSolBmBeys7407lSuO0gPL5iAeJBckpyaxCB6HYsDW3AFVP5pMI6hm/B5hYjlN1TrSualSBCFA==}
 
   '@iconify-json/radix-icons@1.2.6':
     resolution: {integrity: sha512-izgVBJwk37dSvsma1QsRMfCWQ4FIImbBmJId1WUURzRZA5fFyKlCcG/nZC8se0KhOBWszo2mYgLmhKJv/DFPoA==}
@@ -1381,8 +1516,17 @@ packages:
   '@iconify-json/tabler@1.2.38':
     resolution: {integrity: sha512-9v6ooRU/bKOK/Whv4w2aiK5gBnfCV9Ei+uD1iDDeLu2b+EnF3G3ZKkRKWEOOLG8bJyfKn6XEia6gUQ9oO7cF+Q==}
 
+  '@iconify-json/tdesign@1.2.18':
+    resolution: {integrity: sha512-0YB1dbZJdg5ez6et4ABMd/8w3/v+ZrKKXMvrex22MYBA+AE6JdCrPns3lxsQG/Q8HnHxhPpa/fjbozlB47eP4g==}
+
   '@iconify-json/teenyicons@1.2.2':
     resolution: {integrity: sha512-Do08DrvNpT+pKVeyFqn7nZiIviAAY8KbduSfpNKzE1bgVekAIJ/AAJtOBSUFpV4vTk+hXw195+jmCv8/0cJSKA==}
+
+  '@iconify-json/token-branded@1.2.45':
+    resolution: {integrity: sha512-yXsSH7oefq9AIch2h+a23ZK/3PcLDjejKh034VqnXyOWlCk4lEv0/Y4FQpEg0/GG7So2k6P2R4JQYyoW49olOg==}
+
+  '@iconify-json/token@1.2.41':
+    resolution: {integrity: sha512-oN4HSGY1+TIhodJoCRipGU9EyEwDxsfzzl/IT8Fxhm/I7+ftDsl27TRxdc7IZHRugnfb3khu+BiThv+BgBK3xw==}
 
   '@iconify-json/twemoji@1.2.5':
     resolution: {integrity: sha512-uKpuIEV0v6K5BW3Mjdyl+XKFVAbbcPxAgifKvEMtZoUZB5+YiY5zaMm2uNNCxyXzAWU9yNLlj41WU6/mvgALsw==}
@@ -5746,6 +5890,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/ant-design@1.2.9':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/bi@1.2.7':
     dependencies:
       '@iconify/types': 2.0.0
@@ -5770,7 +5918,15 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/cib@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/circle-flags@1.2.11':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/codicon@1.2.73':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5779,6 +5935,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/emojione@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/ep@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5802,6 +5962,18 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/fa7-brands@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fa7-regular@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fa7-solid@1.2.5':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/feather@1.2.1':
     dependencies:
       '@iconify/types': 2.0.0
@@ -5811,6 +5983,14 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/flagpack@1.2.8':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/flowbite@1.2.7':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fluent-color@1.2.21':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5830,7 +6010,15 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/fxemoji@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/gg@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/healthicons@1.2.13':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5843,6 +6031,26 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/humbleicons@1.2.20':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/ic@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/icon-park-outline@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/icon-park-solid@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/icon-park-twotone@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/icon-park@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5870,6 +6078,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/lucide-lab@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/lucide@1.2.134':
     dependencies:
       '@iconify/types': 2.0.0
@@ -5882,6 +6094,14 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/material-icon-theme@1.2.70':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/material-symbols-light@1.2.93':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/material-symbols@1.2.92':
     dependencies:
       '@iconify/types': 2.0.0
@@ -5891,6 +6111,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/mingcute@1.2.8':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/mynaui@1.2.19':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5911,6 +6135,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/pixelarticons@1.2.9':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/prime@1.2.5':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -5942,7 +6170,19 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/tdesign@1.2.18':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/teenyicons@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/token-branded@1.2.45':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/token@1.2.41':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -7490,8 +7730,8 @@ snapshots:
       '@next/eslint-plugin-next': 16.3.5(eslint@9.39.5(jiti@2.7.0))
       eslint: 9.39.5(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.5(jiti@2.7.0))
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.5(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(eslint@9.39.5(jiti@2.7.0))
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.5(jiti@2.7.0))
@@ -7513,7 +7753,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.5(jiti@2.7.0)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3
@@ -7524,22 +7764,22 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0)):
+  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
       eslint: 9.39.5(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.5(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.2.0
@@ -7550,7 +7790,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.5(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0))
+      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0)))(eslint@9.39.5(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.17.0
       is-glob: 4.0.3

@@ -8,7 +8,7 @@ import { CopyButton } from "@/components/CopyButton";
 export const metadata: Metadata = {
   title: "Install — MCP server for coding agents",
   description:
-    "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 146,000 open source icons. Remote MCP server with semantic search and paste-ready imports.",
+    "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 200,000 open source icons. Remote MCP server with semantic search and paste-ready imports.",
   alternates: { canonical: "/install" },
   openGraph: { url: "/install" },
 };
@@ -102,7 +102,7 @@ const TOOLS: { name: string; when: string; args: string }[] = [
     args: "id, format=react|vue|svelte|solid|svg|jsx|iconify|unplugin|css|data-uri|all, color?, size?, package?",
   },
   { name: "get_icons", when: "Batch get_icon for a whole nav bar or toolbar in one round-trip.", args: "ids[], format?, package?" },
-  { name: "list_icon_sets", when: "All 57 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
+  { name: "list_icon_sets", when: "All 81 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
 ];
 
 const EXAMPLE = `> Add home, settings and log-out icons to the sidebar using our existing icon library.
@@ -148,7 +148,7 @@ export default function InstallPage() {
         </div>
         <h1 className="mt-6 text-center text-[32px] font-medium leading-tight tracking-tight">Install IconsDB for your agents</h1>
         <p className="mx-auto mt-3 max-w-xl text-center text-fg-muted">
-          Give your coding agent 146,000 open source icons. The IconsDB{" "}
+          Give your coding agent 200,000 open source icons. The IconsDB{" "}
           <a href="https://modelcontextprotocol.io" className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
             MCP
           </a>{" "}
@@ -173,7 +173,7 @@ export default function InstallPage() {
         <ul className="mt-3 list-disc space-y-2 pl-5 text-fg-muted">
           <li>
             <span className="text-fg">Intent search.</span> &ldquo;a shopping cart&rdquo;, &ldquo;log out&rdquo;, &ldquo;a lady cooking&rdquo; — hybrid keyword +
-            semantic ranking across 57 sets.
+            semantic ranking across 81 sets.
           </li>
           <li>
             <span className="text-fg">Package-aware.</span> If the project uses <code className="font-mono text-sm">lucide-react</code>, every result is a paste-ready
