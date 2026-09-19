@@ -14,6 +14,7 @@ import {
   type StyleBucket,
 } from "@icons-db/core";
 import { useKeywordIndex } from "@/lib/use-search-index";
+import { useLocalSemanticSearch } from "@/lib/semantic-client";
 import { useDebouncedValue, useLocalStorage } from "@/lib/client-utils";
 import { SearchBar } from "./SearchBar";
 import { Filters } from "./Filters";
@@ -47,6 +48,8 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
   const [semantic, setSemantic] = useState<{ query: string; hits: SemanticHit[] }>({ query: "", hits: [] });
   const debouncedQuery = useDebouncedValue(query.trim(), 220);
   const inputRef = useRef<HTMLInputElement>(null);
+  const local = useLocalSemanticSearch();
+  const localState = local.status.state;
 
   // keep url shareable
   useEffect(() => {
@@ -62,20 +65,34 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     }
   }, [query, sets, style, selected]);
 
-  // semantic search (edge) for anything longer than a couple of characters
+  // Semantic search runs the embedding model locally in a worker (see
+  // lib/semantic-client.ts) so it never leaves the browser. If the local
+  // model fails to load (unsupported browser, blocked WASM, ...) fall back
+  // to the edge API, which does the same search server-side.
   useEffect(() => {
     if (debouncedQuery.length < 2) return;
-    const ctrl = new AbortController();
-    fetch(`/api/v1/search?q=${encodeURIComponent(debouncedQuery)}&mode=semantic&limit=400`, { signal: ctrl.signal })
-      .then((r) => r.json() as Promise<{ icons: SemanticHit[] }>)
-      .then((data) => {
-        setSemantic({ query: debouncedQuery, hits: data.icons });
-      })
-      .catch(() => {});
-    return () => ctrl.abort();
-  }, [debouncedQuery]);
 
-  const semanticPending = debouncedQuery.length >= 2 && semantic.query !== debouncedQuery;
+    if (localState === "error") {
+      const ctrl = new AbortController();
+      fetch(`/api/v1/search?q=${encodeURIComponent(debouncedQuery)}&mode=semantic&limit=400`, { signal: ctrl.signal })
+        .then((r) => r.json() as Promise<{ icons: SemanticHit[] }>)
+        .then((data) => setSemantic({ query: debouncedQuery, hits: data.icons }))
+        .catch(() => {});
+      return () => ctrl.abort();
+    }
+
+    if (localState !== "ready") return;
+    let alive = true;
+    local.search(debouncedQuery, 400)?.then((res) => {
+      if (alive && res) setSemantic({ query: debouncedQuery, hits: res.hits });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [debouncedQuery, localState, local]);
+
+  const semanticPending =
+    debouncedQuery.length >= 2 && semantic.query !== debouncedQuery && localState !== "error";
 
   const keywordHits = useMemo<IconHit[]>(() => {
     if (!index || !query.trim()) return [];
