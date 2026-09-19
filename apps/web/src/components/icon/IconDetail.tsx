@@ -99,7 +99,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
 
   return (
     <aside className={`${shell} scrollbar-thin fade-in`}>
-      <div className="flex items-start gap-3 border-b p-4">
+      <div className="sticky top-0 z-10 flex items-start gap-3 border-b bg-bg-elevated p-4 md:rounded-t-2xl">
         <div className="min-w-0 flex-1">
           <h2 className="truncate font-mono text-sm font-medium">{name}</h2>
           <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-fg-muted">
