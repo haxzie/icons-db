@@ -2,7 +2,7 @@
 title: "Icon licenses explained: MIT, Apache, CC-BY, CC0 and what they mean for your app"
 description: "A practical guide to the licenses used by open source icon sets, what each one requires, and how to stay compliant without a lawyer."
 date: "2026-09-18"
-author: "Musthafa"
+author: "Musthaq"
 category: "guides"
 tags: ["licensing", "guide"]
 ---

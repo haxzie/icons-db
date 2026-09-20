@@ -2,7 +2,7 @@
 title: "How to choose an icon set for your product"
 description: "Stroke vs fill, grid size, coverage, licensing and maintenance — the five things that actually matter when picking an icon library."
 date: "2026-09-17"
-author: "Musthafa"
+author: "Musthaq"
 category: "guides"
 tags: ["guide", "design"]
 ---

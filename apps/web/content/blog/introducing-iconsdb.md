@@ -2,7 +2,7 @@
 title: "Introducing IconsDB: 146,000 open source icons, one search box"
 description: "Why we built another icon search, how semantic search finds icons by meaning, and what's different from the usual icon explorers."
 date: "2026-09-19"
-author: "Musthafa"
+author: "Musthaq"
 category: "announcements"
 tags: ["announcement"]
 ---
