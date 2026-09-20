@@ -47,4 +47,4 @@ pnpm ship                             # opennextjs-cloudflare build && deploy
 
 ## API
 
-See https://iconsdb.app/api. Icons keep their original licenses (all MIT/Apache-2.0/ISC/CC0; Solar and Twemoji are CC-BY-4.0, OpenMoji is CC-BY-SA-4.0).
+Code is MIT licensed (see LICENSE) — this covers the site, API, MCP server and pipeline, not the icons. Icons keep their original licenses (all MIT/Apache-2.0/ISC/CC0; see https://iconsdb.app/licenses for every set).
