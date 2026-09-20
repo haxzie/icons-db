@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { searchKeyword, splitVariant, type CollectionMeta } from "@icons-db/core";
+import { mergeHits, searchKeyword, splitVariant, type CollectionMeta } from "@icons-db/core";
 import { useKeywordIndex } from "@/lib/use-search-index";
 import { useLocalStorage } from "@/lib/client-utils";
+import { useSemanticHits } from "@/lib/use-semantic-hits";
 import { TopBar, type SortKey } from "../shell/TopBar";
 import { Toolbar, type ViewMode } from "../shell/Toolbar";
 import { PromoCards } from "../shell/PromoCards";
@@ -39,6 +40,7 @@ export function CollectionBrowser({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const prefixIdx = index?.data.prefixes.findIndex((p) => p.prefix === collection.prefix) ?? -1;
+  const { hits: semanticHits, pending: semanticPending } = useSemanticHits(query, { prefixes: [collection.prefix] });
 
   const facets = useMemo(() => {
     if (!index || prefixIdx < 0) return { styles: [] as string[], categories: [] as string[] };
@@ -57,7 +59,13 @@ export function CollectionBrowser({
       return initialIcons.map((name) => ({ prefix: collection.prefix, name, family: splitVariant(name, collection.suffixes).family, variants: 1 }));
     }
     const q = query.trim();
-    const order = q ? searchKeyword(index, q, { limit: 5000 }).filter((h) => h.prefix === collection.prefix).map((h) => h.idx) : null;
+    const order = q
+      ? mergeHits(
+          searchKeyword(index, q, { limit: 5000 }).filter((h) => h.prefix === collection.prefix),
+          semanticHits,
+          { limit: 5000 },
+        ).map((h) => h.idx)
+      : null;
     const out: GridItem[] = [];
     const seen = new Map<string, GridItem>();
     const iterate = order ?? index.data.icons.map((_, i) => i);
@@ -82,7 +90,7 @@ export function CollectionBrowser({
     }
     if (!q || sort === "name") out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
-  }, [index, prefixIdx, query, style, category, groupVariants, sort, collection.prefix, collection.suffixes, initialIcons]);
+  }, [index, prefixIdx, query, semanticHits, style, category, groupVariants, sort, collection.prefix, collection.suffixes, initialIcons]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -214,6 +222,7 @@ export function CollectionBrowser({
             <p className="mb-4 text-sm font-medium text-fg-muted">
               {items.length.toLocaleString()} of {c.total.toLocaleString()} icons
               {groupVariants && " (variants grouped)"}
+              {semanticPending && <span className="ml-2 inline-block size-1.5 animate-pulse rounded-full bg-accent align-middle" />}
             </p>
             <ResultsGrid
               items={items}
