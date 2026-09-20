@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { og } from "@/lib/seo";
 import Link from "next/link";
 import type { CollectionKind } from "@icons-db/core";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: "Licenses & attribution",
   description: "Every icon set on IconsDB with its author, license and link to the full license text.",
   alternates: { canonical: "/licenses" },
-  openGraph: { url: "/licenses" },
+  openGraph: og({ url: "/licenses" }),
 };
 
 const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos, file types & flags", emoji: "Emoji" };

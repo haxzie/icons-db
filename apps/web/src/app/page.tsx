@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { og } from "@/lib/seo";
 import { Suspense } from "react";
 import { collections } from "@/lib/collections";
 import { SearchApp } from "@/components/search/SearchApp";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
-  openGraph: { url: "/" },
+  openGraph: og({ url: "/" }),
 };
 
 export default function Home() {

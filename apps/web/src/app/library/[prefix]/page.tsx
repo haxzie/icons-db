@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { collections } from "@/lib/collections";
 import { listCollectionPage } from "@/lib/db";
-import { collectionJsonLd, JsonLd } from "@/lib/seo";
+import { collectionJsonLd, JsonLd, og } from "@/lib/seo";
 import { CollectionBrowser } from "@/components/library/CollectionBrowser";
 import { IconLinkGrid, IconLinkTile } from "@/components/IconLinkTile";
 import { Pagination, PER_PAGE } from "@/components/library/Pagination";
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ prefix: s
     title,
     description,
     alternates: { canonical: `/library/${prefix}` },
-    openGraph: { title, description, url: `/library/${prefix}` },
+    openGraph: og({ title, description, url: `/library/${prefix}` }),
   };
 }
 

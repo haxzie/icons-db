@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { og } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { LibraryTable } from "@/components/library/LibraryTable";
 import { collections } from "@/lib/collections";
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
   title: "Icon sets",
   description: "Browse every open source icon set in IconsDB with licence details, authors and icon counts.",
   alternates: { canonical: "/library" },
-  openGraph: { url: "/library" },
+  openGraph: og({ url: "/library" }),
 };
 
 export default function LibraryPage() {

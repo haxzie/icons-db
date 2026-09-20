@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { og } from "@/lib/seo";
 import Link from "next/link";
 import { IconGlyph } from "@/components/IconGlyph";
 import { TrademarkNotice } from "@/components/TrademarkNotice";
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 200,000 open source icons. Remote MCP server with semantic search and paste-ready imports.",
   alternates: { canonical: "/install" },
-  openGraph: { url: "/install" },
+  openGraph: og({ url: "/install" }),
 };
 
 const URL = "https://iconsdb.app/mcp";

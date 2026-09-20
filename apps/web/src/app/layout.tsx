@@ -13,8 +13,12 @@ export const metadata: Metadata = {
   title: { default: "IconsDB — search 200,000+ open source icons, logos & emoji", template: "%s · IconsDB" },
   description:
     "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Font Awesome, Twemoji, Noto Emoji and 74 more open source sets. Copy as SVG, React, Vue or CSS.",
-  openGraph: { type: "website", siteName: "IconsDB", images: ["/logo.png"] },
-  twitter: { card: "summary", images: ["/logo.png"] },
+  openGraph: {
+    type: "website",
+    siteName: "IconsDB",
+    images: [{ url: "/og.png", width: 1200, height: 630, type: "image/png", alt: "IconsDB" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
   icons: { icon: "/logo.svg", apple: "/logo.png" },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };
