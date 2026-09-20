@@ -2,6 +2,7 @@
   "name": "@icons-db/web",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "node scripts/sync-data.mjs && node scripts/build-blog.mjs && next dev",
     "build": "node scripts/sync-data.mjs && node scripts/build-blog.mjs && next build",

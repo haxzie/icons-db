@@ -1,6 +1,7 @@
 {
   "name": "icons-db",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "turbo run dev --filter=@icons-db/web",

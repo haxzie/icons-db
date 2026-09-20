@@ -2,6 +2,7 @@
   "name": "@icons-db/icon-index",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "tsx src/build.ts",
