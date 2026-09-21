@@ -55,13 +55,13 @@ function subscribe(cb: () => void) {
   return () => listeners.delete(cb);
 }
 
-export function useIcon(prefix: string, name: string, wanted = true): IconifyIcon | null | undefined {
+export function useIcon(prefix: string, name: string): IconifyIcon | null | undefined {
   const id = `${prefix}:${name}`;
   const value = useSyncExternalStore(
     subscribe,
     () => cache.get(id),
     () => undefined,
   );
-  if (wanted && value === undefined && typeof window !== "undefined") requestIcon(prefix, name);
+  if (value === undefined && typeof window !== "undefined") requestIcon(prefix, name);
   return value;
 }
