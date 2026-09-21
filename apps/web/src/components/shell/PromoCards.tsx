@@ -47,8 +47,8 @@ export function PromoCards({ items = PROMOS }: { items?: Promo[] }) {
                 {p.sponsored && <div className="mt-1.5 text-[10px] uppercase tracking-wide text-fg-subtle">Sponsored</div>}
               </div>
               <span
-                className="grid size-14 shrink-0 place-items-center text-[#0b57d0] dark:text-[#d2e3fc]"
-                style={{ background: "#c2e0ff", clipPath: SQUIRCLE }}
+                className="grid size-14 shrink-0 place-items-center bg-[#c2e0ff] text-[#0b57d0] dark:bg-[#2b4a75] dark:text-[#d2e3fc]"
+                style={{ clipPath: SQUIRCLE }}
               >
                 <IconGlyph prefix={p.icon.split(":")[0]} name={p.icon.split(":")[1]} className="size-6" />
               </span>
