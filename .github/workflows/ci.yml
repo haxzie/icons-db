@@ -22,6 +22,8 @@ jobs:
           path: packages/icon-index/.model-cache
           key: bge-small-en-v1.5-${{ hashFiles('packages/icon-index/src/embed.ts') }}
       - run: pnpm index:build && pnpm --filter @icons-db/icon-index embed
+      - run: node scripts/sync-data.mjs && node scripts/build-blog.mjs && npx wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts
+        working-directory: apps/web
       - run: pnpm --filter @icons-db/core typecheck && pnpm --filter @icons-db/web typecheck && pnpm --filter @icons-db/web lint && pnpm --filter @icons-db/web test
       - run: npx opennextjs-cloudflare build
         working-directory: apps/web

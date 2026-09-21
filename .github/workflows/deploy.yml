@@ -37,6 +37,7 @@ jobs:
         run: |
           pnpm index:build
           pnpm --filter @icons-db/icon-index embed
+          cd apps/web && node scripts/sync-data.mjs && node scripts/build-blog.mjs && npx wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts
 
       - name: Typecheck, lint, test
         run: |
