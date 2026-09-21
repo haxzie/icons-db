@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Rail } from "@/components/shell/Rail";
+import { OG_IMAGE } from "@/lib/seo";
 import { DevTools } from "@/components/DevTools";
 import "./globals.css";
 
@@ -16,9 +17,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "IconsDB",
-    images: [{ url: "/og.png", width: 1200, height: 630, type: "image/png", alt: "IconsDB" }],
+    locale: "en_US",
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", site: "@haxzie_", creator: "@haxzie_", images: [OG_IMAGE.url] },
   icons: { icon: "/logo.svg", apple: "/logo.png" },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };

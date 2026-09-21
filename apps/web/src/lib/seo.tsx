@@ -3,7 +3,7 @@ import { humanize } from "@icons-db/core";
 
 export const SITE = "https://iconsdb.app";
 
-export const OG_IMAGE = { url: "/og.png", width: 1200, height: 630, type: "image/png", alt: "IconsDB" };
+export const OG_IMAGE = { url: `${SITE}/og.png`, secureUrl: `${SITE}/og.png`, width: 1200, height: 630, type: "image/png", alt: "IconsDB — open source icon search" };
 
 /** Page-level openGraph replaces the root one wholesale, so re-attach the default image. */
 export function og(overrides: Record<string, unknown> = {}) {
