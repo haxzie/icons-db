@@ -12,7 +12,7 @@ export default async function OgImage({ params }: { params: Promise<{ prefix: st
   const c = collectionByPrefix.get(prefix);
   const kind = c?.kind === "emoji" ? "emoji" : c?.kind === "brands" ? "logos" : "icons";
   return new ImageResponse(
-    await OgCard({ title: c?.name ?? prefix, subtitle: c ? `${c.total.toLocaleString()} free ${kind} · ${c.license.spdx ?? c.license.title}` : undefined }),
+    OgCard({ title: c?.name ?? prefix, subtitle: c ? `${c.total.toLocaleString()} free ${kind} · ${c.license.spdx ?? c.license.title}` : undefined }),
     size,
   );
 }
