@@ -9,8 +9,9 @@ import { Pagination, PER_PAGE } from "@/components/library/Pagination";
 
 export const revalidate = 86400;
 
+// Rendered on demand (ISR): prerendering 82 sets in parallel trips D1's rate limit.
 export function generateStaticParams() {
-  return collections.map((c) => ({ prefix: c.prefix }));
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ prefix: string }> }): Promise<Metadata> {

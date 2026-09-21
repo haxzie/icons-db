@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { CollectionKind } from "@icons-db/core";
 import { collectionByPrefix, collections } from "@/lib/collections";
@@ -16,7 +15,7 @@ export const revalidate = 604800;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return concepts.slice(0, 300).map((c) => ({ concept: c.slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ concept: string }> }): Promise<Metadata> {
@@ -42,11 +41,9 @@ export default async function ConceptPage({ params }: { params: Promise<{ concep
   const c = conceptBySlug.get(concept);
   if (!c) notFound();
   const name = conceptName(concept);
-  const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host") ?? "iconsdb.app"}`;
   const [inSets, related] = await Promise.all([
     getFamilyAcrossSets(concept),
-    relatedConcepts(origin, concept, (s) => conceptBySlug.has(s)).catch(() => [] as string[]),
+    relatedConcepts(SITE, concept, (s) => conceptBySlug.has(s)).catch(() => [] as string[]),
   ]);
   const groups = (["icons", "brands", "emoji"] as CollectionKind[])
     .map((k) => ({ kind: k, items: inSets.filter((i) => (collectionByPrefix.get(i.prefix)?.kind ?? "icons") === k) }))
