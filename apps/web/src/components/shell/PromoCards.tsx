@@ -50,7 +50,7 @@ export function PromoCards({ items = PROMOS }: { items?: Promo[] }) {
                 className="grid size-14 shrink-0 place-items-center bg-[#c2e0ff] text-[#0b57d0] dark:bg-[#2b4a75] dark:text-[#d2e3fc]"
                 style={{ clipPath: SQUIRCLE }}
               >
-                <IconGlyph prefix={p.icon.split(":")[0]} name={p.icon.split(":")[1]} className="size-6" />
+                <IconGlyph prefix={p.icon.split(":")[0]} name={p.icon.split(":")[1]} className="size-6" eager />
               </span>
             </Comp>
           );

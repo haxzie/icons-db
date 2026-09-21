@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { buildSnippets, humanize, renderSVG, svgToDataUri, toIconifyIcon } from "@icons-db/core";
-import { getAliasParent, getCollection, getIcon, getRelatedInSet, getSameFamilyAcrossSets, getVariants } from "@/lib/db";
+import { getAliasParent } from "@/lib/db";
+import { getIconPageData } from "@/lib/page-data";
 import { collectionByPrefix } from "@/lib/collections";
 import { conceptBySlug } from "@/lib/concepts";
 import { iconDescription, iconJsonLd, iconTitle, JsonLd, SITE } from "@/lib/seo";
@@ -17,8 +18,10 @@ type Params = { prefix: string; name: string };
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { prefix, name } = await params;
-  const [icon, collection] = await Promise.all([getIcon(prefix, name), getCollection(prefix)]);
-  if (!icon || !collection) return { title: "Icon not found", robots: { index: false } };
+  const collection = collectionByPrefix.get(prefix);
+  const data = collection ? await getIconPageData(prefix, name) : null;
+  if (!data || !collection) return { title: "Icon not found", robots: { index: false } };
+  const { icon } = data;
   const title = iconTitle(icon, collection);
   const description = iconDescription(icon, collection);
   const url = `/icon/${prefix}/${icon.name}`;
@@ -33,20 +36,15 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { prefix, name } = await params;
-  const [icon, collection] = await Promise.all([getIcon(prefix, name), getCollection(prefix)]);
+  const collection = collectionByPrefix.get(prefix);
   if (!collection) notFound();
-  if (!icon) notFound();
-  if (icon.name !== name) {
+  const data = await getIconPageData(prefix, name);
+  if (!data) {
     const parent = await getAliasParent(prefix, name);
     if (parent) permanentRedirect(`/icon/${prefix}/${parent}`);
     notFound();
   }
-
-  const [variants, acrossSets, related] = await Promise.all([
-    getVariants(prefix, icon.family),
-    getSameFamilyAcrossSets(prefix, icon.family),
-    getRelatedInSet(prefix, icon.family, icon.category),
-  ]);
+  const { icon, variants, acrossSets, related } = data;
   const svg = renderSVG(toIconifyIcon(icon), { width: "1em", height: "1em" });
   const snippets = buildSnippets({ prefix, name: icon.name, svg, dataUri: svgToDataUri(svg) });
   const noun = collection.kind === "emoji" ? "emoji" : collection.kind === "brands" ? "logo" : "icon";

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { CollectionKind } from "@icons-db/core";
 import { collectionByPrefix, collections } from "@/lib/collections";
 import { conceptBySlug, conceptName, conceptTitle } from "@/lib/concepts";
-import { getFamilyAcrossSets } from "@/lib/db";
+import { getConceptData } from "@/lib/page-data";
 import { relatedConcepts } from "@/lib/search.server";
 import { JsonLd, og, SITE } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -42,7 +42,7 @@ export default async function ConceptPage({ params }: { params: Promise<{ concep
   if (!c) notFound();
   const name = conceptName(concept);
   const [inSets, related] = await Promise.all([
-    getFamilyAcrossSets(concept),
+    getConceptData(concept),
     relatedConcepts(SITE, concept, (s) => conceptBySlug.has(s)).catch(() => [] as string[]),
   ]);
   const groups = (["icons", "brands", "emoji"] as CollectionKind[])

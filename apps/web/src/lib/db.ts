@@ -265,3 +265,19 @@ export async function getFamilyAcrossSets(family: string): Promise<FamilyInSet[]
     .all<LinkRow & { style: string; variants: number }>();
   return results.map((r) => ({ ...toLink(r), style: r.style, variants: r.variants }));
 }
+
+/** Batched body lookup across sets by "prefix:name" id (chunked for D1's param cap). */
+export async function getIconsByIds(ids: string[]): Promise<IconRecord[]> {
+  if (ids.length === 0) return [];
+  const { DB } = await getEnv();
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 90) chunks.push(ids.slice(i, i + 90));
+  const results = await Promise.all(
+    chunks.map((chunk) =>
+      DB.prepare(`SELECT * FROM icons WHERE id IN (${chunk.map((_, j) => `?${j + 1}`).join(",")})`)
+        .bind(...chunk)
+        .all<IconRow>(),
+    ),
+  );
+  return results.flatMap((r) => r.results.map(toIcon));
+}

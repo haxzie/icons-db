@@ -16,22 +16,19 @@ function emit() {
 
 async function flush() {
   scheduled = false;
-  const batches = Array.from(pending.entries());
+  const ids = Array.from(pending.entries()).flatMap(([prefix, names]) => Array.from(names, (n) => `${prefix}:${n}`));
   pending.clear();
+  // One request per 200 icons regardless of how many sets they span.
   await Promise.all(
-    batches.map(async ([prefix, names]) => {
-      const list = Array.from(names);
-      for (let i = 0; i < list.length; i += 150) {
-        const chunk = list.slice(i, i + 150);
-        try {
-          const res = await fetch(`/api/v1/icons/${prefix}?icons=${chunk.join(",")}`);
-          const data = (await res.json()) as { icons: Record<string, IconifyIcon> };
-          for (const n of chunk) cache.set(`${prefix}:${n}`, data.icons[n] ?? null);
-        } catch {
-          for (const n of chunk) cache.set(`${prefix}:${n}`, null);
-        }
-        emit();
+    Array.from({ length: Math.ceil(ids.length / 200) }, (_, i) => ids.slice(i * 200, i * 200 + 200)).map(async (chunk) => {
+      try {
+        const res = await fetch(`/api/v1/icons?ids=${chunk.join(",")}`);
+        const data = (await res.json()) as { icons: Record<string, IconifyIcon> };
+        for (const id of chunk) cache.set(id, data.icons[id] ?? null);
+      } catch {
+        for (const id of chunk) cache.set(id, null);
       }
+      emit();
     }),
   );
 }
@@ -58,13 +55,13 @@ function subscribe(cb: () => void) {
   return () => listeners.delete(cb);
 }
 
-export function useIcon(prefix: string, name: string): IconifyIcon | null | undefined {
+export function useIcon(prefix: string, name: string, wanted = true): IconifyIcon | null | undefined {
   const id = `${prefix}:${name}`;
   const value = useSyncExternalStore(
     subscribe,
     () => cache.get(id),
     () => undefined,
   );
-  if (value === undefined && typeof window !== "undefined") requestIcon(prefix, name);
+  if (wanted && value === undefined && typeof window !== "undefined") requestIcon(prefix, name);
   return value;
 }

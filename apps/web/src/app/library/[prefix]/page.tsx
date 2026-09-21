@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { collections } from "@/lib/collections";
-import { listCollectionPage } from "@/lib/db";
+import { getCollectionFirstPage } from "@/lib/page-data";
 import { collectionJsonLd, JsonLd, og } from "@/lib/seo";
 import { CollectionBrowser } from "@/components/library/CollectionBrowser";
 import { IconLinkGrid, IconLinkTile } from "@/components/IconLinkTile";
@@ -33,7 +33,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ pre
   const { prefix } = await params;
   const c = collections.find((x) => x.prefix === prefix);
   if (!c) notFound();
-  const { icons, total } = await listCollectionPage(prefix, 1, PER_PAGE);
+  const { icons, total } = await getCollectionFirstPage(prefix, PER_PAGE);
   const pages = Math.ceil(total / PER_PAGE);
   return (
     <>

@@ -210,7 +210,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
                   onClick={() => onSelect(prefix, v.name)}
                   className={`icon-cell grid size-10 place-items-center rounded-lg border ${v.name === name ? "border-accent bg-accent/10" : "border-transparent hover:border-line hover:bg-bg"}`}
                 >
-                  <IconGlyph prefix={prefix} name={v.name} className="size-5" />
+                  <IconGlyph prefix={prefix} name={v.name} className="size-5" eager />
                 </button>
               ))}
             </div>
@@ -259,7 +259,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
                   onClick={() => onSelect(s.prefix, s.name)}
                   className="icon-cell grid size-10 place-items-center rounded-lg border border-transparent hover:border-line hover:bg-bg"
                 >
-                  <IconGlyph prefix={s.prefix} name={s.name} className="size-5" />
+                  <IconGlyph prefix={s.prefix} name={s.name} className="size-5" eager />
                 </button>
               ))}
             </div>
