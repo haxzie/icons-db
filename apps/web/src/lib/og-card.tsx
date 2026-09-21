@@ -30,6 +30,7 @@ export async function OgCard({ title, subtitle }: { title: string; subtitle?: st
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} width={132} height={132} alt="" />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: long ? 64 : 84, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2, maxWidth: 860 }}>{title}</div>

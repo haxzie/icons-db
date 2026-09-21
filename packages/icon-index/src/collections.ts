@@ -87,6 +87,7 @@ export const PREFIXES = [
   "token",
   "token-branded",
   "fxemoji",
+  "keyline-icons",
 ] as const;
 
 export const KINDS: Record<string, CollectionKind> = {
@@ -199,4 +200,5 @@ export const HOMEPAGES: Record<string, string> = {
   token: "https://tokenicons.io",
   "token-branded": "https://tokenicons.io",
   fxemoji: "https://github.com/mozilla/fxemoji",
+  "keyline-icons": "https://keylineicons.com",
 };

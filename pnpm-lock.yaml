@@ -247,6 +247,9 @@ importers:
       '@iconify-json/jam':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/keyline-icons':
+        specifier: ^1.2.7
+        version: 1.2.7
       '@iconify-json/la':
         specifier: ^1.2.1
         version: 1.2.1
@@ -1437,6 +1440,9 @@ packages:
 
   '@iconify-json/jam@1.2.3':
     resolution: {integrity: sha512-Kp+OxTzB8xvbaMyIoqEqB96Ik4zv7uo5y1yavjAee0N1K/6u+PCOBwEi+Djn3WJ2trCrNZk+qYw1BJUsZC41Eg==}
+
+  '@iconify-json/keyline-icons@1.2.7':
+    resolution: {integrity: sha512-QZW/w96GdsQGbUo375DmzXne63u+JXf+xbTfOKOaJvDSOnMMq8GKRzRa5dH4h7iqgbZagtpMKQJChldlYvgrng==}
 
   '@iconify-json/la@1.2.1':
     resolution: {integrity: sha512-7VUpZ+E7PfBpCXmAzLEGRR0LqCyFQRJiJTriO/vIZtQ1BLJ4xiDlIQ8gCCQvyTnKPG4IrvencwAxXpJGhk4pYg==}
@@ -6063,6 +6069,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/jam@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/keyline-icons@1.2.7':
     dependencies:
       '@iconify/types': 2.0.0
 

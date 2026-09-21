@@ -103,7 +103,7 @@ const TOOLS: { name: string; when: string; args: string }[] = [
     args: "id, format=react|vue|svelte|solid|svg|jsx|iconify|unplugin|css|data-uri|all, color?, size?, package?",
   },
   { name: "get_icons", when: "Batch get_icon for a whole nav bar or toolbar in one round-trip.", args: "ids[], format?, package?" },
-  { name: "list_icon_sets", when: "All 81 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
+  { name: "list_icon_sets", when: "All 82 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
 ];
 
 const EXAMPLE = `> Add home, settings and log-out icons to the sidebar using our existing icon library.
@@ -174,7 +174,7 @@ export default function InstallPage() {
         <ul className="mt-3 list-disc space-y-2 pl-5 text-fg-muted">
           <li>
             <span className="text-fg">Intent search.</span> &ldquo;a shopping cart&rdquo;, &ldquo;log out&rdquo;, &ldquo;a lady cooking&rdquo; — hybrid keyword +
-            semantic ranking across 81 sets.
+            semantic ranking across 82 sets.
           </li>
           <li>
             <span className="text-fg">Package-aware.</span> If the project uses <code className="font-mono text-sm">lucide-react</code>, every result is a paste-ready

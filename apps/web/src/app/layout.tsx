@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://iconsdb.app"),
   title: { default: "IconsDB — search 200,000+ open source icons, logos & emoji", template: "%s · IconsDB" },
   description:
-    "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Font Awesome, Twemoji, Noto Emoji and 74 more open source sets. Copy as SVG, React, Vue or CSS.",
+    "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Font Awesome, Twemoji, Noto Emoji and 75 more open source sets. Copy as SVG, React, Vue or CSS.",
   openGraph: {
     type: "website",
     siteName: "IconsDB",
