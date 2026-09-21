@@ -4,6 +4,7 @@ import {
   normalize,
   prefixWeight,
   searchKeyword,
+  splitVariant,
   topTexts,
   type IconHit,
 } from "@icons-db/core";
@@ -50,4 +51,21 @@ export async function search(
   }
   if (mode === "semantic") return { hits: semantic.slice(0, limit).map((s) => ({ ...s })), mode };
   return { hits: mergeHits(keyword, semantic, { limit }), mode };
+}
+
+/** Concept slugs semantically close to `slug` (for /icons/{concept} cross-links). */
+export async function relatedConcepts(origin: string, slug: string, isConcept: (s: string) => boolean, limit = 12): Promise<string[]> {
+  const idx = await loadSearchIndex(origin);
+  const vec = await embedQuery(slug.replace(/-/g, " "));
+  // Wider and looser than search(): we want neighbours *beyond* the exact family.
+  const texts = topTexts(idx.embeddings, vec, 300);
+  const hits = expandTextHits(idx.data, idx.textMap, texts, 3000, 0.6);
+  const suffixes = new Map(idx.data.prefixes.map((p) => [p.prefix, p.suffixes]));
+  const score = new Map<string, number>();
+  for (const h of hits) {
+    const { family } = splitVariant(h.name, suffixes.get(h.prefix) ?? {});
+    if (family === slug || !isConcept(family)) continue;
+    score.set(family, Math.max(score.get(family) ?? 0, h.score));
+  }
+  return [...score.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([f]) => f);
 }

@@ -186,6 +186,8 @@ async function main() {
 
   let totalIcons = 0;
   let totalAliases = 0;
+  // family -> { sets, icons } across UI icon sets, for /icons/{concept} pages
+  const conceptStats = new Map<string, { sets: Set<string>; icons: number }>();
 
   for (const prefix of PREFIXES) {
     const set = await loadSet(prefix);
@@ -223,6 +225,12 @@ async function main() {
         return;
       }
       const { family, style } = splitVariant(name, suffixes);
+      if ((KINDS[prefix] ?? "icons") === "icons") {
+        let cs = conceptStats.get(family);
+        if (!cs) conceptStats.set(family, (cs = { sets: new Set(), icons: 0 }));
+        cs.sets.add(prefix);
+        cs.icons += 1;
+      }
       const record: IconRecord = {
         id: `${prefix}:${name}`,
         prefix,
@@ -273,6 +281,13 @@ async function main() {
   await writeFile(join(DIST, "search-index.json"), JSON.stringify(index));
   await writeFile(join(DIST, "texts.json"), JSON.stringify(texts));
   await writeFile(join(DIST, "collections.json"), JSON.stringify(collections, null, 2));
+  const MIN_CONCEPT_SETS = 4;
+  const concepts = [...conceptStats.entries()]
+    .filter(([slug, c]) => c.sets.size >= MIN_CONCEPT_SETS && /^[a-z][a-z0-9-]*$/.test(slug) && !/^\d/.test(slug))
+    .map(([slug, c]) => ({ slug, sets: c.sets.size, icons: c.icons }))
+    .sort((a, b) => b.sets - a.sets || a.slug.localeCompare(b.slug));
+  await writeFile(join(DIST, "concepts.json"), JSON.stringify(concepts));
+  console.log(`${concepts.length} concepts with >= ${MIN_CONCEPT_SETS} sets`);
   await writeFile(
     join(DIST, "seed", "collections.sql"),
     `DELETE FROM collections;\nINSERT INTO collections ${COLLECTION_COLS} VALUES\n${collections.map(collectionRow).join(",\n")};\n`,

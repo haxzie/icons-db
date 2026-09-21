@@ -251,3 +251,17 @@ export async function getAliasParent(prefix: string, alias: string): Promise<str
     .first<{ name: string }>();
   return row?.name ?? null;
 }
+
+export type FamilyInSet = IconLink & { style: string; variants: number };
+
+/** One representative icon per set for a family, with the number of style variants in that set. */
+export async function getFamilyAcrossSets(family: string): Promise<FamilyInSet[]> {
+  const { DB } = await getEnv();
+  const { results } = await DB.prepare(
+    `SELECT ${LINK_COLS}, style, COUNT(*) AS variants, MIN(length(name)) AS shortest
+     FROM icons WHERE family = ?1 GROUP BY prefix ORDER BY prefix`,
+  )
+    .bind(family)
+    .all<LinkRow & { style: string; variants: number }>();
+  return results.map((r) => ({ ...toLink(r), style: r.style, variants: r.variants }));
+}

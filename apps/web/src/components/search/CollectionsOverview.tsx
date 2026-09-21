@@ -5,6 +5,7 @@ import type { CollectionKind, CollectionMeta } from "@icons-db/core";
 import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
+const POPULAR = ["home", "search", "settings", "user", "heart", "star", "bell", "calendar", "shopping-cart", "trash", "arrow-right", "check", "menu", "download", "lock", "camera"];
 const SUGGESTIONS = ["shopping cart", "log out", "settings", "arrow right", "notification bell", "user profile", "github", "party popper"];
 const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji" };
 
@@ -22,6 +23,21 @@ export function CollectionsOverview({ collections, onQuery }: { collections: Col
           </button>
         ))}
       </div>
+      <section className="mb-10">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-lg font-medium">Browse by name</h2>
+          <Link href="/icons" className="text-sm text-accent hover:underline">
+            All concepts →
+          </Link>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR.map((c) => (
+            <Link key={c} href={`/icons/${c}`} className="chip">
+              {c.replace(/-/g, " ")}
+            </Link>
+          ))}
+        </div>
+      </section>
       {groups.map((g) => (
         <section key={g.kind} className="mb-10">
           <h2 className="mb-3 text-lg font-medium">{TITLES[g.kind]}</h2>

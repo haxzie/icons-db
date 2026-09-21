@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { buildSnippets, humanize, renderSVG, svgToDataUri, toIconifyIcon } from "@icons-db/core";
 import { getAliasParent, getCollection, getIcon, getRelatedInSet, getSameFamilyAcrossSets, getVariants } from "@/lib/db";
 import { collectionByPrefix } from "@/lib/collections";
+import { conceptBySlug } from "@/lib/concepts";
 import { iconDescription, iconJsonLd, iconTitle, JsonLd, SITE } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { IconPage } from "@/components/icon/IconPage";
@@ -86,7 +87,16 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         )}
 
         {acrossSets.length > 0 && (
-          <Section title={`The same ${noun} in other sets`}>
+          <Section
+            title={`The same ${noun} in other sets`}
+            aside={
+              conceptBySlug.has(icon.family) ? (
+                <Link href={`/icons/${icon.family}`} className="text-sm text-accent hover:underline">
+                  All {humanize(icon.family)} icons →
+                </Link>
+              ) : undefined
+            }
+          >
             <IconLinkGrid>
               {acrossSets.map((i) => (
                 <IconLinkTile key={`${i.prefix}:${i.name}`} icon={i} setName={collectionByPrefix.get(i.prefix)?.name} showSet />
@@ -138,10 +148,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, aside, children }: { title: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="mb-3 text-lg font-medium">{title}</h2>
+      <div className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 className="text-lg font-medium">{title}</h2>
+        {aside}
+      </div>
       {children}
     </section>
   );
