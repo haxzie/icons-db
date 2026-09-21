@@ -1,0 +1,67 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The embedding model (~33 MB) is fetched from Hugging Face on first run.
+      - uses: actions/cache@v4
+        with:
+          path: packages/icon-index/.model-cache
+          key: bge-small-en-v1.5-${{ hashFiles('packages/icon-index/src/embed.ts') }}
+
+      - name: Build icon index
+        run: |
+          pnpm index:build
+          pnpm --filter @icons-db/icon-index embed
+
+      - name: Typecheck, lint, test
+        run: |
+          pnpm --filter @icons-db/core typecheck
+          pnpm --filter @icons-db/web typecheck
+          pnpm --filter @icons-db/web lint
+          pnpm --filter @icons-db/web test
+
+      - name: Build
+        working-directory: apps/web
+        run: npx opennextjs-cloudflare build
+
+      - name: Deploy
+        working-directory: apps/web
+        run: npx opennextjs-cloudflare deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Smoke test
+        run: |
+          set -e
+          for u in / /install /library/lucide /icon/lucide/house /icons/home; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
+            echo "$code $u"; [ "$code" = 200 ]
+          done
+          curl -sf -X POST https://iconsdb.app/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' > /dev/null

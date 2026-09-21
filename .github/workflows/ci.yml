@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache@v4
+        with:
+          path: packages/icon-index/.model-cache
+          key: bge-small-en-v1.5-${{ hashFiles('packages/icon-index/src/embed.ts') }}
+      - run: pnpm index:build && pnpm --filter @icons-db/icon-index embed
+      - run: pnpm --filter @icons-db/core typecheck && pnpm --filter @icons-db/web typecheck && pnpm --filter @icons-db/web lint && pnpm --filter @icons-db/web test
+      - run: npx opennextjs-cloudflare build
+        working-directory: apps/web
