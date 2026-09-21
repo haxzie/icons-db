@@ -13,13 +13,15 @@ import {
   type SearchIndexData,
 } from "@icons-db/core";
 import { HOMEPAGES, KINDS, PREFIXES } from "./collections";
+import { loadLobehub, LOBEHUB_PREFIX } from "./lobehub";
 import { DIST } from "./paths";
 
 const require = createRequire(import.meta.url);
 
-type SetFiles = { icons: IconifyJSON; info: IconifyInfo; meta: IconifyMetaData; version: string };
+export type SetFiles = { icons: IconifyJSON; info: IconifyInfo; meta: IconifyMetaData; version: string };
 
 async function loadSet(prefix: string): Promise<SetFiles> {
+  if (prefix === LOBEHUB_PREFIX) return loadLobehub();
   const dir = dirname(require.resolve(`@iconify-json/${prefix}/package.json`));
   const read = async (f: string) => JSON.parse(await readFile(join(dir, f), "utf8"));
   let meta: IconifyMetaData = {};

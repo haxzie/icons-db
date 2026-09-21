@@ -217,7 +217,7 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
                 collectionByPrefix={collectionByPrefix}
               />
             ) : (
-              <CollectionsOverview collections={collections} onQuery={setQuery} />
+              <CollectionsOverview collections={collections} />
             )}
           </div>
           {selected && index && (

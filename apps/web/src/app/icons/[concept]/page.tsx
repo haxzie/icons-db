@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CollectionKind } from "@icons-db/core";
 import { collectionByPrefix, collections } from "@/lib/collections";
-import { conceptBySlug, conceptName, concepts, conceptTitle } from "@/lib/concepts";
+import { conceptBySlug, conceptName, conceptTitle } from "@/lib/concepts";
 import { getFamilyAcrossSets } from "@/lib/db";
 import { relatedConcepts } from "@/lib/search.server";
 import { JsonLd, og, SITE } from "@/lib/seo";

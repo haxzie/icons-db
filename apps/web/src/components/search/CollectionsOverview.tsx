@@ -6,23 +6,14 @@ import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
 const POPULAR = ["home", "search", "settings", "user", "heart", "star", "bell", "calendar", "shopping-cart", "trash", "arrow-right", "check", "menu", "download", "lock", "camera"];
-const SUGGESTIONS = ["shopping cart", "log out", "settings", "arrow right", "notification bell", "user profile", "github", "party popper"];
 const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji" };
 
-export function CollectionsOverview({ collections, onQuery }: { collections: CollectionMeta[]; onQuery: (q: string) => void }) {
+export function CollectionsOverview({ collections }: { collections: CollectionMeta[] }) {
   const groups = (["icons", "brands", "emoji"] as CollectionKind[])
     .map((k) => ({ kind: k, items: collections.filter((c) => c.kind === k) }))
     .filter((g) => g.items.length > 0);
   return (
     <div className="fade-in">
-      <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-fg-muted">
-        <span className="mr-1">Try</span>
-        {SUGGESTIONS.map((s) => (
-          <button key={s} type="button" onClick={() => onQuery(s)} className="chip">
-            {s}
-          </button>
-        ))}
-      </div>
       <section className="mb-10">
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="text-lg font-medium">Browse by name</h2>

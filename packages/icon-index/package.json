@@ -95,8 +95,10 @@
     "@iconify-json/uis": "^1.2.3",
     "@iconify-json/vscode-icons": "^1.2.78",
     "@iconify-json/weui": "^1.2.4",
+    "@iconify/tools": "^5.0.14",
     "@iconify/utils": "^3.1.7",
-    "@icons-db/core": "workspace:*"
+    "@icons-db/core": "workspace:*",
+    "@lobehub/icons-static-svg": "^1.95.1"
   },
   "devDependencies": {
     "@iconify/types": "^2.0.0",

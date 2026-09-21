@@ -32,7 +32,7 @@ export function registerTools(server: McpServer, origin: string) {
       title: "Search icons",
       description:
         "Find open source icons, logos or emoji by meaning (e.g. \"shopping cart\", \"log out\", \"github\"). " +
-        "Searches 200k icons across 82 sets with hybrid keyword + semantic ranking. " +
+        "Searches 200k icons across 83 sets with hybrid keyword + semantic ranking. " +
         "If the project already depends on an icon package (lucide-react, @heroicons/react, @tabler/icons-react, react-icons, …) pass it as `package` so every result is importable without adding a dependency. " +
         "Pass several `queries` when you need a consistent set of icons for one UI (nav bar, toolbar): the response says which sets cover all of them. " +
         "Results are one row per icon family; call get_icon for code.",
@@ -206,7 +206,7 @@ export function registerTools(server: McpServer, origin: string) {
     "list_icon_sets",
     {
       title: "List icon sets",
-      description: "All 82 icon/logo/emoji sets with counts, license, attribution flag and npm packages. Filter by kind, license or package.",
+      description: "All 83 icon/logo/emoji sets with counts, license, attribution flag and npm packages. Filter by kind, license or package.",
       inputSchema: z.object({
         kind: KIND.optional(),
         license: LICENSE.optional(),

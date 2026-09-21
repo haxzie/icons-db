@@ -134,6 +134,14 @@ export const SET_PACKAGES: Record<string, PackageInfo[]> = {
   cib: [{ npm: "@coreui/icons", framework: "js", symbol: (n) => "cib" + pascal(n), usage: (s) => `<CIcon icon={${s}} />  // from @coreui/icons-react` }],
   token: [{ npm: "@web3icons/react", framework: "react", symbol: (n) => "Token" + pascal(n).toUpperCase(), usage: (s) => `<${s} variant="mono" />` }],
   "token-branded": [{ npm: "@web3icons/react", framework: "react", symbol: (n) => "Token" + pascal(n.replace(/-background$/, "")).toUpperCase(), usage: (s) => `<${s} variant="branded" />` }],
+  lobehub: [
+    {
+      npm: "@lobehub/icons",
+      framework: "react",
+      symbol: (n) => pascal(n.replace(/-(color|text|text-color|text-cn|brand|brand-color)$/, "")),
+      usage: (s) => `<${s} size={24} />  // also ${s}.Color, ${s}.Text, ${s}.Brand`,
+    },
+  ],
   "keyline-icons": [{ npm: "@keyline-icons/react", framework: "react", symbol: (n) => pascal(n) }],
   "circle-flags": [{ npm: "react-circle-flags", framework: "react", symbol: () => "CircleFlag", usage: () => `<CircleFlag countryCode="…" />` }],
 };
