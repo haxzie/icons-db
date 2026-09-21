@@ -31,18 +31,20 @@ export async function search(
   const allow = opts.prefixes?.length ? new Set(opts.prefixes) : null;
   const filter = (h: IconHit) => !allow || allow.has(h.prefix);
 
+  // When restricted to sets, search wide and filter before truncating; otherwise
+  // a set whose icons rank below the global cutoff would appear to have no matches.
   const keyword =
-    mode === "semantic" ? [] : searchKeyword(idx.keyword, query, { limit: 300, prefixWeight }).filter(filter);
+    mode === "semantic" ? [] : searchKeyword(idx.keyword, query, { limit: allow ? 5000 : 300, prefixWeight }).filter(filter).slice(0, 300);
 
   if (mode === "keyword") return { hits: keyword.slice(0, limit), mode };
 
   let semantic: ReturnType<typeof expandTextHits> = [];
   try {
     const vec = await embedQuery(query);
-    const texts = topTexts(idx.embeddings, vec, 60);
+    const texts = topTexts(idx.embeddings, vec, allow ? 200 : 60);
     // bge cosine scores compress into ~0.6-1.0, so cut relative to the best match.
     const floor = Math.max(0.72, (texts[0]?.score ?? 0) - 0.22);
-    semantic = expandTextHits(idx.data, idx.textMap, texts, 400, floor).filter(filter);
+    semantic = expandTextHits(idx.data, idx.textMap, texts, allow ? 4000 : 400, floor).filter(filter).slice(0, 400);
   } catch (err) {
     console.error("semantic search failed", err);
   }

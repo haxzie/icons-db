@@ -21,7 +21,9 @@ let loading: Promise<Loaded> | null = null;
 async function fetchAsset(path: string, origin: string): Promise<Response> {
   const env = await getEnv();
   const url = new URL(path, origin);
-  if (env.ASSETS) {
+  // In `next dev` the ASSETS binding serves the last *build's* .open-next/assets,
+  // which goes stale after a data rebuild; hit the dev server for public/ instead.
+  if (env.ASSETS && process.env.NODE_ENV !== "development") {
     const res = await env.ASSETS.fetch(new Request(url.toString()));
     if (res.ok) return res;
   }
