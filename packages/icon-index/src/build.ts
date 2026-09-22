@@ -7,6 +7,8 @@ import {
   humanize,
   resolveSuffixes,
   splitVariant,
+  synonymsOf,
+  tokenize,
   type CollectionMeta,
   type IconRecord,
   type IndexIconEntry,
@@ -19,6 +21,22 @@ import { DIST } from "./paths";
 const require = createRequire(import.meta.url);
 
 export type SetFiles = { icons: IconifyJSON; info: IconifyInfo; meta: IconifyMetaData; version: string };
+
+/** Embedding text: name + synonym expansions + category, so semantic search
+ * bridges "plus"->"add", "gear"->"settings", etc. Deterministic per
+ * (family, category) so the dedup of `texts` stays tight. */
+function enrichText(family: string, category: string | null): string {
+  const base = humanize(family);
+  const syns = new Set<string>();
+  for (const tok of tokenize(family)) {
+    for (const s of synonymsOf(tok)) syns.add(s);
+  }
+  for (const t of tokenize(base)) syns.delete(t);
+  const parts = [base];
+  if (syns.size) parts.push(Array.from(syns).join(" "));
+  if (category) parts.push(humanize(category));
+  return parts.join(". ");
+}
 
 async function loadSet(prefix: string): Promise<SetFiles> {
   if (prefix === LOBEHUB_PREFIX) return loadLobehub();
@@ -251,7 +269,7 @@ async function main() {
         aliases: [],
       };
       iconIdxByName.set(name, indexIcons.length);
-      indexIcons.push([prefixIdx, name, textId(humanize(family)), categoryId(record.category)]);
+      indexIcons.push([prefixIdx, name, textId(enrichText(family, record.category)), categoryId(record.category)]);
       records.push(record);
     });
 
