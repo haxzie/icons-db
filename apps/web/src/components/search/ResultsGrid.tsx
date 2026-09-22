@@ -88,6 +88,9 @@ export function ResultsGrid({ items, view, color, selected, onSelect, loading, c
               onClick={(e) => {
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
                 e.preventDefault();
+                // Opening the side panel is not a navigation — stop the native event
+                // reaching nextjs-toploader's document listener so no progress bar flashes.
+                e.nativeEvent.stopImmediatePropagation();
                 onSelect(item);
               }}
               title={`${set} · ${item.name}`}
