@@ -24,6 +24,7 @@
     "@next/third-parties": "16.3.5",
     "@opennextjs/cloudflare": "^1.20.6",
     "next": "16.3.5",
+    "nextjs-toploader": "^3.9.17",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "^4.6.5"
