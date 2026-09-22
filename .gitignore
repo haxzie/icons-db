@@ -13,3 +13,6 @@ next-env.d.ts
 cloudflare-env.d.ts
 *.log
 apps/web/src/generated/
+
+apps/web/public/data/embeddings.bin
+apps/web/public/data/search-index.json

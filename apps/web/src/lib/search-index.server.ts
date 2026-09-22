@@ -18,30 +18,26 @@ type Loaded = {
 
 let loading: Promise<Loaded> | null = null;
 
-async function fetchAsset(path: string, origin: string): Promise<Response> {
+async function loadData<T>(file: string, origin: string, decode: (r: Response) => Promise<T>): Promise<T> {
   const env = await getEnv();
-  const url = new URL(path, origin);
-  // In `next dev` the ASSETS binding serves the last *build's* .open-next/assets,
-  // which goes stale after a data rebuild; hit the dev server for public/ instead.
-  if (env.ASSETS && process.env.NODE_ENV !== "development") {
-    const res = await env.ASSETS.fetch(new Request(url.toString()));
-    if (res.ok) return res;
+  // Read straight from the R2 binding when available (no HTTP round trip).
+  if (env.DATA && process.env.NODE_ENV !== "development") {
+    const obj = await env.DATA.get(file);
+    if (obj) return decode(new Response(obj.body));
   }
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`failed to load ${path}: ${res.status}`);
-  return res;
+  const res = await fetch(new URL(`/data/${file}`, origin).toString());
+  if (!res.ok) throw new Error(`failed to load ${file}: ${res.status}`);
+  return decode(res);
 }
 
 /** Loaded once per isolate; ~15MB of index + quantised embeddings. */
 export function loadSearchIndex(origin: string): Promise<Loaded> {
   if (!loading) {
     loading = (async () => {
-      const [dataRes, embRes] = await Promise.all([
-        fetchAsset("/data/search-index.json", origin),
-        fetchAsset("/data/embeddings.bin", origin),
+      const [data, embeddings] = await Promise.all([
+        loadData("search-index.json", origin, (r) => r.json() as Promise<SearchIndexData>),
+        loadData("embeddings.bin", origin, async (r) => decodeEmbeddings(await r.arrayBuffer())),
       ]);
-      const data = (await dataRes.json()) as SearchIndexData;
-      const embeddings = decodeEmbeddings(await embRes.arrayBuffer());
       let keyword: KeywordIndex | null = null;
       return {
         data,

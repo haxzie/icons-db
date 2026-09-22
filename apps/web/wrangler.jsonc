@@ -23,6 +23,7 @@
     { "binding": "DB", "database_name": "icons-db", "database_id": "b23a013e-9752-4064-8c4f-f5e20c89985f", "remote": true }
   ],
   "ai": { "binding": "AI" },
+  "r2_buckets": [{ "binding": "DATA", "bucket_name": "icons-db-data" }],
   "ratelimits": [
     { "name": "API_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } }
   ]
