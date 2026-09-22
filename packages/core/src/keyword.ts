@@ -1,4 +1,5 @@
 import type { IconHit, SearchIndexData } from "./types";
+import { synonymsOf } from "./synonyms";
 
 export type KeywordIndex = {
   data: SearchIndexData;
@@ -50,12 +51,12 @@ function lowerBound(tokens: string[], prefix: string): number {
 }
 
 /** Icons matching a single query token (prefix match), with best per-icon token score. */
-function matchToken(index: KeywordIndex, qtok: string, out: Map<number, number>) {
+function matchPrefix(index: KeywordIndex, qtok: string, weight: number, out: Map<number, number>) {
   const { tokens, postings } = index;
   let i = lowerBound(tokens, qtok);
   while (i < tokens.length && tokens[i].startsWith(qtok)) {
     const exact = tokens[i] === qtok;
-    const score = exact ? 1 : 0.6 + 0.4 * (qtok.length / tokens[i].length);
+    const score = (exact ? 1 : 0.6 + 0.4 * (qtok.length / tokens[i].length)) * weight;
     const list = postings[i];
     for (let k = 0; k < list.length; k++) {
       const idx = list[k];
@@ -64,6 +65,12 @@ function matchToken(index: KeywordIndex, qtok: string, out: Map<number, number>)
     }
     i++;
   }
+}
+
+function matchToken(index: KeywordIndex, qtok: string, out: Map<number, number>) {
+  matchPrefix(index, qtok, 1, out);
+  // Synonyms match at a discount so literal-name hits still rank first.
+  for (const syn of synonymsOf(qtok)) matchPrefix(index, syn, 0.6, out);
 }
 
 export type KeywordOptions = {
