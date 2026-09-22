@@ -22,20 +22,19 @@ const require = createRequire(import.meta.url);
 
 export type SetFiles = { icons: IconifyJSON; info: IconifyInfo; meta: IconifyMetaData; version: string };
 
-/** Embedding text: name + synonym expansions + category, so semantic search
- * bridges "plus"->"add", "gear"->"settings", etc. Deterministic per
- * (family, category) so the dedup of `texts` stays tight. */
-function enrichText(family: string, category: string | null): string {
+/** Embedding text: name + synonym expansions so semantic search bridges
+ * "plus"->"add", "gear"->"settings", etc. Deterministic per family, so the
+ * dedup of `texts` stays 1:1 with names (keeps embeddings.bin under the
+ * 25 MiB Cloudflare static-asset limit). Category is intentionally excluded:
+ * it varies per set for the same family and would balloon the vector count. */
+function enrichText(family: string): string {
   const base = humanize(family);
   const syns = new Set<string>();
   for (const tok of tokenize(family)) {
     for (const s of synonymsOf(tok)) syns.add(s);
   }
   for (const t of tokenize(base)) syns.delete(t);
-  const parts = [base];
-  if (syns.size) parts.push(Array.from(syns).join(" "));
-  if (category) parts.push(humanize(category));
-  return parts.join(". ");
+  return syns.size ? `${base}. ${Array.from(syns).join(" ")}` : base;
 }
 
 async function loadSet(prefix: string): Promise<SetFiles> {
@@ -269,7 +268,7 @@ async function main() {
         aliases: [],
       };
       iconIdxByName.set(name, indexIcons.length);
-      indexIcons.push([prefixIdx, name, textId(enrichText(family, record.category)), categoryId(record.category)]);
+      indexIcons.push([prefixIdx, name, textId(enrichText(family)), categoryId(record.category)]);
       records.push(record);
     });
 
