@@ -56,6 +56,30 @@ export function normalize(v: Float32Array | number[]): Float32Array {
   return out;
 }
 
+/**
+ * How many texts the semantic pass keeps, and how far below the best match a
+ * hit may score before it is dropped. Shared so the edge worker
+ * (search.server.ts) and the in-browser worker (semantic-worker.ts) stay in
+ * step — they are two implementations of one ranking, and drift between them
+ * shows up as "the same query gives different results on reload".
+ *
+ * Both numbers were measured against the real 67k-text index (see
+ * packages/icon-index/src/evaluate-search.ts). The previous settings — k=60
+ * with an *absolute* 0.72 floor — dropped the correct text for 3 of 30
+ * natural-language queries: "no internet connection" ranked 71st (outside k)
+ * and "how much time is left" scored 0.701 (under the floor). Widening k and
+ * making the floor purely relative recovers both, taking survival from
+ * 90% to 97%.
+ */
+export const SEMANTIC_K = 400;
+
+/** Cut relative to the best match; bge cosine scores compress into ~0.55-0.95,
+ * so a fixed threshold is really a threshold on "how good was the best hit",
+ * which is not what we want to filter on. */
+export function semanticFloor(topScore: number): number {
+  return topScore - 0.25;
+}
+
 /** Top-K text ids by cosine similarity (brute force; fine for tens of thousands). */
 export function topTexts(
   m: EmbeddingMatrix,

@@ -4,6 +4,8 @@ import {
   normalize,
   prefixWeight,
   searchKeyword,
+  SEMANTIC_K,
+  semanticFloor,
   splitVariant,
   topTexts,
   type IconHit,
@@ -42,9 +44,8 @@ export async function search(
   let semantic: ReturnType<typeof expandTextHits> = [];
   try {
     const vec = await embedQuery(query);
-    const texts = topTexts(idx.embeddings, vec, allow ? 200 : 60);
-    // bge cosine scores compress into ~0.6-1.0, so cut relative to the best match.
-    const floor = Math.max(0.72, (texts[0]?.score ?? 0) - 0.22);
+    const texts = topTexts(idx.embeddings, vec, allow ? 800 : SEMANTIC_K);
+    const floor = semanticFloor(texts[0]?.score ?? 0);
     semantic = expandTextHits(idx.data, idx.textMap, texts, allow ? 4000 : 400, floor).filter(filter).slice(0, 400);
   } catch (err) {
     console.error("semantic search failed", err);

@@ -10,6 +10,8 @@ import {
   decodeEmbeddings,
   expandTextHits,
   normalize,
+  SEMANTIC_K,
+  semanticFloor,
   topTexts,
   type SearchIndexData,
 } from "@icons-db/core";
@@ -107,8 +109,8 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
     if (!encode || !data || !textMap || !embeddings) return;
     const t0 = performance.now();
     const vec = await embed(req.query);
-    const texts = topTexts(embeddings, vec, 60);
-    const floor = Math.max(0.72, (texts[0]?.score ?? 0) - 0.22);
+    const texts = topTexts(embeddings, vec, SEMANTIC_K);
+    const floor = semanticFloor(texts[0]?.score ?? 0);
     const hits = expandTextHits(data, textMap, texts, req.limit, floor);
     post({ type: "result", id: req.id, hits, ms: performance.now() - t0 });
   }

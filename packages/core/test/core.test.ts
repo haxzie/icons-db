@@ -63,8 +63,15 @@ describe("keyword search", () => {
   });
   it("finds parents through alias names", () => {
     const hits = searchKeyword(index, "delete");
-    expect(hits).toHaveLength(1);
+    // "delete" reaches `trash` twice over: as an alias of it, and as a synonym.
+    // The synonym then prefix-matches the rest of the family, so the whole
+    // trash family comes back — which is what someone typing "delete" wants.
     expect(hits[0].name).toBe("trash");
+    // The alias is never its own result; it collapses onto its parent.
+    expect(hits.map((h) => h.name)).not.toContain("delete");
+    expect(hits.map((h) => h.name)).toEqual(expect.arrayContaining(["trash-2", "trash-fill"]));
+    // The direct hit must stay well clear of the synonym-only matches.
+    expect(hits[0].score).toBeGreaterThan(hits[1].score * 2);
   });
   it("requires every query token to match", () => {
     expect(searchKeyword(index, "shopping cart").map((h) => h.name)).toEqual(
