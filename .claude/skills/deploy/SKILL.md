@@ -122,7 +122,17 @@ Provider callback URLs (set these in the GitHub/Google app consoles):
 - `https://iconsdb.app/api/auth/callback/google`
 
 **Rotating `BETTER_AUTH_SECRET` invalidates every session and makes the stored JWKS private key
-undecryptable.** If you must rotate it, also `DELETE FROM jwks` so a fresh signing key is generated.
+undecryptable** — `/oauth2/token` then 500s with "Failed to decrypt private key" and clients can
+consent but never get a token. After any rotation:
+
+```bash
+wrangler d1 execute icons-db --remote --command \
+  'DELETE FROM "jwks"; DELETE FROM "oauthAccessToken"; DELETE FROM "oauthRefreshToken";'
+```
+
+Then hit production once so it regenerates the key under the new secret. Note `next dev` proxies
+D1 to production with your *local* secret, so don't let it regenerate the key — it would break
+production again.
 
 ### Slack notifications
 
@@ -208,6 +218,21 @@ the token expires. Don't remove it as an optimization without shortening `access
 
 Personal-token traffic is recorded in `mcp_usage` under the client id
 `personal-access-token`.
+
+### Two MCP gotchas that look like outages
+
+**Never let the Worker fetch its own origin.** `requireMcpAuth` only takes a `jwksUrl`, so it
+fetches `/api/auth/jwks` over HTTP; with the `global_fetch_strictly_public` compat flag that
+re-enters this same Worker and, under concurrency, wedges it until every request hangs without
+reaching our code. Tokens are verified locally instead (`src/lib/auth/verify-token.ts`, keys read
+straight from `jwks` in D1). Don't reintroduce `requireMcpAuth`. The tell: unauthenticated `/mcp`
+401s instantly while a tokened request hangs and produces no log line at all.
+
+**Dynamic registration defaults `application_type` to `web`**, and a web client may not use
+loopback redirect URIs — so desktop MCP clients registering `http://127.0.0.1:<port>/callback`
+were rejected outright ("web clients require https redirect URIs on non-loopback hosts").
+`src/lib/auth/dcr.ts` relabels a registration as `native` when every redirect URI is an http
+loopback address; explicit types, hosted https clients and spoofed hosts are untouched.
 
 ### Verifying auth after a deploy
 
