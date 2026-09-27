@@ -21,5 +21,8 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image).*)"],
+  // Auth, OAuth discovery and the MCP endpoint must reach their handlers with
+  // the original host and path intact — a canonical-host redirect mid-OAuth
+  // breaks the signed authorization query.
+  matcher: ["/((?!_next/static|_next/image|api/auth|\\.well-known|mcp).*)"],
 };

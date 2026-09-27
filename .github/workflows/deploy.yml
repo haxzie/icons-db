@@ -63,5 +63,16 @@ jobs:
             code=$(curl -s -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
             echo "$code $u"; [ "$code" = 200 ]
           done
-          curl -sf -X POST https://iconsdb.app/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' \
-            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' > /dev/null
+          # /mcp is OAuth-protected: an unauthenticated call must be a 401 that
+          # points clients at the authorization server, not a 200 or a 500.
+          challenge=$(curl -s -o /dev/null -D - -X POST https://iconsdb.app/mcp \
+            -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2026-07-28","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}')
+          echo "$challenge" | head -1
+          echo "$challenge" | grep -qi '^HTTP/[0-9.]* 401'
+          echo "$challenge" | grep -qi '^www-authenticate:.*resource_metadata'
+          # OAuth discovery must be reachable at the origin root for MCP clients.
+          for u in /.well-known/oauth-protected-resource/mcp /.well-known/oauth-authorization-server/api/auth; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
+            echo "$code $u"; [ "$code" = 200 ]
+          done

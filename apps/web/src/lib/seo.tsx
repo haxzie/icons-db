@@ -1,7 +1,8 @@
 import type { CollectionMeta, IconRecord } from "@icons-db/core";
 import { humanize } from "@icons-db/core";
+import { SITE } from "./site";
 
-export const SITE = "https://iconsdb.app";
+export { SITE };
 
 export const OG_IMAGE = { url: `${SITE}/og.png`, secureUrl: `${SITE}/og.png`, width: 1200, height: 630, type: "image/png", alt: "IconsDB — open source icon search" };
 

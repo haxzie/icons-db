@@ -1,0 +1,20 @@
+# Copy to .dev.vars for local development (never commit the real file).
+# Production values live in Cloudflare secrets: wrangler secret put <NAME>
+
+# openssl rand -base64 32
+BETTER_AUTH_SECRET=
+
+# Without this, auth URLs and cookies are issued for https://iconsdb.app.
+BETTER_AUTH_URL=http://localhost:3000
+
+# GitHub OAuth app — callback: http://localhost:3000/api/auth/callback/github
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Google OAuth client — callback: http://localhost:3000/api/auth/callback/google
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Optional: signup and MCP-connect notifications. Leave blank locally so test
+# signups don't post into the team channel.
+SLACK_WEBHOOK_URL=

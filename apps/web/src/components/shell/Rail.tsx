@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "../ThemeToggle";
+import { AccountButton } from "../auth/AccountButton";
 
 const items = [
   {
@@ -94,6 +95,7 @@ export function Rail() {
           </svg>
         </a>
         <ThemeToggle />
+        <AccountButton />
       </div>
     </nav>
   );

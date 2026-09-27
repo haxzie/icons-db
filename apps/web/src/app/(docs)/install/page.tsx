@@ -154,7 +154,8 @@ export default function InstallPage() {
             MCP
           </a>{" "}
           server searches by meaning and answers with the exact import for the icon package already in your{" "}
-          <code className="font-mono text-sm">package.json</code>. Remote, no install, no API key.
+          <code className="font-mono text-sm">package.json</code>. Remote, no install, no API key — your agent
+          opens a browser once to sign in.
         </p>
 
         <div className="mt-6 flex items-center gap-3 rounded-2xl border bg-bg-elevated p-5">

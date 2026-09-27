@@ -31,13 +31,15 @@ wrangler), but prefer CI.
 > `git push origin …` hangs, push over HTTPS with the gh credential helper:
 > `git -c credential.helper='!gh auth git-credential' push https://github.com/haxzie/icons-db.git <branch>:main`
 
-## The three data stores (know which a change touches)
+## The data stores (know which a change touches)
 
 | Store | Holds | Changes when | How it ships |
 |---|---|---|---|
 | **D1** (`icons-db`) | icon bodies + metadata (206k+ rows) | you add/remove an icon set | **manual seed** (below) |
 | **R2** (`icons-db-data`) | `embeddings.bin`, `search-index.json` (too big for the 25 MiB static-asset limit) | you reindex/re-embed | **manual `pnpm data:upload`** |
 | **KV** (`NEXT_INC_CACHE_KV`) | OpenNext ISR/page cache | automatically | nothing to do |
+| **R2** (`icons-db-avatars`) | user profile pictures, mirrored from GitHub/Google | on sign-up | written at runtime |
+| **D1 auth tables** | users, sessions, OAuth clients/tokens, `mcp_usage`, `api_token` | schema changes only | `wrangler d1 migrations apply` |
 
 Code-only changes need none of these steps — just push. The manual steps are **only** when the
 icon dataset changes.
@@ -89,10 +91,140 @@ If you migrate the D1 schema, add a file under `apps/web/migrations/` and
 
 - GitHub repo secret `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, **KV**, **R2**, SSL/zone).
 - Secret `CLOUDFLARE_ACCOUNT_ID`, variable `NEXT_PUBLIC_GA_ID` (`G-R6ZDXEJQ8G`).
-- Bindings live in `apps/web/wrangler.jsonc`: `DB` (D1), `DATA` (R2), `NEXT_INC_CACHE_KV`,
-  `AI`, `ASSETS`, `API_RATE_LIMIT`, custom domains `iconsdb.app` + `www` + `iconsdb.haxzie.com`.
+- Bindings live in `apps/web/wrangler.jsonc`: `DB` (D1), `DATA` + `AVATARS` (R2),
+  `NEXT_INC_CACHE_KV`, `AI`, `ASSETS`, `API_RATE_LIMIT`, `EMAIL` (Email Sending), custom domains
+  `iconsdb.app` + `www` + `iconsdb.haxzie.com`. Auth secrets are listed under "Auth & the MCP
+  OAuth provider" below.
 - After changing bindings run `pnpm --filter @icons-db/web cf-typegen` (CI regenerates
   `cloudflare-env.d.ts` before typecheck).
+
+## Auth & the MCP OAuth provider
+
+`/mcp` is an OAuth 2.1 protected resource — unauthenticated calls get a 401 with an RFC 9728
+challenge, and MCP clients register themselves (DCR) and walk the browser flow. The provider is
+[Better Auth](https://better-auth.com) (`src/lib/auth/`), stored in the same D1 database.
+
+### Required secrets
+
+```bash
+cd apps/web
+wrangler secret put BETTER_AUTH_SECRET     # openssl rand -base64 32 — signs sessions + OAuth codes
+wrangler secret put GITHUB_CLIENT_ID
+wrangler secret put GITHUB_CLIENT_SECRET
+wrangler secret put GOOGLE_CLIENT_ID
+wrangler secret put GOOGLE_CLIENT_SECRET
+wrangler secret put SLACK_WEBHOOK_URL    # optional: growth notifications
+```
+
+Provider callback URLs (set these in the GitHub/Google app consoles):
+
+- `https://iconsdb.app/api/auth/callback/github`
+- `https://iconsdb.app/api/auth/callback/google`
+
+**Rotating `BETTER_AUTH_SECRET` invalidates every session and makes the stored JWKS private key
+undecryptable.** If you must rotate it, also `DELETE FROM jwks` so a fresh signing key is generated.
+
+### Slack notifications
+
+`SLACK_WEBHOOK_URL` (an incoming webhook) gets two events, posted fire-and-forget so a Slack
+outage can never fail a signup or a tool call:
+
+- `:tada: *Name* (email) signed up via email|GitHub|Google` — from the `user.create` database
+  hook, so it fires once per account, never on a repeat sign-in.
+- `:electric_plug: *Name* (email) connected to <app> MCP` — from an after-hook on
+  `/oauth2/consent`, only when the user accepted. A user who re-authorizes the same client posts
+  again; that is rare enough to be signal rather than noise.
+
+Leave the variable unset locally (`.dev.vars`) so test signups don't post to the channel.
+
+### Magic-link email
+
+Magic links go out through the Cloudflare Email Sending binding (`EMAIL`), from
+`login@iconsdb.app`. The domain has to be onboarded once:
+
+```bash
+npx wrangler email sending enable iconsdb.app   # adds DNS records to the zone
+npx wrangler email sending list                 # confirm it's listed
+```
+
+Until that runs, magic-link sends fail (social sign-in still works). In `next dev` a failed send
+prints the link to the console instead.
+
+### Schema changes
+
+The auth tables come from `migrations/0004_auth.sql`, generated with the Better Auth CLI:
+
+```bash
+cd apps/web
+npx auth@1.7.6 generate --config auth-schema.config.ts --output /tmp/auth-schema.sql -y
+wrangler d1 migrations apply icons-db --remote   # note: no --yes flag on this command
+```
+
+`auth-schema.config.ts` is a generation-only shim — the real instance is built per-request in
+`src/lib/auth/config.ts`, where the D1 binding exists.
+
+### Page layout
+
+Auth pages render without the side rail. That split is done with a `(auth)` route group holding
+`sign-in` and `consent`, while each browsing section (`blog/`, `icon/`, `icons/`, `library/`,
+`(docs)/`, `(home)/`) has a one-line `layout.tsx` re-exporting `AppChrome`.
+
+It is deliberately **not** one big `(app)` group: putting a segment inside a route group changes
+the generated route name for its `opengraph-image.tsx` (e.g. `/blog/[slug]/opengraph-image` →
+`/blog/[slug]/opengraph-image-1p5g3f`), which would 404 every OG image URL that page metadata
+hardcodes. A new top-level *page* section needs its own `layout.tsx`; route handlers don't.
+
+### Local development
+
+`next dev` proxies D1 to **production** (the binding is `remote: true`), so anything you sign up
+with locally lands in the real database — clean up after testing. Copy `.dev.vars.example` to
+`.dev.vars` and set `BETTER_AUTH_URL=http://localhost:3000` so cookies aren't `Secure` and OAuth
+URLs point at your machine.
+
+### The consent screen
+
+`/consent` shows two overlapping cards: the IconsDB mark and the requesting app. The app icon
+comes from `src/lib/auth/client-logos.ts`, which maps well-known MCP clients (Claude Code, Cursor,
+Copilot, VS Code, Codex, Windsurf, Gemini, Zed, Cline, Warp, JetBrains, …) to icons from our own
+sets — a registered `logo_uri` is only the fallback for apps we don't recognise, and the app's
+initial is the last resort. Adding a client means one line in `PRESETS` plus a check that the icon
+id exists in D1.
+
+### Profile page & personal access tokens
+
+`/profile` (linked from the rail avatar) shows the user's details plus two tabs:
+
+- **Connected apps** — OAuth grants, with request counts from `mcp_usage`. Revoking deletes the
+  consent row *and* the client's access/refresh tokens. Better Auth's own
+  `/oauth2/delete-consent` only removes the consent row, which would leave the refresh token
+  alive, so `revokeGrant` in `src/lib/auth/grants.ts` does the full job.
+- **Personal access tokens** — `idb_…` tokens for clients that can only send a static header.
+  Only the SHA-256 is stored (`api_token.hash`); the plaintext is shown once at creation.
+
+Because OAuth access tokens are self-contained JWTs, deleting rows can't invalidate one already
+issued. The MCP route therefore checks `hasGrant(user, client)` on every OAuth-authenticated
+request — that indexed D1 read is what makes "Revoke" effective immediately rather than whenever
+the token expires. Don't remove it as an optimization without shortening `accessTokenExpiresIn`.
+
+Personal-token traffic is recorded in `mcp_usage` under the client id
+`personal-access-token`.
+
+### Verifying auth after a deploy
+
+```bash
+curl -s https://iconsdb.app/.well-known/oauth-protected-resource/mcp | jq
+curl -s https://iconsdb.app/.well-known/oauth-authorization-server/api/auth | jq .issuer
+# unauthenticated MCP call must be a 401 carrying the challenge
+curl -s -o /dev/null -D - -X POST https://iconsdb.app/mcp -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | grep -i www-authenticate
+```
+
+Who is actually using the MCP:
+
+```bash
+wrangler d1 execute icons-db --remote --command \
+  'SELECT u.email, SUM(m.requests) n FROM mcp_usage m JOIN "user" u ON u.id=m.user_id GROUP BY 1 ORDER BY n DESC LIMIT 20'
+```
 
 ## Verifying a deploy
 

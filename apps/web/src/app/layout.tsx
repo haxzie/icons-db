@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import NextTopLoader from "nextjs-toploader";
-import { Rail } from "@/components/shell/Rail";
 import { OG_IMAGE } from "@/lib/seo";
 import { DevTools } from "@/components/DevTools";
 import "./globals.css";
@@ -34,11 +33,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
+      {/* No rail here: each browsing section supplies its own chrome via
+          AppChrome, so the (auth) pages can render bare — a consent screen
+          shouldn't offer navigation out of the flow. */}
       <body className="flex min-h-full">
         <NextTopLoader color="#1a73e8" height={3} shadow="0 0 8px #1a73e8" showSpinner={false} />
-        <Rail />
         <DevTools />
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col">{children}</div>
+        {children}
       </body>
       {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
     </html>
