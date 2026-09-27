@@ -25,7 +25,10 @@
   "ai": { "binding": "AI" },
   "r2_buckets": [
     { "binding": "DATA", "bucket_name": "icons-db-data" },
-    { "binding": "AVATARS", "bucket_name": "icons-db-avatars" }
+    // remote in dev too: D1 is remote, so a local sign-in would otherwise write
+    // the user row to production while the avatar landed in local miniflare,
+    // leaving production pointing at an object that only exists on a laptop.
+    { "binding": "AVATARS", "bucket_name": "icons-db-avatars", "remote": true }
   ],
   "send_email": [{ "name": "EMAIL", "remote": true }],
   "ratelimits": [

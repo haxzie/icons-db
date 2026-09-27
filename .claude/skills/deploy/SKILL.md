@@ -186,8 +186,13 @@ hardcodes. A new top-level *page* section needs its own `layout.tsx`; route hand
 
 ### Local development
 
-`next dev` proxies D1 to **production** (the binding is `remote: true`), so anything you sign up
-with locally lands in the real database — clean up after testing. Copy `.dev.vars.example` to
+`next dev` proxies D1 **and the avatars bucket** to production (both are `remote: true`), so
+anything you sign up with locally lands in the real database — clean up after testing.
+
+`AVATARS` has to stay remote: with a remote D1 but a local bucket, a social sign-in in dev writes
+the user row to production while the mirrored picture lands in local miniflare, so production ends
+up pointing at an object that only exists on that laptop and the avatar 404s. `DATA` is still
+local in dev, which is why semantic search doesn't work there (`failed to load embeddings.bin`). Copy `.dev.vars.example` to
 `.dev.vars` and set `BETTER_AUTH_URL=http://localhost:3000` so cookies aren't `Secure` and OAuth
 URLs point at your machine.
 
