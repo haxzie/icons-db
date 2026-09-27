@@ -59,13 +59,16 @@ jobs:
       - name: Smoke test
         run: |
           set -e
+          # Every request is bounded: an unbounded curl turns one hung
+          # connection into a 30-minute job timeout instead of a failure.
+          CURL="curl -sS --max-time 20 --retry 3 --retry-delay 2 --retry-all-errors"
           for u in / /install /library/lucide /icon/lucide/house /icons/home; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
+            code=$($CURL -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
             echo "$code $u"; [ "$code" = 200 ]
           done
           # /mcp is OAuth-protected: an unauthenticated call must be a 401 that
           # points clients at the authorization server, not a 200 or a 500.
-          challenge=$(curl -s -o /dev/null -D - -X POST https://iconsdb.app/mcp \
+          challenge=$($CURL -o /dev/null -D - -X POST https://iconsdb.app/mcp \
             -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' \
             -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2026-07-28","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}')
           echo "$challenge" | head -1
@@ -73,6 +76,6 @@ jobs:
           echo "$challenge" | grep -qi '^www-authenticate:.*resource_metadata'
           # OAuth discovery must be reachable at the origin root for MCP clients.
           for u in /.well-known/oauth-protected-resource/mcp /.well-known/oauth-authorization-server/api/auth; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
+            code=$($CURL -o /dev/null -w '%{http_code}' "https://iconsdb.app$u")
             echo "$code $u"; [ "$code" = 200 ]
           done
