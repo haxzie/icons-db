@@ -37,6 +37,14 @@ export function createAuth(env: Env) {
     database: env.DB,
     trustedOrigins: [authOrigin(env)],
 
+    advanced: {
+      // Workers don't populate a remote address, so without this Better Auth
+      // can't tell callers apart: rate limiting collapses into one shared
+      // bucket per path (one noisy client locks out everybody) and sessions
+      // record an all-zero IP. Cloudflare sets cf-connecting-ip at the edge.
+      ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] },
+    },
+
     socialProviders: {
       github: {
         clientId: env.GITHUB_CLIENT_ID ?? "",
