@@ -54,10 +54,13 @@ export function registerTools(server: McpServer, origin: string) {
       const { sets, note } = resolveSets(args.package, args.sets);
       const filters: SearchFilters = { sets, kind: args.kind, style: args.style as StyleBucket | undefined, license: args.license };
 
+      // Coverage needs a wider pool per query than the caller asked for, so a set that
+      // ranks 20th for one concept can still show up as covering all of them.
+      const pool = queries.length > 1 ? Math.max(limit, 30) : limit;
       const perQuery = await Promise.all(
         queries.map(async (q) => {
           const { hits } = await search(origin, q, { mode: "hybrid", limit: 400, prefixes: sets });
-          return { q, rows: groupHits(hits, filters, queries.length > 1 ? Math.max(limit, 30) : limit) };
+          return { q, rows: groupHits(hits, filters, pool) };
         }),
       );
 
@@ -105,7 +108,7 @@ export function registerTools(server: McpServer, origin: string) {
       lines.push("", `Next: get_icon id="${first?.id ?? "lucide:house"}" format=react|vue|svelte|svg — or get_icons for several at once.`);
       return {
         ...text(lines.join("\n")),
-        structuredContent: { results: Object.fromEntries(perQuery.map(({ q, rows }) => [q, rows.map((r) => ({ id: r.id, set: r.set, styles: r.styles, license: r.license, attribution: r.attribution }))])) },
+        structuredContent: { results: Object.fromEntries(perQuery.map(({ q, rows }) => [q, rows.slice(0, limit).map((r) => ({ id: r.id, set: r.set, styles: r.styles, license: r.license, attribution: r.attribution }))])) },
       };
     },
   );
