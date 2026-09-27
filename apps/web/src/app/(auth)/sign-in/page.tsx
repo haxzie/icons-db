@@ -31,9 +31,14 @@ export default async function SignInPage({
   ).toString();
   const isOAuthFlow = !!params.client_id && !!params.sig;
 
-  if (session) redirect(isOAuthFlow ? `/api/auth/oauth2/authorize?${oauthQuery}` : "/");
+  // `?next=` returns the user to the page that sent them here. Only same-site
+  // paths: a full URL, "//host", or "/\host" would make this an open redirect
+  // (browsers normalise the backslash to a slash, so it has to be rejected too).
+  const next = typeof params.next === "string" && /^\/(?![/\\])/.test(params.next) ? params.next : "/";
 
-  const callbackURL = isOAuthFlow ? `/api/auth/oauth2/authorize?${oauthQuery}` : "/";
+  if (session) redirect(isOAuthFlow ? `/api/auth/oauth2/authorize?${oauthQuery}` : next);
+
+  const callbackURL = isOAuthFlow ? `/api/auth/oauth2/authorize?${oauthQuery}` : next;
 
   return (
     <main className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center gap-8 px-6 py-16">

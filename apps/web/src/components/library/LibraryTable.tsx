@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { CollectionMeta } from "@icons-db/core";
 import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
+import { SubmitSetButton } from "./SubmitSetButton";
 
 export function LibraryTable({ collections }: { collections: CollectionMeta[] }) {
   const router = useRouter();
@@ -26,26 +27,29 @@ export function LibraryTable({ collections }: { collections: CollectionMeta[] })
 
   return (
     <>
-      <div className="mt-5 flex h-12 max-w-xl items-center rounded-full bg-bg-muted transition focus-within:bg-bg-elevated focus-within:shadow-[0_1px_6px_rgba(32,33,36,.28)] dark:focus-within:shadow-none dark:focus-within:ring-1 dark:focus-within:ring-line">
-        <svg viewBox="0 0 24 24" className="ml-4 size-5 shrink-0 text-fg-muted" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search sets by name, author, type or license"
-          autoComplete="off"
-          className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-fg-subtle [&::-webkit-search-cancel-button]:hidden"
-        />
-        {query && (
-          <button type="button" onClick={() => setQuery("")} aria-label="Clear" className="mr-2 grid size-8 place-items-center rounded-full text-fg-muted hover:bg-bg-muted">
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        )}
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex h-12 w-full max-w-xl items-center rounded-full bg-bg-muted transition focus-within:bg-bg-elevated focus-within:shadow-[0_1px_6px_rgba(32,33,36,.28)] dark:focus-within:shadow-none dark:focus-within:ring-1 dark:focus-within:ring-line">
+          <svg viewBox="0 0 24 24" className="ml-4 size-5 shrink-0 text-fg-muted" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search sets by name, author, type or license"
+            autoComplete="off"
+            className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-fg-subtle [&::-webkit-search-cancel-button]:hidden"
+          />
+          {query && (
+            <button type="button" onClick={() => setQuery("")} aria-label="Clear" className="mr-2 grid size-8 place-items-center rounded-full text-fg-muted hover:bg-bg-muted">
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <SubmitSetButton />
       </div>
       <p className="mt-3 text-sm font-medium text-fg-muted">
         {rows.length} of {collections.length} sets
