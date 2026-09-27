@@ -1,9 +1,10 @@
 import { after } from "next/server";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
-import { requireMcpAuth } from "@better-auth/mcp";
 import { rateLimited } from "@/lib/api";
 import { registerTools } from "@/lib/mcp/tools";
-import { getAuth, getMcpResource, MCP_SCOPE } from "@/lib/auth";
+import { getMcpResource, MCP_SCOPE } from "@/lib/auth";
+import { authOrigin } from "@/lib/auth/config";
+import { verifyAccessToken } from "@/lib/auth/verify-token";
 import { getEnv } from "@/lib/env";
 import { hasGrant } from "@/lib/auth/grants";
 import { looksLikeApiToken, resolveToken, touchToken } from "@/lib/auth/tokens";
@@ -64,33 +65,52 @@ async function handle(req: Request) {
   const bearer = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
   if (looksLikeApiToken(bearer)) return withCors(await serveWithApiToken(req, bearer));
 
-  const auth = await getAuth();
-  const guarded = requireMcpAuth(
-    auth,
-    async (request, claims) => {
-      const userId = typeof claims.sub === "string" ? claims.sub : null;
-      const clientId = typeof claims.client_id === "string" ? claims.client_id : null;
+  const env = await getEnv();
+  const resource = await getMcpResource();
+  const issuer = `${authOrigin(env)}/api/auth`;
 
-      // Access tokens are self-contained JWTs, so revoking an app in the profile
-      // page can't invalidate one that's already issued. Checking the grant here
-      // is what makes "revoke" take effect immediately instead of whenever the
-      // token happens to expire.
-      if (userId && clientId) {
-        const env = await getEnv();
-        if (!(await hasGrant(env, userId, clientId))) return revoked();
-      }
+  if (!bearer) return withCors(challenge(401, "invalid_request", "Authorization required", resource));
 
-      const res = await handlerFor(new URL(request.url).origin).fetch(request);
-      if (userId) after(recordMcpUsage(userId, clientId));
-      return res;
-    },
-    { resource: await getMcpResource(), requiredScopes: [MCP_SCOPE] },
-  );
+  const verified = await verifyAccessToken(env, bearer, {
+    issuer,
+    resource,
+    requiredScopes: [MCP_SCOPE],
+  });
+  if (!verified.ok) {
+    const status = verified.error === "insufficient_scope" ? 403 : 401;
+    return withCors(challenge(status, verified.error, verified.description, resource));
+  }
 
-  // Covers both tool responses and the 401/403 challenges requireMcpAuth raises.
-  return withCors(await guarded(req));
+  const userId = typeof verified.claims.sub === "string" ? verified.claims.sub : null;
+  const clientId = typeof verified.claims.client_id === "string" ? verified.claims.client_id : null;
+
+  // Access tokens are self-contained JWTs, so revoking an app in the profile
+  // page can't invalidate one already issued. Checking the grant here is what
+  // makes "revoke" take effect immediately.
+  if (userId && clientId && !(await hasGrant(env, userId, clientId))) {
+    return withCors(challenge(401, "invalid_grant", "Access was revoked by the user", resource));
+  }
+
+  const res = await handlerFor(new URL(req.url).origin).fetch(req);
+  if (userId) after(recordMcpUsage(userId, clientId));
+  return withCors(res);
 }
 
+/** RFC 6750 / RFC 9728 challenge pointing clients at the metadata document. */
+function challenge(status: number, error: string, description: string, resource: string) {
+  const params = [
+    `resource_metadata="${new URL(resource).origin}/.well-known/oauth-protected-resource${new URL(resource).pathname}"`,
+    `error="${error}"`,
+    `error_description="${description}"`,
+    `scope="${MCP_SCOPE}"`,
+  ].join(", ");
+  return new Response(JSON.stringify({ error, error_description: description }), {
+    status,
+    headers: { "content-type": "application/json", "www-authenticate": `Bearer ${params}` },
+  });
+}
+
+/** Personal access tokens: resolved against D1, no network hop. */
 async function serveWithApiToken(req: Request, token: string) {
   const env = await getEnv();
   const resolved = await resolveToken(env, token);
@@ -107,16 +127,6 @@ async function serveWithApiToken(req: Request, token: string) {
   after(touchToken(env, resolved.tokenId));
   after(recordMcpUsage(resolved.userId, "personal-access-token"));
   return res;
-}
-
-function revoked() {
-  return new Response(JSON.stringify({ error: "invalid_grant" }), {
-    status: 401,
-    headers: {
-      "content-type": "application/json",
-      "www-authenticate": `Bearer error="invalid_grant", error_description="Access was revoked by the user"`,
-    },
-  });
 }
 
 function withCors(res: Response) {
