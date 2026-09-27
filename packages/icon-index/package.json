@@ -98,11 +98,17 @@
     "@iconify/tools": "^5.0.14",
     "@iconify/utils": "^3.1.7",
     "@icons-db/core": "workspace:*",
-    "@lobehub/icons-static-svg": "^1.95.1"
+    "@lobehub/icons-static-svg": "^1.95.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@unlocalhosted/dither-icons": "^0.2.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@iconify/types": "^2.0.0",
     "@types/node": "^22",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "tsx": "^4",
     "typescript": "^5",
     "vitest": "^4"

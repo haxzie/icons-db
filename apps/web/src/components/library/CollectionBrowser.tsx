@@ -16,6 +16,11 @@ import { LicenseBadge } from "../LicenseBadge";
 import { TrademarkNotice } from "../TrademarkNotice";
 import type { Selected } from "../search/SearchApp";
 
+/** "https://x.com/dprophecyguy" -> "@dprophecyguy" */
+function twitterHandle(url: string): string {
+  return "@" + url.replace(/\/+$/, "").split("/").pop();
+}
+
 export function CollectionBrowser({
   collection,
   collections,
@@ -141,6 +146,14 @@ export function CollectionBrowser({
                 {" · "}
                 <a href={c.homepage} className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
                   Website
+                </a>
+              </>
+            )}
+            {c.author.twitter && (
+              <>
+                {" · "}
+                <a href={c.author.twitter} className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
+                  {twitterHandle(c.author.twitter)}
                 </a>
               </>
             )}

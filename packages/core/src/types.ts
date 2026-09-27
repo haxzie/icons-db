@@ -12,7 +12,7 @@ export type CollectionMeta = {
   name: string;
   kind: CollectionKind;
   total: number;
-  author: { name: string; url?: string };
+  author: { name: string; url?: string; /** Full profile URL, e.g. https://x.com/handle */ twitter?: string };
   license: License;
   homepage?: string;
   category?: string;

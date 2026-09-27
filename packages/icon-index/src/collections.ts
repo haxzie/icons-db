@@ -89,6 +89,7 @@ export const PREFIXES = [
   "fxemoji",
   "keyline-icons",
   "lobehub",
+  "dither",
 ] as const;
 
 export const KINDS: Record<string, CollectionKind> = {
@@ -118,6 +119,11 @@ export const KINDS: Record<string, CollectionKind> = {
   "token-branded": "brands",
   fxemoji: "emoji",
   lobehub: "brands",
+};
+
+/** Author profiles to credit on the set page. Full URLs so the link is unambiguous. */
+export const AUTHOR_TWITTERS: Record<string, string> = {
+  dither: "https://x.com/dprophecyguy",
 };
 
 export const HOMEPAGES: Record<string, string> = {
@@ -204,4 +210,5 @@ export const HOMEPAGES: Record<string, string> = {
   fxemoji: "https://github.com/mozilla/fxemoji",
   "keyline-icons": "https://keylineicons.com",
   lobehub: "https://lobehub.com/icons",
+  dither: "https://dithered.dev",
 };

@@ -142,6 +142,14 @@ export const SET_PACKAGES: Record<string, PackageInfo[]> = {
       usage: (s) => `<${s} size={24} />  // also ${s}.Color, ${s}.Text, ${s}.Brand`,
     },
   ],
+  dither: [
+    {
+      npm: "@unlocalhosted/dither-icons",
+      framework: "react",
+      symbol: (n) => pascal(n.replace(/-outline$/, "")) + "Icon",
+      usage: (s) => `<${s} size={24} texture="dither" />  // also "solid" / "outline"`,
+    },
+  ],
   "keyline-icons": [{ npm: "@keyline-icons/react", framework: "react", symbol: (n) => pascal(n) }],
   "circle-flags": [{ npm: "react-circle-flags", framework: "react", symbol: () => "CircleFlag", usage: () => `<CircleFlag countryCode="…" />` }],
 };

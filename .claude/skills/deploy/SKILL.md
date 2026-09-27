@@ -45,10 +45,15 @@ icon dataset changes.
 ## Adding / changing an icon set (full pipeline)
 
 1. `pnpm --filter @icons-db/icon-index add @iconify-json/<prefix>`
-2. Register it in `packages/icon-index/src/collections.ts` (`PREFIXES`, `HOMEPAGES`, and
-   `KINDS` if it's `emoji`/`brands`). Add variant suffixes to `packages/core/src/variants.ts`
-   if the set uses non-standard style suffixes, and an npm entry to
-   `packages/core/src/packages.ts` for the MCP.
+2. Register it in `packages/icon-index/src/collections.ts` (`PREFIXES`, `HOMEPAGES`,
+   `AUTHOR_TWITTERS` if the author wants the credit, and `KINDS` if it's `emoji`/`brands`).
+   Add variant suffixes to `packages/core/src/variants.ts` if the set uses non-standard style
+   suffixes, and an npm entry to `packages/core/src/packages.ts` for the MCP.
+
+   **Not on Iconify?** Write a loader that returns a `SetFiles` and branch on it in
+   `loadSet()` — see `lobehub.ts` (plain SVG files) and `dither.ts` (React components rendered
+   with `react-dom/server`). Supply `info` and `meta.suffixes` by hand there; everything
+   downstream is identical.
 3. Rebuild the index + embeddings:
    ```bash
    pnpm index:build

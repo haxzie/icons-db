@@ -26,6 +26,7 @@ type CollectionRow = {
   total: number;
   author_name: string | null;
   author_url: string | null;
+  author_twitter: string | null;
   license_title: string | null;
   license_spdx: string | null;
   license_url: string | null;
@@ -65,7 +66,7 @@ function toCollection(r: CollectionRow): CollectionMeta {
     name: r.name,
     kind: (r.kind as CollectionMeta["kind"]) ?? "icons",
     total: r.total,
-    author: { name: r.author_name ?? "", url: r.author_url ?? undefined },
+    author: { name: r.author_name ?? "", url: r.author_url ?? undefined, twitter: r.author_twitter ?? undefined },
     license: {
       title: r.license_title ?? "Unknown",
       spdx: r.license_spdx ?? undefined,

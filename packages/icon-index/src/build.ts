@@ -14,7 +14,8 @@ import {
   type IndexIconEntry,
   type SearchIndexData,
 } from "@icons-db/core";
-import { HOMEPAGES, KINDS, PREFIXES } from "./collections";
+import { AUTHOR_TWITTERS, HOMEPAGES, KINDS, PREFIXES } from "./collections";
+import { loadDither, DITHER_PREFIX } from "./dither";
 import { loadLobehub, LOBEHUB_PREFIX } from "./lobehub";
 import { DIST } from "./paths";
 
@@ -39,6 +40,7 @@ function enrichText(family: string): string {
 
 async function loadSet(prefix: string): Promise<SetFiles> {
   if (prefix === LOBEHUB_PREFIX) return loadLobehub();
+  if (prefix === DITHER_PREFIX) return loadDither();
   const dir = dirname(require.resolve(`@iconify-json/${prefix}/package.json`));
   const read = async (f: string) => JSON.parse(await readFile(join(dir, f), "utf8"));
   let meta: IconifyMetaData = {};
@@ -67,7 +69,7 @@ function collectionMeta(prefix: string, s: SetFiles, total: number): CollectionM
     name: s.info.name,
     kind: KINDS[prefix] ?? (s.info.category === "Emoji" ? "emoji" : "icons"),
     total,
-    author: { name: s.info.author?.name ?? "", url: s.info.author?.url },
+    author: { name: s.info.author?.name ?? "", url: s.info.author?.url, twitter: AUTHOR_TWITTERS[prefix] },
     license: {
       title: lic.title,
       spdx: lic.spdx,
@@ -125,6 +127,7 @@ function collectionRow(c: CollectionMeta): string {
     c.total,
     sqlStr(c.author.name),
     sqlStr(c.author.url),
+    sqlStr(c.author.twitter),
     sqlStr(c.license.title),
     sqlStr(c.license.spdx),
     sqlStr(c.license.url),
@@ -142,7 +145,7 @@ function collectionRow(c: CollectionMeta): string {
 const ICON_COLS =
   "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases)";
 const COLLECTION_COLS =
-  "(prefix,name,kind,total,author_name,author_url,license_title,license_spdx,license_url,attribution,homepage,category,palette,height,samples,version,suffixes)";
+  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,height,samples,version,suffixes)";
 
 async function main() {
   await rm(DIST, { recursive: true, force: true });
