@@ -31,6 +31,7 @@ type Props = {
 
 const PREVIEW_SIZES = [16, 24, 32, 48, 96];
 const PNG_SIZES = [64, 128, 256, 512, 1024];
+const PRESET_COLORS = ["#000000", "#ffffff", "#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6"];
 
 export function IconDetail({ prefix, name, index, collection, onClose, onSelect, variant = "panel", variants: givenVariants }: Props) {
   const icon = useIcon(prefix, name);
@@ -138,34 +139,59 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             <span className="size-12 animate-pulse rounded bg-bg-muted" />
           )}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs">
-          <div className="flex gap-1">
-            {PREVIEW_SIZES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setPreviewSize(s)}
-                className={`rounded px-1.5 py-0.5 tabular-nums ${previewSize === s ? "bg-bg-muted text-fg" : "text-fg-subtle hover:text-fg"}`}
-              >
-                {s}
-              </button>
-            ))}
+        <div className="mt-3 space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-fg-subtle">Size</span>
+            <div className="ml-auto flex gap-1">
+              {PREVIEW_SIZES.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setPreviewSize(s)}
+                  className={`rounded px-1.5 py-0.5 tabular-nums ${previewSize === s ? "bg-bg-muted text-fg" : "text-fg-subtle hover:text-fg"}`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
-          <label className="ml-auto flex items-center gap-1.5 text-fg-muted">
-            <input
-              type="color"
-              value={color || "#6366f1"}
-              onChange={(e) => setColor(e.target.value)}
-              className="size-5 cursor-pointer rounded border-0 bg-transparent p-0"
-            />
-            {color ? (
-              <button type="button" onClick={() => setColor("")} className="font-mono hover:text-fg">
-                {color} ×
+          <div className="flex items-center gap-2">
+            <span className="text-fg-subtle">Color</span>
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setColor("")}
+                title="currentColor"
+                aria-pressed={!color}
+                className={`grid size-5 place-items-center rounded border ${color ? "hover:border-fg-subtle" : "border-accent ring-1 ring-accent"}`}
+              >
+                <span className="size-2.5 rounded-full bg-current" />
               </button>
-            ) : (
-              <span>currentColor</span>
-            )}
-          </label>
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  title={c}
+                  aria-pressed={color === c}
+                  style={{ background: c }}
+                  className={`size-5 rounded border ${color === c ? "border-accent ring-1 ring-accent" : "border-line hover:border-fg-subtle"}`}
+                />
+              ))}
+              <label
+                title={color || "Custom color"}
+                className="relative grid size-5 cursor-pointer place-items-center overflow-hidden rounded border border-line hover:border-fg-subtle"
+                style={{ background: "conic-gradient(#ef4444,#eab308,#22c55e,#06b6d4,#6366f1,#ec4899,#ef4444)" }}
+              >
+                <input
+                  type="color"
+                  value={color || "#6366f1"}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="absolute inset-0 cursor-pointer opacity-0"
+                />
+              </label>
+            </div>
+          </div>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
