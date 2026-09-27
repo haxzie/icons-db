@@ -152,6 +152,38 @@ export const SET_PACKAGES: Record<string, PackageInfo[]> = {
   ],
   "keyline-icons": [{ npm: "@keyline-icons/react", framework: "react", symbol: (n) => pascal(n) }],
   "circle-flags": [{ npm: "react-circle-flags", framework: "react", symbol: () => "CircleFlag", usage: () => `<CircleFlag countryCode="…" />` }],
+  // Style is a `weight` prop, so the symbol is the family name. The npm packages only
+  // ship Outline + Filled; the set's `-duotone` cut is SVG/Iconify-only for now.
+  reicon: [
+    {
+      npm: "reicon-react",
+      framework: "react",
+      symbol: (n, style) => pascal(strip(n, style.toLowerCase())),
+      usage: (s) => `<${s} size={24} weight="Outline" />  // also "Filled"`,
+      note: 'Style is a prop: weight="Outline|Filled".',
+    },
+    {
+      npm: "reicon-vue",
+      framework: "vue",
+      symbol: (n, style) => pascal(strip(n, style.toLowerCase())),
+      usage: (s) => `<${s} :size="24" weight="Outline" />`,
+      note: 'Style is a prop: weight="Outline|Filled".',
+    },
+    {
+      npm: "reicon-svelte",
+      framework: "svelte",
+      symbol: (n, style) => pascal(strip(n, style.toLowerCase())),
+      usage: (s) => `<${s} size={24} weight="Outline" />`,
+      note: 'Style is a prop: weight="Outline|Filled".',
+    },
+    {
+      npm: "reicon",
+      framework: "js",
+      symbol: (n, style) => pascal(strip(n, style.toLowerCase())),
+      usage: (s) => `document.body.append(${s}({ size: 24, weight: "Outline" }))`,
+      note: 'Style is an option: weight: "Outline|Filled".',
+    },
+  ],
 };
 
 /** Universal packages that work for every set, keyed by framework. */

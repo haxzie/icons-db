@@ -90,6 +90,8 @@ export const PREFIXES = [
   "keyline-icons",
   "lobehub",
   "dither",
+  // batch 4
+  "reicon",
 ] as const;
 
 export const KINDS: Record<string, CollectionKind> = {
@@ -211,4 +213,5 @@ export const HOMEPAGES: Record<string, string> = {
   "keyline-icons": "https://keylineicons.com",
   lobehub: "https://lobehub.com/icons",
   dither: "https://dithered.dev",
+  reicon: "https://reicon.dev",
 };

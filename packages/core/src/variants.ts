@@ -78,11 +78,21 @@ export const MANUAL_SUFFIXES: Record<string, Record<string, string>> = {
   flagpack: { "": "Rounded" },
 };
 
+/** Relabels for sets whose Iconify metadata declares a suffix we don't want to
+ * show verbatim. Keyed by suffix, so the split itself is unaffected. */
+const SUFFIX_LABELS: Record<string, Record<string, string>> = {
+  // Upstream labels reicon's `-duotone` cut "BoldDuotone"; every other set spaces it.
+  reicon: { duotone: "Duotone" },
+};
+
 export function resolveSuffixes(
   prefix: string,
   metadataSuffixes: Record<string, string> | undefined,
 ): Record<string, string> {
-  if (metadataSuffixes && Object.keys(metadataSuffixes).length > 0) return metadataSuffixes;
+  if (metadataSuffixes && Object.keys(metadataSuffixes).length > 0) {
+    const labels = SUFFIX_LABELS[prefix];
+    return labels ? { ...metadataSuffixes, ...labels } : metadataSuffixes;
+  }
   return MANUAL_SUFFIXES[prefix] ?? { "": "Regular" };
 }
 

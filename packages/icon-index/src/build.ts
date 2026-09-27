@@ -25,8 +25,8 @@ export type SetFiles = { icons: IconifyJSON; info: IconifyInfo; meta: IconifyMet
 
 /** Embedding text: name + synonym expansions so semantic search bridges
  * "plus"->"add", "gear"->"settings", etc. Deterministic per family, so the
- * dedup of `texts` stays 1:1 with names (keeps embeddings.bin under the
- * 25 MiB Cloudflare static-asset limit). Category is intentionally excluded:
+ * dedup of `texts` stays 1:1 with names (keeps embeddings.bin small enough to
+ * decode in one isolate). Category is intentionally excluded:
  * it varies per set for the same family and would balloon the vector count. */
 function enrichText(family: string): string {
   const base = humanize(family);
