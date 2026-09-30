@@ -7,6 +7,11 @@
 // cap. The field only matters where there is ink under it, so we rasterise the
 // icon and drop every grain cell that falls on a transparent pixel. That is
 // pixel-identical to the full field and roughly a quarter of the bytes.
+//
+// The icons also animate on hover, through a stylesheet keyed to runtime hooks.
+// `dither-motion.ts` rewrites those hooks onto classes and prunes the sheet down
+// to the rules one icon needs, so the animation survives into the body; see the
+// note there for why it cannot be carried across as-is.
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
@@ -15,6 +20,7 @@ import { Resvg } from "@resvg/resvg-js";
 import { cleanupSVG, runSVGO, SVG, IconSet } from "@iconify/tools";
 import { DitherIcon, definitions, ditherField } from "@unlocalhosted/dither-icons";
 import type { IconifyJSON } from "@iconify/types";
+import { ICON_CLASS, iconClass, rewriteMarkup, scopeStylesheet } from "./dither-motion";
 import type { SetFiles } from "./build";
 
 export const DITHER_PREFIX = "dither";
@@ -41,12 +47,44 @@ function trim(n: number): string {
   return n === 0 ? "0" : String(n).replace(/^(-?)0\./, "$1.");
 }
 
-/** The rendered markup carries the runtime's animation CSS and hooks; none of it
- * survives into a static body, and cleanupSVG chokes on <style>. */
-function staticSvg(name: string, texture: "dither" | "solid" | "outline"): string {
-  return renderToStaticMarkup(createElement(DitherIcon, { name, texture, animate: false }))
-    .replace(/<style>[\s\S]*?<\/style>/g, "")
-    .replace(/\s(?:class|data-[\w-]+|aria-[\w-]+|role)="[^"]*"/g, "");
+/** The rendered markup, split from the stylesheet that animates it. cleanupSVG
+ * chokes on <style>, so the CSS travels separately and is re-attached at the end. */
+function render(name: string, texture: "dither" | "solid" | "outline"): { markup: string; css: string } {
+  const raw = renderToStaticMarkup(createElement(DitherIcon, { name, texture, animate: true }));
+  const css = /<style>([\s\S]*?)<\/style>/.exec(raw)?.[1] ?? "";
+  return { markup: rewriteMarkup(raw.replace(/<style>[\s\S]*?<\/style>/g, "")), css };
+}
+
+/** @iconify/tools' defaults minus the passes that flatten groups — the animated
+ * parts are groups, and collapsing them takes their class hooks with them. */
+const SVGO_PLUGINS = [
+  "cleanupAttrs",
+  "removeComments",
+  "removeUselessDefs",
+  "removeEditorsNSData",
+  "removeEmptyAttrs",
+  "removeEmptyContainers",
+  "convertColors",
+  "convertTransform",
+  "removeNonInheritableGroupAttrs",
+  "removeUnusedNS",
+  "cleanupNumericValues",
+  "cleanupListOfValues",
+  "sortDefsChildren",
+  "sortAttrs",
+] as const;
+
+/** D1 rejects bodies over 64 KB; an icon that would blow the cap ships static. */
+const MAX_BODY_BYTES = 64 * 1024;
+
+/** Re-attach the pruned stylesheet and the hover target to a cleaned body. */
+function withMotion(body: string, css: string, name: string): string {
+  if (!css) return body;
+  // A stroke-only icon has almost no hit area of its own, so the transparent
+  // rect is what makes the whole square respond to the pointer.
+  const target = `<rect width="24" height="24" fill="none" stroke="none" pointer-events="all"/>`;
+  const wrapped = `<style>${css}</style><g class="${ICON_CLASS} ${iconClass(name)}">${target}${body}</g>`;
+  return wrapped.length > MAX_BODY_BYTES ? body : wrapped;
 }
 
 /** Alpha channel of the icon drawn with the grain mask disabled, one byte per cell. */
@@ -83,15 +121,20 @@ export async function loadDither(): Promise<SetFiles> {
   const pkgPath = fileURLToPath(new URL("../package.json", import.meta.resolve("@unlocalhosted/dither-icons")));
   const pkg = JSON.parse(await readFile(pkgPath, "utf8")) as { version: string };
   const set = new IconSet({ prefix: DITHER_PREFIX, icons: {} });
+  /** icon name -> the stylesheet that animates it and the definition it belongs
+   * to, both applied after export (IconSet has no room for either). */
+  const motion = new Map<string, { css: string; base: string }>();
   let skipped = 0;
   for (const definition of definitions) {
     for (const [texture, suffix] of TEXTURES) {
       const name = suffix ? `${definition.name}-${suffix}` : definition.name;
       try {
-        const svg = new SVG(trimField(staticSvg(definition.name, texture)));
+        const { markup, css } = render(definition.name, texture);
+        const svg = new SVG(trimField(markup));
         cleanupSVG(svg);
-        await runSVGO(svg, { keepShapes: true });
+        await runSVGO(svg, { plugins: [...SVGO_PLUGINS] });
         set.fromSVG(name, svg);
+        motion.set(name, { css: scopeStylesheet(css, definition.name), base: definition.name });
       } catch {
         skipped += 1;
       }
@@ -99,6 +142,14 @@ export async function loadDither(): Promise<SetFiles> {
   }
   if (skipped) console.warn(`dither: skipped ${skipped} unrenderable icons`);
   const icons = set.export() as IconifyJSON;
+  let animated = 0;
+  for (const [name, icon] of Object.entries(icons.icons)) {
+    const m = motion.get(name);
+    const body = m ? withMotion(icon.body, m.css, m.base) : icon.body;
+    if (body !== icon.body) animated += 1;
+    icon.body = body;
+  }
+  console.log(`dither: ${animated}/${Object.keys(icons.icons).length} icons keep their hover animation`);
   const samples = ["bell", "heart", "sparkles", "download", "lock", "search"].filter((s) => icons.icons[s]);
   return {
     icons,
