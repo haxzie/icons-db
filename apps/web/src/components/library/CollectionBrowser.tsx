@@ -48,6 +48,17 @@ export function CollectionBrowser({
   const prefixIdx = index?.data.prefixes.findIndex((p) => p.prefix === collection.prefix) ?? -1;
   const { hits: semanticHits, pending: semanticPending } = useSemanticHits(query, { prefixes: [collection.prefix] });
 
+  // The facets come out of the search index, which is ~600 KB gzipped and has to
+  // be tokenised before it can filter anything — several seconds on a cold load.
+  // Until it lands the sidebar draws a skeleton sized from what the set metadata
+  // already knows, so the section appears immediately and does not jump when the
+  // real (clickable) chips replace it.
+  const loadingFacets = index === null;
+  const placeholders = useMemo(
+    () => ({ styles: Object.values(collection.suffixes), categories: collection.categories ?? [] }),
+    [collection.suffixes, collection.categories],
+  );
+
   const facets = useMemo(() => {
     if (!index || prefixIdx < 0) return { styles: [] as string[], categories: [] as string[] };
     const styles = new Set<string>();
@@ -191,14 +202,16 @@ export function CollectionBrowser({
           <input type="checkbox" checked={groupVariants} onChange={(e) => setGroupVariants(e.target.checked)} className="size-4 accent-accent" />
         </label>
         <SidebarLabel>Filter</SidebarLabel>
-        {facets.styles.length > 1 && (
+        {(loadingFacets ? placeholders.styles : facets.styles).length > 1 && (
           <SidebarSection title="Style">
             <div className="flex flex-wrap gap-2">
-              {facets.styles.map((s) => (
-                <button key={s} type="button" className="chip" data-active={style === s} onClick={() => setStyle(style === s ? null : s)}>
-                  {s}
-                </button>
-              ))}
+              {loadingFacets
+                ? placeholders.styles.map((s) => <ChipSkeleton key={s} label={s} />)
+                : facets.styles.map((s) => (
+                    <button key={s} type="button" className="chip" data-active={style === s} onClick={() => setStyle(style === s ? null : s)}>
+                      {s}
+                    </button>
+                  ))}
             </div>
           </SidebarSection>
         )}
@@ -209,14 +222,16 @@ export function CollectionBrowser({
             </button>
           </SidebarSection>
         )}
-        {facets.categories.length > 0 && (
+        {(loadingFacets ? placeholders.categories : facets.categories).length > 0 && (
           <SidebarSection title="Category">
             <div className="flex flex-wrap gap-2">
-              {facets.categories.map((cat) => (
-                <button key={cat} type="button" className="chip" data-active={category === cat} onClick={() => setCategory(category === cat ? null : cat)}>
-                  {cat}
-                </button>
-              ))}
+              {loadingFacets
+                ? placeholders.categories.map((cat) => <ChipSkeleton key={cat} label={cat} />)
+                : facets.categories.map((cat) => (
+                    <button key={cat} type="button" className="chip" data-active={category === cat} onClick={() => setCategory(category === cat ? null : cat)}>
+                      {cat}
+                    </button>
+                  ))}
             </div>
           </SidebarSection>
         )}
@@ -274,5 +289,15 @@ export function CollectionBrowser({
         </div>
       </main>
     </div>
+  );
+}
+
+/** A chip-shaped placeholder. The label is rendered transparent rather than
+ * guessed at, so the skeleton is exactly as wide as the chip that replaces it. */
+function ChipSkeleton({ label }: { label: string }) {
+  return (
+    <span aria-hidden className="chip pointer-events-none animate-pulse select-none border-transparent bg-bg-muted text-transparent">
+      {label}
+    </span>
   );
 }

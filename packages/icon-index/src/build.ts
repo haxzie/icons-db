@@ -63,7 +63,7 @@ const ATTRIBUTION_SPDX = /^CC-BY/i;
 const MAX_BODY_BYTES = 64 * 1024;
 let skippedLarge = 0;
 
-function collectionMeta(prefix: string, s: SetFiles, total: number, animated: number): CollectionMeta {
+function collectionMeta(prefix: string, s: SetFiles, total: number, animated: number, categories: string[]): CollectionMeta {
   const lic = s.info.license ?? { title: "Unknown" };
   return {
     prefix,
@@ -85,6 +85,7 @@ function collectionMeta(prefix: string, s: SetFiles, total: number, animated: nu
     samples: s.info.samples ?? [],
     version: s.version,
     suffixes: resolveSuffixes(prefix, s.meta.suffixes),
+    categories: categories.length ? categories : undefined,
   };
 }
 
@@ -302,7 +303,8 @@ async function main() {
     }
     totalIcons += records.length;
     const animated = records.reduce((n, r) => n + (r.animated ? 1 : 0), 0);
-    collections.push(collectionMeta(prefix, set, records.length, animated));
+    const usedCategories = [...new Set(records.map((r) => r.category).filter((c): c is string => c !== null))].sort();
+    collections.push(collectionMeta(prefix, set, records.length, animated, usedCategories));
     console.log(
       `${prefix.padEnd(18)} ${String(records.length).padStart(6)} icons  ${String(aliasesByParent.size).padStart(5)} aliased` +
         (animated ? `  ${animated} animated` : ""),

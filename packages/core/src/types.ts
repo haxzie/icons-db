@@ -24,6 +24,11 @@ export type CollectionMeta = {
   version?: string;
   /** Style suffixes, e.g. { "": "Regular", "fill": "Fill" } */
   suffixes: Record<string, string>;
+  /** Category names the set uses, for the library sidebar to reserve space
+   * before the search index (which is what actually filters) has loaded.
+   * Only the pipeline's collections.json carries it; the D1 row has no column
+   * because nothing server-side reads it. */
+  categories?: string[];
 };
 
 export type StyleBucket = "outline" | "filled" | "duotone" | "light" | "color";
