@@ -166,6 +166,9 @@ importers:
       '@iconify-json/emojione':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/eos-icons':
+        specifier: ^1.2.4
+        version: 1.2.4
       '@iconify-json/ep':
         specifier: ^1.2.4
         version: 1.2.4
@@ -341,6 +344,9 @@ importers:
         specifier: latest
         version: 1.2.11
       '@iconify-json/streamline-emojis':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/svg-spinners':
         specifier: ^1.2.4
         version: 1.2.4
       '@iconify-json/tabler':
@@ -1485,6 +1491,9 @@ packages:
   '@iconify-json/emojione@1.2.3':
     resolution: {integrity: sha512-T9+T3HIbJNLKKsmxYKlaYhvnHYkz/HNYTV7SHCXVZPfeUi4FqskY70YeN8yYAZT8cCv7w5vJxS4Q1m8zb9CMMg==}
 
+  '@iconify-json/eos-icons@1.2.4':
+    resolution: {integrity: sha512-gp2BCSF3+aRgMqE7LRAVxT5nXJLOtfcvGnOYwJz4gc4zxcEqAaOByxFVLZej15jXPRJmUv2TSzMNrQ2gDtw4VA==}
+
   '@iconify-json/ep@1.2.4':
     resolution: {integrity: sha512-dtKOueYp1CRxAUW+GayIiuHqOlELfO0W3QiHOH4NjvKtBn2uxZbByIKQ+7B1Hj+AgZrhWTie3QKYkZn+VQVZrw==}
 
@@ -1661,6 +1670,9 @@ packages:
 
   '@iconify-json/streamline-emojis@1.2.4':
     resolution: {integrity: sha512-iNr9T9XuZVTyQPJO8ZlLxBzPkpi7qMl+z1l0C31vpEMqhPMelth3n7CeWQYtixdetDPdI81yeG4ROqjWpYJE6A==}
+
+  '@iconify-json/svg-spinners@1.2.4':
+    resolution: {integrity: sha512-ayn0pogFPwJA1WFZpDnoq9/hjDxN+keeCMyThaX4d3gSJ3y0mdKUxIA/b1YXWGtY9wVtZmxwcvOIeEieG4+JNg==}
 
   '@iconify-json/tabler@1.2.38':
     resolution: {integrity: sha512-9v6ooRU/bKOK/Whv4w2aiK5gBnfCV9Ei+uD1iDDeLu2b+EnF3G3ZKkRKWEOOLG8bJyfKn6XEia6gUQ9oO7cF+Q==}
@@ -6428,6 +6440,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/eos-icons@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify-json/ep@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
@@ -6661,6 +6677,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/streamline-emojis@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/svg-spinners@1.2.4':
     dependencies:
       '@iconify/types': 2.0.0
 

@@ -92,6 +92,9 @@ export const PREFIXES = [
   "dither",
   // batch 4
   "reicon",
+  // animated
+  "svg-spinners",
+  "eos-icons",
 ] as const;
 
 export const KINDS: Record<string, CollectionKind> = {
@@ -214,4 +217,6 @@ export const HOMEPAGES: Record<string, string> = {
   lobehub: "https://lobehub.com/icons",
   dither: "https://dithered.dev",
   reicon: "https://reicon.dev",
+  "svg-spinners": "https://github.com/n3r4zzurr0/svg-spinners",
+  "eos-icons": "https://eos-icons.com",
 };
