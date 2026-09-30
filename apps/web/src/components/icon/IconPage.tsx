@@ -50,6 +50,12 @@ export function IconPage({
               <dd>{icon.category}</dd>
             </>
           )}
+          {icon.animated && (
+            <>
+              <dt className="text-fg-subtle">Animation</dt>
+              <dd>Animated SVG (SMIL)</dd>
+            </>
+          )}
           <dt className="text-fg-subtle">Viewbox</dt>
           <dd className="font-mono">
             {icon.width}×{icon.height}

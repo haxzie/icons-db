@@ -11,10 +11,12 @@ export async function GET(req: Request) {
   const mode: SearchMode = modeParam === "keyword" || modeParam === "semantic" ? modeParam : "hybrid";
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 120) || 120, 1), 500);
   const prefixes = (url.searchParams.get("prefixes") ?? "").split(",").filter(Boolean);
-  const { hits } = await search(url.origin, q, { mode, limit, prefixes });
+  const animated = url.searchParams.get("animated") === "1" || url.searchParams.get("animated") === "true";
+  const { hits } = await search(url.origin, q, { mode, limit, prefixes, animated });
   return json({
     query: q,
     mode,
+    ...(animated ? { animated: true } : {}),
     total: hits.length,
     icons: hits.map((h) => ({ prefix: h.prefix, name: h.name, idx: h.idx, score: Number(h.score.toFixed(4)) })),
   });

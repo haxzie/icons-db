@@ -13,6 +13,8 @@ type Loaded = {
   /** Built lazily; the browser does keyword search itself so most requests never need it. */
   readonly keyword: KeywordIndex;
   textMap: Map<number, number[]>;
+  /** Icon indices that animate, for the `animated` search filter. */
+  animated: Set<number>;
   embeddings: EmbeddingMatrix;
 };
 
@@ -45,6 +47,7 @@ export function loadSearchIndex(origin: string): Promise<Loaded> {
           return (keyword ??= buildKeywordIndex(data));
         },
         textMap: buildTextMap(data),
+        animated: new Set(data.animated ?? []),
         embeddings,
       };
     })().catch((err) => {

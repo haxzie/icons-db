@@ -32,9 +32,10 @@ export function registerTools(server: McpServer, origin: string) {
       title: "Search icons",
       description:
         "Find open source icons, logos or emoji by meaning (e.g. \"shopping cart\", \"log out\", \"github\"). " +
-        "Searches 200k icons across 83 sets with hybrid keyword + semantic ranking. " +
+        "Searches 220k icons across 87 sets with hybrid keyword + semantic ranking. " +
         "If the project already depends on an icon package (lucide-react, @heroicons/react, @tabler/icons-react, react-icons, …) pass it as `package` so every result is importable without adding a dependency. " +
         "Pass several `queries` when you need a consistent set of icons for one UI (nav bar, toolbar): the response says which sets cover all of them. " +
+        "Pass animated=true for self-animating icons — spinners and loaders, or line-md's draw-on transitions. " +
         "Results are one row per icon family; call get_icon for code.",
       inputSchema: z.object({
         query: z.string().min(1).max(100).optional().describe("What the icon should depict, in plain words"),
@@ -44,6 +45,7 @@ export function registerTools(server: McpServer, origin: string) {
         kind: KIND.optional().describe("icons (UI), emoji, or brands (logos, file types, flags)"),
         style: STYLE.optional(),
         license: LICENSE.optional().describe("no-attribution hides CC-BY sets"),
+        animated: z.boolean().optional().describe("Only icons that animate themselves (spinners, loaders, draw-on transitions)"),
         limit: z.number().int().min(1).max(50).optional().describe("Rows per query, default 10"),
       }),
     },
@@ -59,7 +61,7 @@ export function registerTools(server: McpServer, origin: string) {
       const pool = queries.length > 1 ? Math.max(limit, 30) : limit;
       const perQuery = await Promise.all(
         queries.map(async (q) => {
-          const { hits } = await search(origin, q, { mode: "hybrid", limit: 400, prefixes: sets });
+          const { hits } = await search(origin, q, { mode: "hybrid", limit: 400, prefixes: sets, animated: args.animated });
           return { q, rows: groupHits(hits, filters, pool) };
         }),
       );
@@ -124,7 +126,7 @@ export function registerTools(server: McpServer, origin: string) {
       lines.push(`## ${b.label}`, "```", b.code.trimEnd(), "```");
       if (b.note) lines.push(b.note);
     }
-    return { lines, data: { id, set: c.name, style: icon.style, license: licenseLabel(c), attribution: c.license.attribution, svg: format === "svg" || format === "all" ? svg : undefined, code: blocks } };
+    return { lines, data: { id, set: c.name, style: icon.style, animated: icon.animated, license: licenseLabel(c), attribution: c.license.attribution, svg: format === "svg" || format === "all" ? svg : undefined, code: blocks } };
   };
 
   server.registerTool(
@@ -153,6 +155,14 @@ export function registerTools(server: McpServer, origin: string) {
       const others = variants.filter((v) => v.name !== icon.name);
       if (others.length) lines.push("", `Variants: ${others.map((v) => `${prefix}:${v.name} (${v.style})`).join(", ")}`);
       if (across.length) lines.push(`Same icon in other sets: ${across.map((a) => `${a.prefix}:${a.name}`).join(", ")}`);
+      if (icon.animated) {
+        lines.push(
+          "",
+          "This icon animates (SMIL inside the SVG). It plays wherever the markup is inlined — the React/Vue/Svelte and SVG snippets above all keep it. " +
+            "CSS `mask`/`background-image` and any rasterisation do not run SVG animation; " +
+            `for a still, use ${SITE}/api/v1/icon/${prefix}/${icon.name}.svg?static`,
+        );
+      }
       lines.push("", licenseLine(c));
       if (c.kind === "brands") lines.push(TRADEMARK);
       lines.push(`Page: ${SITE}/icon/${prefix}/${icon.name} · SVG: ${SITE}/api/v1/icon/${prefix}/${icon.name}.svg`);
@@ -209,7 +219,7 @@ export function registerTools(server: McpServer, origin: string) {
     "list_icon_sets",
     {
       title: "List icon sets",
-      description: "All 83 icon/logo/emoji sets with counts, license, attribution flag and npm packages. Filter by kind, license or package.",
+      description: "All icon/logo/emoji sets with counts, license, attribution flag, how many icons animate, and npm packages. Filter by kind, license or package.",
       inputSchema: z.object({
         kind: KIND.optional(),
         license: LICENSE.optional(),
@@ -223,10 +233,10 @@ export function registerTools(server: McpServer, origin: string) {
         .sort((a, b) => b.total - a.total);
       const lines = rows.map((c) => {
         const pkgs = (SET_PACKAGES[c.prefix] ?? []).map((p) => p.npm).filter((v, i, a) => a.indexOf(v) === i);
-        return `${c.prefix} · ${c.name} · ${c.total.toLocaleString()} · ${c.kind} · ${licenseLabel(c)}${c.license.attribution ? " (attribution)" : ""}${pkgs.length ? ` · ${pkgs.join(", ")}` : ""}`;
+        return `${c.prefix} · ${c.name} · ${c.total.toLocaleString()} · ${c.kind} · ${licenseLabel(c)}${c.license.attribution ? " (attribution)" : ""}${c.animated ? ` · ${c.animated.toLocaleString()} animated` : ""}${pkgs.length ? ` · ${pkgs.join(", ")}` : ""}`;
       });
       lines.push("", "Every set also works with @iconify/react, @iconify/vue, @iconify/svelte and unplugin-icons (~icons/<prefix>/<name>).");
-      return { ...text(lines.join("\n")), structuredContent: { sets: rows.map((c) => ({ prefix: c.prefix, name: c.name, total: c.total, kind: c.kind, license: licenseLabel(c), attribution: c.license.attribution, packages: (SET_PACKAGES[c.prefix] ?? []).map((p) => p.npm) })) } };
+      return { ...text(lines.join("\n")), structuredContent: { sets: rows.map((c) => ({ prefix: c.prefix, name: c.name, total: c.total, kind: c.kind, license: licenseLabel(c), attribution: c.license.attribution, animated: c.animated, packages: (SET_PACKAGES[c.prefix] ?? []).map((p) => p.npm) })) } };
     },
   );
 
@@ -259,7 +269,7 @@ export function registerTools(server: McpServer, origin: string) {
     "iconsdb://sets",
     { title: "Icon sets", description: "All icon sets with licence and packages", mimeType: "application/json" },
     async (uri) => ({
-      contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(collections.map((c) => ({ prefix: c.prefix, name: c.name, total: c.total, kind: c.kind, license: licenseLabel(c), attribution: c.license.attribution }))) }],
+      contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(collections.map((c) => ({ prefix: c.prefix, name: c.name, total: c.total, kind: c.kind, license: licenseLabel(c), attribution: c.license.attribution, animated: c.animated }))) }],
     }),
   );
 

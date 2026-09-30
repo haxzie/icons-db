@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildSnippets,
   humanize,
+  isAnimated,
   renderSVG,
   splitVariant,
-  svgToDataUri,
+  staticFrame,
   type CollectionMeta,
   type KeywordIndex,
   type SemanticHit,
@@ -41,6 +42,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
   const [pngSize, setPngSize] = useState(256);
   const [tab, setTab] = useState("svg");
   const [similar, setSimilar] = useState<SemanticHit[]>([]);
+  const previewRef = useRef<SVGSVGElement>(null);
 
   const suffixes = useMemo(
     () => index?.data.prefixes.find((p) => p.prefix === prefix)?.suffixes ?? collection?.suffixes ?? {},
@@ -83,15 +85,21 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
   }, [prefix, family, index]);
 
   const svg = useMemo(() => (icon ? renderSVG(icon, { width: "1em", height: "1em", color: color || undefined }) : ""), [icon, color]);
-  const snippets = useMemo(
-    () => (icon ? buildSnippets({ prefix, name, svg, dataUri: svgToDataUri(svg) }) : []),
-    [icon, prefix, name, svg],
-  );
+  const animated = useMemo(() => Boolean(icon) && isAnimated(svg), [icon, svg]);
+  const snippets = useMemo(() => (icon ? buildSnippets({ prefix, name, svg }) : []), [icon, prefix, name, svg]);
   const active = snippets.find((s) => s.kind === tab) ?? snippets[0];
+
+  /** line-md and friends play once on load, so the only way to see the animation
+   * again is to rewind the document's SMIL clock. */
+  function replay() {
+    previewRef.current?.setCurrentTime(0);
+  }
 
   async function downloadPng() {
     if (!icon) return;
-    const px = renderSVG(icon, { width: pngSize, height: pngSize, color: color || (document.documentElement.classList.contains("dark") ? "#ffffff" : "#000000") });
+    let px = renderSVG(icon, { width: pngSize, height: pngSize, color: color || (document.documentElement.classList.contains("dark") ? "#ffffff" : "#000000") });
+    // A PNG is one frame, and frame 0 of most animated icons is blank.
+    if (animated) px = staticFrame(px);
     const blob = await svgToPng(px, pngSize);
     downloadBlob(blob, `${prefix}-${name}-${pngSize}.png`);
   }
@@ -112,6 +120,11 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             </Link>
             <span>·</span>
             <span>{style}</span>
+            {animated && (
+              <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[11px] font-medium text-accent" title="This icon animates on its own">
+                Animated
+              </span>
+            )}
             {collection && <LicenseBadge license={collection.license} withLink />}
           </p>
         </div>
@@ -132,11 +145,23 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
       </div>
 
       <div className="p-4">
-        <div className="flex items-center justify-center rounded-xl border bg-bg py-8" style={{ color: color || undefined }}>
+        <div className="relative flex items-center justify-center rounded-xl border bg-bg py-8" style={{ color: color || undefined }}>
           {icon ? (
-            <InlineSvg icon={icon} style={{ width: previewSize, height: previewSize }} />
+            <InlineSvg icon={icon} svgRef={previewRef} style={{ width: previewSize, height: previewSize }} />
           ) : (
             <span className="size-12 animate-pulse rounded bg-bg-muted" />
+          )}
+          {animated && (
+            <button
+              type="button"
+              onClick={replay}
+              title="Replay animation"
+              className="absolute right-2 top-2 grid size-7 place-items-center rounded-md border bg-bg-elevated text-fg-muted hover:border-fg-subtle hover:text-fg"
+            >
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4" />
+              </svg>
+            </button>
           )}
         </div>
         <div className="mt-3 space-y-2 text-xs">
@@ -269,6 +294,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
                 >
                   {copied === `code:${active.kind}` ? "Copied" : "Copy"}
                 </button>
+                {active.note && <p className="mt-2 text-xs leading-relaxed text-fg-muted">{active.note}</p>}
               </div>
             )}
           </Section>

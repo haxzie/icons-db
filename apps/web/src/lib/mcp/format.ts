@@ -4,7 +4,6 @@ import {
   renderSVG,
   splitVariant,
   styleBucket,
-  svgToDataUri,
   toIconifyIcon,
   UNIVERSAL_PACKAGES,
   type CollectionMeta,
@@ -94,7 +93,7 @@ export function codeFor(icon: IconRecord, c: CollectionMeta, format: IconFormat,
     height: opts.size ? String(opts.size) : "1em",
   });
   const id = `${icon.prefix}:${icon.name}`;
-  const snippets = buildSnippets({ prefix: icon.prefix, name: icon.name, svg, dataUri: svgToDataUri(svg) });
+  const snippets = buildSnippets({ prefix: icon.prefix, name: icon.name, svg });
   const byKind = new Map(snippets.map((s) => [s.kind, s]));
   const blocks: { label: string; code: string; note?: string }[] = [];
 
@@ -114,10 +113,10 @@ export function codeFor(icon: IconRecord, c: CollectionMeta, format: IconFormat,
       const pkg = packageImport(icon.prefix, icon.name, icon.style, fw);
       if (pkg) blocks.push({ label: `${fw} (${pkg.npm})`, code: pkg.code, note: pkg.note });
     }
-    for (const s of snippets) blocks.push({ label: s.label, code: s.code });
+    for (const s of snippets) blocks.push({ label: s.label, code: s.code, note: s.note });
   } else {
     const s = byKind.get(format as Exclude<IconFormat, Framework | "jsx" | "all">);
-    if (s) blocks.push({ label: s.label, code: s.code });
+    if (s) blocks.push({ label: s.label, code: s.code, note: s.note });
   }
   return { blocks, svg };
 }

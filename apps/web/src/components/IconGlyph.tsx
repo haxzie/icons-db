@@ -5,10 +5,22 @@ import type { IconifyIcon } from "@iconify/types";
 import { renderInline } from "@icons-db/core";
 import { useIcon } from "@/lib/icon-store";
 
-export function InlineSvg({ icon, className, style }: { icon: IconifyIcon; className?: string; style?: React.CSSProperties }) {
+export function InlineSvg({
+  icon,
+  className,
+  style,
+  svgRef,
+}: {
+  icon: IconifyIcon;
+  className?: string;
+  style?: React.CSSProperties;
+  /** For animated icons: lets the caller rewind SMIL with `setCurrentTime(0)`. */
+  svgRef?: React.Ref<SVGSVGElement>;
+}) {
   const { viewBox, body } = useMemo(() => renderInline(icon), [icon]);
   return (
     <svg
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       viewBox={viewBox}
       className={className}

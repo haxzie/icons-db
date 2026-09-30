@@ -8,9 +8,16 @@ export type SnippetKind =
   | "css"
   | "data-uri";
 
-export type Snippet = { kind: SnippetKind; label: string; language: string; code: string };
+export type Snippet = { kind: SnippetKind; label: string; language: string; code: string; note?: string };
 
 import { pascal } from "./packages";
+import { isAnimated, staticFrame } from "./animation";
+import { svgToDataUri } from "./svg";
+
+const MASK_NOTE =
+  "This icon is animated. Browsers do not run SVG animation inside a CSS mask, so the rule above uses a still of the drawn icon. Inline the SVG (or use the React/Vue/Svelte snippet) to keep the animation.";
+const DATA_URI_NOTE =
+  "This icon is animated and the data URI keeps the animation, which plays in an <img>. It will not animate as a CSS mask — see the CSS snippet for a still version.";
 
 function toJsxAttrs(svg: string): string {
   return svg
@@ -22,13 +29,13 @@ function toJsxAttrs(svg: string): string {
     .replace(/xmlns:xlink/g, "xmlnsXlink");
 }
 
-export function buildSnippets(opts: {
-  prefix: string;
-  name: string;
-  svg: string;
-  dataUri: string;
-}): Snippet[] {
-  const { prefix, name, svg, dataUri } = opts;
+export function buildSnippets(opts: { prefix: string; name: string; svg: string }): Snippet[] {
+  const { prefix, name, svg } = opts;
+  const animated = isAnimated(svg);
+  const dataUri = svgToDataUri(svg);
+  // CSS masks ignore SMIL, and frame 0 of most animated icons is blank or
+  // half-drawn, so the mask gets a still instead of the live body.
+  const maskUri = animated ? svgToDataUri(staticFrame(svg)) : dataUri;
   const id = `${prefix}:${name}`;
   const component = pascal(`${prefix}-${name}`);
   const jsx = toJsxAttrs(svg).replace("<svg ", "<svg {...props} ");
@@ -68,8 +75,9 @@ export function buildSnippets(opts: {
       kind: "css",
       label: "CSS",
       language: "css",
-      code: `.icon-${name} {\n  width: 24px;\n  height: 24px;\n  background-color: currentColor;\n  -webkit-mask: url("${dataUri}") no-repeat center / contain;\n  mask: url("${dataUri}") no-repeat center / contain;\n}`,
+      code: `.icon-${name} {\n  width: 24px;\n  height: 24px;\n  background-color: currentColor;\n  -webkit-mask: url("${maskUri}") no-repeat center / contain;\n  mask: url("${maskUri}") no-repeat center / contain;\n}`,
+      note: animated ? MASK_NOTE : undefined,
     },
-    { kind: "data-uri", label: "Data URI", language: "text", code: dataUri },
+    { kind: "data-uri", label: "Data URI", language: "text", code: dataUri, note: animated ? DATA_URI_NOTE : undefined },
   ];
 }

@@ -36,6 +36,7 @@ export function CollectionBrowser({
   const [query, setQuery] = useState("");
   const [style, setStyle] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
+  const [animatedOnly, setAnimatedOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("relevance");
   const [filtersOpen, setFiltersOpen] = useLocalStorage("iconsdb:filters", true);
   const [groupVariants, setGroupVariants] = useLocalStorage("iconsdb:group", true);
@@ -59,6 +60,8 @@ export function CollectionBrowser({
     return { styles: Array.from(styles).sort(), categories: Array.from(cats).sort() };
   }, [index, prefixIdx, collection.suffixes]);
 
+  const animatedIdx = useMemo(() => new Set(index?.data.animated ?? []), [index]);
+
   const items = useMemo<GridItem[]>(() => {
     if (!index || prefixIdx < 0) {
       return initialIcons.map((name) => ({ prefix: collection.prefix, name, family: splitVariant(name, collection.suffixes).family, variants: 1 }));
@@ -78,6 +81,7 @@ export function CollectionBrowser({
       const e = index.data.icons[i];
       if (e[0] !== prefixIdx || e.length === 5) continue;
       if (category && index.data.categories[e[3]] !== category) continue;
+      if (animatedOnly && !animatedIdx.has(i)) continue;
       const v = splitVariant(e[1], collection.suffixes);
       if (style && v.style !== style) continue;
       if (groupVariants) {
@@ -95,7 +99,7 @@ export function CollectionBrowser({
     }
     if (!q || sort === "name") out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
-  }, [index, prefixIdx, query, semanticHits, style, category, groupVariants, sort, collection.prefix, collection.suffixes, initialIcons]);
+  }, [index, prefixIdx, query, semanticHits, style, category, animatedOnly, animatedIdx, groupVariants, sort, collection.prefix, collection.suffixes, initialIcons]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -111,7 +115,7 @@ export function CollectionBrowser({
   }, [selected]);
 
   const collectionByPrefix = useMemo(() => new Map(collections.map((c) => [c.prefix, c])), [collections]);
-  const activeFilters = (style ? 1 : 0) + (category ? 1 : 0);
+  const activeFilters = (style ? 1 : 0) + (category ? 1 : 0) + (animatedOnly ? 1 : 0);
   const c = collection;
 
   return (
@@ -122,6 +126,7 @@ export function CollectionBrowser({
         onReset={() => {
           setStyle(null);
           setCategory(null);
+          setAnimatedOnly(false);
           setColor("");
           setGroupVariants(true);
         }}
@@ -133,7 +138,7 @@ export function CollectionBrowser({
             <LicenseBadge license={c.license} withLink />
           </div>
           <p className="mt-1 text-xs leading-relaxed text-fg-muted">
-            {c.total.toLocaleString()} icons by{" "}
+            {c.total.toLocaleString()} icons{c.animated > 0 && `, ${c.animated.toLocaleString()} animated`} by{" "}
             {c.author.url ? (
               <a href={c.author.url} className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
                 {c.author.name}
@@ -195,6 +200,13 @@ export function CollectionBrowser({
                 </button>
               ))}
             </div>
+          </SidebarSection>
+        )}
+        {c.animated > 0 && c.animated < c.total && (
+          <SidebarSection title="Animation">
+            <button type="button" className="chip" data-active={animatedOnly} onClick={() => setAnimatedOnly(!animatedOnly)}>
+              Animated only
+            </button>
           </SidebarSection>
         )}
         {facets.categories.length > 0 && (

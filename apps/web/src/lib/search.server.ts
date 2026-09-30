@@ -26,27 +26,31 @@ export type SearchMode = "keyword" | "semantic" | "hybrid";
 export async function search(
   origin: string,
   query: string,
-  opts: { mode?: SearchMode; limit?: number; prefixes?: string[] } = {},
+  opts: { mode?: SearchMode; limit?: number; prefixes?: string[]; animated?: boolean } = {},
 ): Promise<{ hits: IconHit[]; mode: SearchMode }> {
   const mode = opts.mode ?? "hybrid";
   const limit = opts.limit ?? 120;
   const idx = await loadSearchIndex(origin);
   const allow = opts.prefixes?.length ? new Set(opts.prefixes) : null;
-  const filter = (h: IconHit) => !allow || allow.has(h.prefix);
+  const filter = (h: IconHit) => (!allow || allow.has(h.prefix)) && (!opts.animated || idx.animated.has(h.idx));
 
-  // When restricted to sets, search wide and filter before truncating; otherwise
-  // a set whose icons rank below the global cutoff would appear to have no matches.
+  // When a filter narrows the result set, search wide and filter before
+  // truncating; otherwise matches ranked below the global cutoff — a small set's
+  // icons, or the ~1% of icons that animate — would look like no matches at all.
+  const wide = Boolean(allow || opts.animated);
   const keyword =
-    mode === "semantic" ? [] : searchKeyword(idx.keyword, query, { limit: allow ? 5000 : 300, prefixWeight }).filter(filter).slice(0, 300);
+    mode === "semantic"
+      ? []
+      : searchKeyword(idx.keyword, query, { limit: wide ? 5000 : 300, prefixWeight }).filter(filter).slice(0, 300);
 
   if (mode === "keyword") return { hits: keyword.slice(0, limit), mode };
 
   let semantic: ReturnType<typeof expandTextHits> = [];
   try {
     const vec = await embedQuery(query);
-    const texts = topTexts(idx.embeddings, vec, allow ? 800 : SEMANTIC_K);
+    const texts = topTexts(idx.embeddings, vec, wide ? 800 : SEMANTIC_K);
     const floor = semanticFloor(texts[0]?.score ?? 0);
-    semantic = expandTextHits(idx.data, idx.textMap, texts, allow ? 4000 : 400, floor).filter(filter).slice(0, 400);
+    semantic = expandTextHits(idx.data, idx.textMap, texts, wide ? 4000 : 400, floor).filter(filter).slice(0, 400);
   } catch (err) {
     console.error("semantic search failed", err);
   }

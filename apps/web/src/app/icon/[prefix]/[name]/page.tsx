@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { buildSnippets, humanize, renderSVG, svgToDataUri, toIconifyIcon } from "@icons-db/core";
+import { buildSnippets, humanize, renderSVG, toIconifyIcon } from "@icons-db/core";
 import { getAliasParent } from "@/lib/db";
 import { getIconPageData } from "@/lib/page-data";
 import { collectionByPrefix } from "@/lib/collections";
@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   }
   const { icon, variants, acrossSets, related } = data;
   const svg = renderSVG(toIconifyIcon(icon), { width: "1em", height: "1em" });
-  const snippets = buildSnippets({ prefix, name: icon.name, svg, dataUri: svgToDataUri(svg) });
+  const snippets = buildSnippets({ prefix, name: icon.name, svg });
   const noun = collection.kind === "emoji" ? "emoji" : collection.kind === "brands" ? "logo" : "icon";
   const otherVariants = variants.filter((v) => v.name !== icon.name);
 
@@ -68,7 +68,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             {collection.name}
           </Link>{" "}
           by {collection.author.name} · {icon.style}
-          {icon.category && <> · {icon.category}</>} · <LicenseBadge license={collection.license} withLink />{" "}
+          {icon.category && <> · {icon.category}</>}
+          {icon.animated && <> · animated</>} · <LicenseBadge license={collection.license} withLink />{" "}
           {collection.license.attribution ? "Attribution required." : "Free for personal and commercial use."}
         </p>
 
@@ -121,6 +122,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
                 <div key={s.kind} className="min-w-0 rounded-2xl border bg-bg-elevated p-4">
                   <h3 className="mb-2 text-sm font-medium">{s.label}</h3>
                   <pre className="scrollbar-thin max-h-56 overflow-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-relaxed text-fg-muted">{s.code}</pre>
+                  {s.note && <p className="mt-2 text-xs leading-relaxed text-fg-muted">{s.note}</p>}
                 </div>
               ))}
           </div>

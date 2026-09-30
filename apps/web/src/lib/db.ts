@@ -1,3 +1,4 @@
+import { isAnimated } from "@icons-db/core";
 import type { CollectionMeta, IconRecord } from "@icons-db/core";
 import { getEnv } from "./env";
 
@@ -17,6 +18,7 @@ type IconRow = {
   style: string;
   category: string | null;
   aliases: string | null;
+  animated: number;
 };
 
 type CollectionRow = {
@@ -34,6 +36,7 @@ type CollectionRow = {
   homepage: string | null;
   category: string | null;
   palette: number;
+  animated: number;
   height: number | null;
   samples: string | null;
   version: string | null;
@@ -57,6 +60,9 @@ function toIcon(r: IconRow): IconRecord {
     style: r.style,
     category: r.category,
     aliases: r.aliases ? JSON.parse(r.aliases) : [],
+    // The column is a materialised copy of what the body already says; read the
+    // body too so the flag is right on rows seeded before the column existed.
+    animated: r.animated === 1 || isAnimated(r.body),
   };
 }
 
@@ -76,6 +82,7 @@ function toCollection(r: CollectionRow): CollectionMeta {
     homepage: r.homepage ?? undefined,
     category: r.category ?? undefined,
     palette: r.palette === 1,
+    animated: r.animated ?? 0,
     height: r.height ?? undefined,
     samples: r.samples ? JSON.parse(r.samples) : [],
     version: r.version ?? undefined,

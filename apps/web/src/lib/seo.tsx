@@ -27,7 +27,8 @@ export function iconDescription(icon: IconRecord, c: CollectionMeta): string {
   const noun = KIND_NOUN[c.kind];
   const license = c.license.attribution ? `${c.license.title}, attribution required` : `${c.license.title}, free for commercial use`;
   const aliases = icon.aliases.length ? ` Also known as ${icon.aliases.slice(0, 3).join(", ")}.` : "";
-  return `Download the ${humanize(icon.family)} ${noun} from ${c.name} (${license}) as SVG or PNG, or copy it as React, Vue, Svelte or CSS code.${aliases}`;
+  const animated = icon.animated ? " Animated SVG." : "";
+  return `Download the ${humanize(icon.family)} ${noun} from ${c.name} (${license}) as SVG or PNG, or copy it as React, Vue, Svelte or CSS code.${animated}${aliases}`;
 }
 
 export function iconJsonLd(icon: IconRecord, c: CollectionMeta) {

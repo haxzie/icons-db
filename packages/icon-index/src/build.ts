@@ -5,6 +5,7 @@ import { parseIconSet } from "@iconify/utils";
 import type { IconifyJSON, IconifyMetaData, IconifyInfo } from "@iconify/types";
 import {
   humanize,
+  isAnimated,
   resolveSuffixes,
   splitVariant,
   synonymsOf,
@@ -62,7 +63,7 @@ const ATTRIBUTION_SPDX = /^CC-BY/i;
 const MAX_BODY_BYTES = 64 * 1024;
 let skippedLarge = 0;
 
-function collectionMeta(prefix: string, s: SetFiles, total: number): CollectionMeta {
+function collectionMeta(prefix: string, s: SetFiles, total: number, animated: number): CollectionMeta {
   const lic = s.info.license ?? { title: "Unknown" };
   return {
     prefix,
@@ -79,6 +80,7 @@ function collectionMeta(prefix: string, s: SetFiles, total: number): CollectionM
     homepage: HOMEPAGES[prefix] ?? s.info.author?.url,
     category: s.info.category,
     palette: Boolean(s.info.palette),
+    animated,
     height: typeof s.info.height === "number" ? s.info.height : undefined,
     samples: s.info.samples ?? [],
     version: s.version,
@@ -116,6 +118,7 @@ function iconRow(r: IconRecord): string {
     sqlStr(r.style),
     sqlStr(r.category),
     sqlStr(r.aliases.length ? JSON.stringify(r.aliases) : null),
+    r.animated ? 1 : 0,
   ].join(",")})`;
 }
 
@@ -135,6 +138,7 @@ function collectionRow(c: CollectionMeta): string {
     sqlStr(c.homepage),
     sqlStr(c.category),
     c.palette ? 1 : 0,
+    c.animated,
     c.height ?? "NULL",
     sqlStr(JSON.stringify(c.samples)),
     sqlStr(c.version),
@@ -143,9 +147,9 @@ function collectionRow(c: CollectionMeta): string {
 }
 
 const ICON_COLS =
-  "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases)";
+  "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases,animated)";
 const COLLECTION_COLS =
-  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,height,samples,version,suffixes)";
+  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,animated,height,samples,version,suffixes)";
 
 async function main() {
   await rm(DIST, { recursive: true, force: true });
@@ -153,6 +157,7 @@ async function main() {
 
   const prefixes: SearchIndexData["prefixes"] = [];
   const indexIcons: IndexIconEntry[] = [];
+  const animatedIdx: number[] = [];
   const texts: string[] = [];
   const textIds = new Map<string, number>();
   const categoryNames: string[] = [];
@@ -269,7 +274,9 @@ async function main() {
         style,
         category: categories.get(name) ?? categories.get(family) ?? null,
         aliases: [],
+        animated: isAnimated(data.body),
       };
+      if (record.animated) animatedIdx.push(indexIcons.length);
       iconIdxByName.set(name, indexIcons.length);
       indexIcons.push([prefixIdx, name, textId(enrichText(family)), categoryId(record.category)]);
       records.push(record);
@@ -294,12 +301,16 @@ async function main() {
       await flushSeed();
     }
     totalIcons += records.length;
-    collections.push(collectionMeta(prefix, set, records.length));
-    console.log(`${prefix.padEnd(18)} ${String(records.length).padStart(6)} icons  ${String(aliasesByParent.size).padStart(5)} aliased`);
+    const animated = records.reduce((n, r) => n + (r.animated ? 1 : 0), 0);
+    collections.push(collectionMeta(prefix, set, records.length, animated));
+    console.log(
+      `${prefix.padEnd(18)} ${String(records.length).padStart(6)} icons  ${String(aliasesByParent.size).padStart(5)} aliased` +
+        (animated ? `  ${animated} animated` : ""),
+    );
   }
   await flushSeed(true);
 
-  const index: SearchIndexData = { v: 1, prefixes, categories: categoryNames, icons: indexIcons };
+  const index: SearchIndexData = { v: 1, prefixes, categories: categoryNames, icons: indexIcons, animated: animatedIdx };
   await writeFile(join(DIST, "search-index.json"), JSON.stringify(index));
   await writeFile(join(DIST, "texts.json"), JSON.stringify(texts));
   await writeFile(join(DIST, "collections.json"), JSON.stringify(collections, null, 2));
@@ -315,7 +326,7 @@ async function main() {
     `DELETE FROM collections;\nINSERT INTO collections ${COLLECTION_COLS} VALUES\n${collections.map(collectionRow).join(",\n")};\n`,
   );
 
-  console.log(`\n${totalIcons} icons, ${totalAliases} aliases, ${texts.length} unique texts, ${seedFile} seed files, ${skippedLarge} oversized icons skipped`);
+  console.log(`\n${totalIcons} icons, ${animatedIdx.length} animated, ${totalAliases} aliases, ${texts.length} unique texts, ${seedFile} seed files, ${skippedLarge} oversized icons skipped`);
 }
 
 main().catch((err) => {

@@ -40,6 +40,7 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     return STYLE_BUCKETS.includes(s as StyleBucket) ? (s as StyleBucket) : null;
   });
   const [noAttribution, setNoAttribution] = useState(params.get("license") === "free");
+  const [animatedOnly, setAnimatedOnly] = useState(params.get("animated") === "1");
   const [sort, setSort] = useState<SortKey>("relevance");
   const [filtersOpen, setFiltersOpen] = useLocalStorage("iconsdb:filters", true);
   const [groupVariants, setGroupVariants] = useLocalStorage("iconsdb:group", true);
@@ -61,11 +62,12 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     if (kind !== "all") p.set("kind", kind);
     if (style) p.set("style", style);
     if (noAttribution) p.set("license", "free");
+    if (animatedOnly) p.set("animated", "1");
     if (selected) p.set("icon", `${selected.prefix}:${selected.name}`);
     const qs = p.toString();
     const next = qs ? `/?${qs}` : "/";
     if (next !== window.location.pathname + window.location.search) window.history.replaceState(null, "", next);
-  }, [query, sets, kind, style, noAttribution, selected]);
+  }, [query, sets, kind, style, noAttribution, animatedOnly, selected]);
 
   const keywordHits = useMemo<IconHit[]>(() => {
     if (!index || !query.trim()) return [];
@@ -78,6 +80,9 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
   }, [keywordHits, semanticHits, query]);
 
   const collectionByPrefix = useMemo(() => new Map(collections.map((c) => [c.prefix, c])), [collections]);
+  // Per icon, not per set: eos-icons ships 10 animated icons among 253.
+  const animatedIdx = useMemo(() => new Set(index?.data.animated ?? []), [index]);
+  const animatedTotal = useMemo(() => collections.reduce((n, c) => n + c.animated, 0), [collections]);
 
   const items = useMemo<GridItem[]>(() => {
     if (!index) return [];
@@ -90,6 +95,7 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
       const c = collectionByPrefix.get(h.prefix);
       if (kind !== "all" && (c?.kind ?? "icons") !== kind) continue;
       if (noAttribution && c?.license.attribution) continue;
+      if (animatedOnly && !animatedIdx.has(h.idx)) continue;
       const { family, style: styleLabel } = splitVariant(h.name, suffixesFor.get(h.prefix) ?? {});
       if (style && styleBucket(styleLabel, c?.palette) !== style) continue;
       if (groupVariants) {
@@ -109,7 +115,7 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     if (sort === "name") out.sort((a, b) => a.name.localeCompare(b.name) || a.prefix.localeCompare(b.prefix));
     else if (sort === "set") out.sort((a, b) => a.prefix.localeCompare(b.prefix) || a.name.localeCompare(b.name));
     return out;
-  }, [hits, index, sets, kind, noAttribution, style, groupVariants, sort, collectionByPrefix]);
+  }, [hits, index, sets, kind, noAttribution, animatedOnly, animatedIdx, style, groupVariants, sort, collectionByPrefix]);
 
   const countsByPrefix = useMemo(() => {
     const m = new Map<string, number>();
@@ -143,10 +149,11 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     setKind("all");
     setStyle(null);
     setNoAttribution(false);
+    setAnimatedOnly(false);
     setColor("");
     setGroupVariants(true);
   };
-  const activeFilters = sets.length + (kind !== "all" ? 1 : 0) + (style ? 1 : 0) + (noAttribution ? 1 : 0);
+  const activeFilters = sets.length + (kind !== "all" ? 1 : 0) + (style ? 1 : 0) + (noAttribution ? 1 : 0) + (animatedOnly ? 1 : 0);
   const showResults = query.trim().length > 0;
   const total = collections.reduce((n, c) => n + c.total, 0);
 
@@ -165,6 +172,9 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
           onStyle={setStyle}
           noAttribution={noAttribution}
           onNoAttribution={setNoAttribution}
+          animated={animatedOnly}
+          onAnimated={setAnimatedOnly}
+          animatedTotal={animatedTotal}
           groupVariants={groupVariants}
           onGroupVariants={setGroupVariants}
           color={color}

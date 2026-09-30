@@ -17,6 +17,8 @@ export type CollectionMeta = {
   homepage?: string;
   category?: string;
   palette: boolean;
+  /** How many icons in the set animate (SMIL/CSS inside the body). */
+  animated: number;
   height?: number;
   samples: string[];
   version?: string;
@@ -37,6 +39,11 @@ export type SearchIndexData = {
   prefixes: { prefix: string; name: string; suffixes: Record<string, string> }[];
   categories: string[];
   icons: IndexIconEntry[];
+  /** Indices into `icons` that animate. Sparse enough (~1% of icons) to be much
+   * smaller as a list than a sixth tuple slot on every entry. Only canonical
+   * entries are listed; aliases resolve through their parent before filtering.
+   * Optional so a cached index from an older build still parses. */
+  animated?: number[];
 };
 
 export function entryParent(e: IndexIconEntry): number | undefined {
@@ -70,4 +77,5 @@ export type IconRecord = {
   style: string;
   category: string | null;
   aliases: string[];
+  animated: boolean;
 };

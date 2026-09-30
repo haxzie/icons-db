@@ -36,6 +36,10 @@ type Props = {
   onStyle: (s: StyleBucket | null) => void;
   noAttribution: boolean;
   onNoAttribution: (v: boolean) => void;
+  animated: boolean;
+  onAnimated: (v: boolean) => void;
+  /** Total animated icons across every set; the section hides when there are none. */
+  animatedTotal: number;
   groupVariants: boolean;
   onGroupVariants: (v: boolean) => void;
   color: string;
@@ -100,6 +104,18 @@ export function SearchFilters(p: Props) {
           ))}
         </div>
       </SidebarSection>
+
+      {p.animatedTotal > 0 && (
+        <SidebarSection title="Animation" icon={<AnimationIcon />}>
+          <label className="flex cursor-pointer items-center justify-between py-1 text-sm">
+            <span>
+              Animated only
+              <span className="block text-xs text-fg-muted">{p.animatedTotal.toLocaleString()} icons animate on their own</span>
+            </span>
+            <Switch checked={p.animated} onChange={p.onAnimated} />
+          </label>
+        </SidebarSection>
+      )}
 
       <SidebarSection title="License" icon={<LicenseIcon />}>
         <label className="flex cursor-pointer items-center justify-between py-1 text-sm">
@@ -176,6 +192,14 @@ function StyleIcon() {
       <circle cx="7.5" cy="11.5" r="1" />
       <circle cx="10.5" cy="7.5" r="1" />
       <circle cx="15.5" cy="7.5" r="1" />
+    </svg>
+  );
+}
+function AnimationIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3a9 9 0 1 0 9 9" />
+      <path d="m10 9.5 5 2.5-5 2.5z" />
     </svg>
   );
 }

@@ -20,6 +20,7 @@ export function LibraryTable({ collections }: { collections: CollectionMeta[] })
           c.prefix.includes(q) ||
           c.author.name.toLowerCase().includes(q) ||
           c.kind.includes(q) ||
+          (c.animated > 0 && "animated".includes(q)) ||
           (c.license.spdx ?? c.license.title).toLowerCase().includes(q),
       ),
     [collections, q],
@@ -78,6 +79,14 @@ export function LibraryTable({ collections }: { collections: CollectionMeta[] })
                 <td className="px-4 py-2.5">
                   <span className="font-medium">{c.name}</span>
                   <span className="ml-2 font-mono text-xs text-fg-subtle">{c.prefix}</span>
+                  {c.animated > 0 && (
+                    <span
+                      className="ml-2 rounded bg-accent-soft px-1.5 py-0.5 text-[11px] font-medium text-accent"
+                      title={`${c.animated.toLocaleString()} of ${c.total.toLocaleString()} icons animate`}
+                    >
+                      Animated
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-2.5 capitalize text-fg-muted">{c.kind}</td>
                 <td className="px-4 py-2.5">
