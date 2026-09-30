@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import type { CollectionMeta, IconRecord } from "@icons-db/core";
 import { primeIcon } from "@/lib/icon-store";
+import { replaySmil } from "../IconGlyph";
 import { IconDetail } from "./IconDetail";
 
 export function IconPage({
@@ -35,6 +36,7 @@ export function IconPage({
       <div>
         <div
           className="flex aspect-square max-h-[420px] items-center justify-center rounded-2xl border bg-bg-elevated [&>svg]:size-40 md:max-h-[520px]"
+          onMouseEnter={(e) => replaySmil(e.currentTarget.querySelector("svg"))}
           dangerouslySetInnerHTML={{ __html: svg }}
         />
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">

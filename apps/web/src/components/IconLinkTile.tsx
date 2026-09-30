@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { renderInline, toIconifyIcon } from "@icons-db/core";
 import type { IconLink } from "@/lib/db";
+import { IconLinkGridHover } from "./IconLinkGridHover";
 
 /** Server-rendered, crawlable icon tile: a real link with the SVG inlined. */
 export function IconLinkTile({ icon, setName, showSet }: { icon: IconLink; setName?: string; showSet?: boolean }) {
@@ -22,5 +23,10 @@ export function IconLinkTile({ icon, setName, showSet }: { icon: IconLink; setNa
 }
 
 export function IconLinkGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3">{children}</div>;
+  // The tiles stay server components so they render as crawlable links; the
+  // hover replay is therefore delegated from the grid rather than attached to
+  // each of the few hundred of them.
+  return (
+    <IconLinkGridHover className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-3">{children}</IconLinkGridHover>
+  );
 }
