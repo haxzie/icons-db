@@ -15,7 +15,7 @@ import {
 } from "@icons-db/core";
 import { useIcon } from "@/lib/icon-store";
 import { downloadBlob, svgToPng, useCopy } from "@/lib/client-utils";
-import { IconGlyph, InlineSvg } from "../IconGlyph";
+import { IconGlyph, InlineSvg, replaySmil } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
 type Props = {
@@ -89,10 +89,10 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
   const snippets = useMemo(() => (icon ? buildSnippets({ prefix, name, svg }) : []), [icon, prefix, name, svg]);
   const active = snippets.find((s) => s.kind === tab) ?? snippets[0];
 
-  /** line-md and friends play once on load, so the only way to see the animation
-   * again is to rewind the document's SMIL clock. */
+  /** line-md and friends play once on load; hovering any tile replays it, and
+   * this button does the same for the preview. */
   function replay() {
-    previewRef.current?.setCurrentTime(0);
+    replaySmil(previewRef.current);
   }
 
   async function downloadPng() {
