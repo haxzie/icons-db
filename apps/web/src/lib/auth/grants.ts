@@ -1,5 +1,6 @@
 import type { Env } from "@/lib/env";
 import { getEnv } from "@/lib/env";
+import { parseScopeList } from "./scopes";
 
 export type AppGrant = {
   consentId: string;
@@ -44,7 +45,7 @@ export async function listGrants(userId: string): Promise<AppGrant[]> {
     consentId: r.consent_id,
     clientId: r.client_id,
     appName: r.app_name?.trim() || "Unnamed app",
-    scopes: parseScopes(r.scopes),
+    scopes: parseScopeList(r.scopes),
     grantedAt: toMillis(r.granted_at),
     requests: r.requests ?? 0,
     lastUsedAt: r.last_used_at,
@@ -81,17 +82,6 @@ export async function hasGrant(env: Env, userId: string, clientId: string): Prom
     .bind(userId, clientId)
     .first<{ ok: number }>();
   return !!row;
-}
-
-function parseScopes(value: string | null): string[] {
-  if (!value) return [];
-  try {
-    const parsed = JSON.parse(value);
-    if (Array.isArray(parsed)) return parsed.map(String);
-  } catch {
-    // Stored as a space- or comma-separated string in some versions.
-  }
-  return value.split(/[\s,]+/).filter(Boolean);
 }
 
 function toMillis(value: string | number | null): number | null {
