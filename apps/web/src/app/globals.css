@@ -24,8 +24,12 @@
   --bg-elevated: #ffffff;
   --bg-muted: #f1f3f4;
   --fg: #202124;
-  --fg-muted: #5f6368;
-  --fg-subtle: #80868b;
+  /* Three steps down one grey ramp, mirrored in the dark block below. The old
+   * #5f6368/#80868b pair put the dimmer of the two at 3.3:1 against
+   * --bg-muted — under AA, and --bg-muted is what every search placeholder
+   * and table header sits on. */
+  --fg-muted: #3c4043;
+  --fg-subtle: #5f6368;
   --line: #e0e3e7;
   --accent: #1a73e8;
   --accent-fg: #ffffff;
@@ -40,10 +44,7 @@
   --bg-elevated: #1e1f20;
   --bg-muted: #28292a;
   --fg: #e3e3e3;
-  /* Secondary greys are a step brighter than the light theme's are dark: on a
-   * near-black ground the old #a8abb0/#7d8085 pair fell to 6.3:1 and 3.7:1
-   * against --bg-muted, and the darker of the two is what every search
-   * placeholder and table header is drawn in. */
+  /* The light block's ramp, reflected: same three steps, same ratios. */
   --fg-muted: #bdc1c6;
   --fg-subtle: #9aa0a6;
   --line: #303134;
