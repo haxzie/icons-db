@@ -40,8 +40,12 @@
   --bg-elevated: #1e1f20;
   --bg-muted: #28292a;
   --fg: #e3e3e3;
-  --fg-muted: #a8abb0;
-  --fg-subtle: #7d8085;
+  /* Secondary greys are a step brighter than the light theme's are dark: on a
+   * near-black ground the old #a8abb0/#7d8085 pair fell to 6.3:1 and 3.7:1
+   * against --bg-muted, and the darker of the two is what every search
+   * placeholder and table header is drawn in. */
+  --fg-muted: #bdc1c6;
+  --fg-subtle: #9aa0a6;
   --line: #303134;
   --accent: #8ab4f8;
   --accent-fg: #062e6f;

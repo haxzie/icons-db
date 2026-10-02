@@ -9,7 +9,7 @@ import { validateSubmission, type SubmissionErrors } from "@/lib/submissions";
 const EMPTY = { repo: "", website: "", twitter: "" };
 
 /**
- * "Submit a set", next to the library search box. Signed-out visitors are sent
+ * "Submit a set", opposite the library heading. Signed-out visitors are sent
  * to sign in and returned here; signed-in ones get the form, which posts to our
  * Slack channel for a manual look before anything is published.
  */
@@ -30,7 +30,7 @@ export function SubmitSetButton() {
         type="button"
         onClick={onClick}
         disabled={isPending}
-        className="flex h-12 shrink-0 items-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+        className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-accent px-4 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
       >
         <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 5v14M5 12h14" />

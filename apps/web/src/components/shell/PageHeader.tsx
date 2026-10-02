@@ -3,10 +3,13 @@ import Link from "next/link";
 export function PageHeader({
   crumbs,
   title,
+  action,
   width = "max-w-[1400px]",
 }: {
   crumbs?: { href: string; label: string }[];
   title: string;
+  /** Sits opposite the title — a primary action for the page. */
+  action?: React.ReactNode;
   width?: string;
 }) {
   return (
@@ -23,7 +26,10 @@ export function PageHeader({
           ))}
         </nav>
       )}
-      <h1 className="text-[28px] font-medium tracking-tight">{title}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-[28px] font-medium tracking-tight">{title}</h1>
+        {action}
+      </div>
     </div>
   );
 }
