@@ -13,6 +13,14 @@
     { "pattern": "www.iconsdb.app", "custom_domain": true },
     { "pattern": "iconsdb.haxzie.com", "custom_domain": true }
   ],
+  // Plain vars, not secrets: both are NEXT_PUBLIC_, so they ship to the browser
+  // anyway. Next inlines them at build time, so the build also needs them in its
+  // environment (.github/workflows/deploy.yml) — these entries only cover reads
+  // from the Worker at runtime.
+  "vars": {
+    "NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN": "phc_uUuDdJ8RULWn2vrEvKR4bWZeRZ8rcWprUWeehptJZgKK",
+    "NEXT_PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
+  },
   "observability": { "enabled": true },
   "upload_source_maps": true,
   "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "icons-db" }],

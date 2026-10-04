@@ -90,7 +90,11 @@ If you migrate the D1 schema, add a file under `apps/web/migrations/` and
 ## Secrets / config CI relies on
 
 - GitHub repo secret `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, **KV**, **R2**, SSL/zone).
-- Secret `CLOUDFLARE_ACCOUNT_ID`, variable `NEXT_PUBLIC_GA_ID` (`G-R6ZDXEJQ8G`).
+- Secret `CLOUDFLARE_ACCOUNT_ID`, variables `NEXT_PUBLIC_GA_ID` (`G-R6ZDXEJQ8G`),
+  `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`, `NEXT_PUBLIC_POSTHOG_HOST`.
+- **`NEXT_PUBLIC_*` must be in the CI job's `env`, not just `wrangler.jsonc`** — Next inlines
+  them at `next build`, so a value that only exists as a Worker var reaches the server but
+  never the browser bundle. Both places are set for PostHog; keep them in sync.
 - Bindings live in `apps/web/wrangler.jsonc`: `DB` (D1), `DATA` + `AVATARS` (R2),
   `NEXT_INC_CACHE_KV`, `AI`, `ASSETS`, `API_RATE_LIMIT`, `EMAIL` (Email Sending), custom domains
   `iconsdb.app` + `www` + `iconsdb.haxzie.com`. Auth secrets are listed under "Auth & the MCP

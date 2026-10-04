@@ -18,3 +18,11 @@ GOOGLE_CLIENT_SECRET=
 # Optional: signup and MCP-connect notifications. Leave blank locally so test
 # signups don't post into the team channel.
 SLACK_WEBHOOK_URL=
+
+# PostHog is NOT read from here: NEXT_PUBLIC_* values are inlined by `next build`,
+# not read from the Worker env, so .dev.vars can't reach them. To get local
+# analytics, put these in apps/web/.env.local instead (and expect the events to
+# land in the production project):
+#   NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=phc_…
+#   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+# Production gets them from wrangler.jsonc vars + the deploy workflow's env.
