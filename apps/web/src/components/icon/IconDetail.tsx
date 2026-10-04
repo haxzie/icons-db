@@ -15,6 +15,7 @@ import {
 } from "@icons-db/core";
 import { useIcon } from "@/lib/icon-store";
 import { downloadBlob, svgToPng, useCopy } from "@/lib/client-utils";
+import { track, type Surface } from "@/lib/analytics";
 import { IconGlyph, InlineSvg, replaySmil } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
@@ -95,6 +96,25 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
     replaySmil(previewRef.current);
   }
 
+  const surface: Surface = variant === "page" ? "icon_page" : "search_panel";
+
+  // One event per icon actually looked at. The ref is what makes that true:
+  // the panel remounts on a new key and dev StrictMode runs effects twice, and
+  // neither should show up as a second view.
+  const viewed = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${prefix}:${name}`;
+    if (viewed.current === key) return;
+    viewed.current = key;
+    track("icon_viewed", { set: prefix, icon: name, surface });
+  }, [prefix, name, surface]);
+
+  /** Copy, plus the event — so no call site can copy without reporting it. */
+  function copyAs(text: string, key: string, format: string) {
+    track("icon_copied", { set: prefix, icon: name, format, surface, recolored: Boolean(color) });
+    return copy(text, key);
+  }
+
   async function downloadPng() {
     if (!icon) return;
     let px = renderSVG(icon, { width: pngSize, height: pngSize, color: color || (document.documentElement.classList.contains("dark") ? "#ffffff" : "#000000") });
@@ -102,6 +122,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
     if (animated) px = staticFrame(px);
     const blob = await svgToPng(px, pngSize);
     downloadBlob(blob, `${prefix}-${name}-${pngSize}.png`);
+    track("icon_downloaded", { set: prefix, icon: name, format: "png", size: pngSize, surface, recolored: Boolean(color) });
   }
 
   const shell =
@@ -220,14 +241,15 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Action onClick={() => copy(svg, "svg")} done={copied === "svg"} disabled={!icon}>
+          <Action onClick={() => copyAs(svg, "svg", "svg")} done={copied === "svg"} disabled={!icon}>
             Copy SVG
           </Action>
-          <Action onClick={() => copy(`${prefix}:${name}`, "name")} done={copied === "name"}>
+          <Action onClick={() => copyAs(`${prefix}:${name}`, "name", "name")} done={copied === "name"}>
             Copy name
           </Action>
           <a
             href={`/api/v1/icon/${prefix}/${name}.svg?download${color ? `&color=${encodeURIComponent(color)}` : ""}`}
+            onClick={() => track("icon_downloaded", { set: prefix, icon: name, format: "svg", surface, recolored: Boolean(color) })}
             className="flex h-9 items-center justify-center rounded-lg border bg-bg-elevated text-sm hover:border-fg-subtle"
           >
             Download SVG
@@ -289,7 +311,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
                 </pre>
                 <button
                   type="button"
-                  onClick={() => copy(active.code, `code:${active.kind}`)}
+                  onClick={() => copyAs(active.code, `code:${active.kind}`, active.kind)}
                   className="absolute right-2 top-2 rounded-md border bg-bg-elevated px-2 py-0.5 text-xs hover:border-fg-subtle"
                 >
                   {copied === `code:${active.kind}` ? "Copied" : "Copy"}

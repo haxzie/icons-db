@@ -14,7 +14,8 @@ import {
 } from "@icons-db/core";
 import { useKeywordIndex } from "@/lib/use-search-index";
 import { useSemanticHits } from "@/lib/use-semantic-hits";
-import { useLocalStorage } from "@/lib/client-utils";
+import { useDebouncedValue, useLocalStorage } from "@/lib/client-utils";
+import { track } from "@/lib/analytics";
 import { TopBar, type SortKey } from "../shell/TopBar";
 import { Toolbar, type ViewMode } from "../shell/Toolbar";
 import { PromoCards } from "../shell/PromoCards";
@@ -116,6 +117,39 @@ export function SearchApp({ collections }: { collections: CollectionMeta[] }) {
     else if (sort === "set") out.sort((a, b) => a.prefix.localeCompare(b.prefix) || a.name.localeCompare(b.name));
     return out;
   }, [hits, index, sets, kind, noAttribution, animatedOnly, animatedIdx, style, groupVariants, sort, collectionByPrefix]);
+
+  // One event per search the visitor actually settled on, not per keystroke.
+  const settledQuery = useDebouncedValue(query.trim(), 700);
+  const reportedQuery = useRef<string | null>(null);
+  useEffect(() => {
+    if (!settledQuery || !index) return;
+    if (reportedQuery.current === settledQuery) return;
+
+    const report = (semanticReady: boolean) => {
+      reportedQuery.current = settledQuery;
+      track("icons_searched", {
+        query: settledQuery,
+        results: items.length,
+        no_results: items.length === 0,
+        semantic_ready: semanticReady,
+      });
+    };
+
+    // Waiting for the semantic worker keeps `no_results` honest — semantic is
+    // what rescues queries keyword search misses. But the embedding model is a
+    // ~33 MB download, so don't wait on it indefinitely: a visitor who gives up
+    // before it lands is exactly the search worth hearing about. Past the
+    // grace period we report the keyword-only count and say so, so the
+    // trustworthy numbers stay filterable on `semantic_ready`.
+    if (semanticPending) {
+      const t = setTimeout(() => report(false), 2500);
+      return () => clearTimeout(t);
+    }
+    report(true);
+    // items is read as a snapshot at report time; later filter changes to the
+    // same query deliberately don't re-fire.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settledQuery, index, semanticPending]);
 
   const countsByPrefix = useMemo(() => {
     const m = new Map<string, number>();

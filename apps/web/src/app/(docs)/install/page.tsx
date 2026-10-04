@@ -163,7 +163,7 @@ export default function InstallPage() {
             <div className="text-xs uppercase tracking-wide text-fg-subtle">MCP endpoint</div>
             <code className="mt-1 block truncate font-mono text-lg">{URL}</code>
           </div>
-          <CopyButton text={URL} label="Copy endpoint" />
+          <CopyButton text={URL} label="Copy endpoint" context="install:mcp-endpoint" />
         </div>
 
         <h2 className="mt-10 text-lg font-medium">Set up your agent</h2>
@@ -205,7 +205,7 @@ export default function InstallPage() {
         <h2 className="mt-10 text-lg font-medium">Example session</h2>
         <div className="relative mt-3">
           <pre className="overflow-x-auto rounded-2xl border bg-bg-elevated p-4 pr-14 font-mono text-[13px] leading-relaxed">{EXAMPLE}</pre>
-          <CopyButton text={EXAMPLE} className="absolute right-2 top-2" />
+          <CopyButton text={EXAMPLE} className="absolute right-2 top-2" context="install:api-example" />
         </div>
 
         <p className="mt-10 text-sm text-fg-muted">

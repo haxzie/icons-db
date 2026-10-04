@@ -1,8 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 
-export function CopyButton({ text, className = "", label = "Copy" }: { text: string; className?: string; label?: string }) {
+export function CopyButton({
+  text,
+  className = "",
+  label = "Copy",
+  context,
+}: {
+  text: string;
+  className?: string;
+  label?: string;
+  /** What was copied, e.g. "install:claude-code" — omit to copy untracked. */
+  context?: string;
+}) {
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -11,6 +23,7 @@ export function CopyButton({ text, className = "", label = "Copy" }: { text: str
       title={copied ? "Copied" : label}
       onClick={async () => {
         await navigator.clipboard.writeText(text);
+        if (context) track("snippet_copied", { context });
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}

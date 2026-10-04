@@ -33,7 +33,7 @@ export function AgentTabs({ agents }: { agents: AgentGuide[] }) {
                   {s.file && <div className="mb-1 font-mono text-[11px] text-fg-subtle">{s.file}</div>}
                   <div className="relative">
                     <pre className="overflow-x-auto rounded-2xl border bg-bg-elevated p-4 pr-14 font-mono text-[13px] leading-relaxed">{s.code}</pre>
-                    <CopyButton text={s.code} className="absolute right-2 top-2" />
+                    <CopyButton text={s.code} className="absolute right-2 top-2" context={`install:${agent.id}`} />
                   </div>
                 </div>
               )}
