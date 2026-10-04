@@ -4,7 +4,7 @@ import { collections } from "./collections";
 /**
  * Curated shelves for the library's storefront.
  *
- * The library is a flat list of 87 sets, which is the right shape once you know
+ * The library is a flat list of 90 sets, which is the right shape once you know
  * what you are after and useless when you don't. These are the entry points for
  * the second case: a handful of groupings broad enough to be worth a card and
  * narrow enough that every set under one belongs there.

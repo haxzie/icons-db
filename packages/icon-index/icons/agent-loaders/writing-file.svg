@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z"/>
+    <path d="M14 2.5v5h5"/>
+    <line x1="8.5" y1="12.5" x2="15.5" y2="12.5" opacity=".4"/>
+    <line x1="8.5" y1="16.5" x2="15.5" y2="16.5"><animate attributeName="x2" values="8.5;15.5;15.5" keyTimes="0;0.7;1" dur="1.8s" repeatCount="indefinite"/></line>
+  </g>
+</svg>

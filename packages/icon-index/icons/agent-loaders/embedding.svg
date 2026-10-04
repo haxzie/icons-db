@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.0" y="3.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.00s" repeatCount="indefinite"/></rect>
+    <rect x="9.5" y="3.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.12s" repeatCount="indefinite"/></rect>
+    <rect x="16.0" y="3.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.24s" repeatCount="indefinite"/></rect>
+    <rect x="3.0" y="9.5" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.36s" repeatCount="indefinite"/></rect>
+    <rect x="9.5" y="9.5" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.48s" repeatCount="indefinite"/></rect>
+    <rect x="16.0" y="9.5" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.60s" repeatCount="indefinite"/></rect>
+    <rect x="3.0" y="16.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.72s" repeatCount="indefinite"/></rect>
+    <rect x="9.5" y="16.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.84s" repeatCount="indefinite"/></rect>
+    <rect x="16.0" y="16.0" width="5" height="5" rx="1.25" fill="currentColor" stroke="none" opacity=".2"><animate attributeName="opacity" values=".2;1;.2" dur="1.4s" begin="0.96s" repeatCount="indefinite"/></rect>
+  </g>
+</svg>

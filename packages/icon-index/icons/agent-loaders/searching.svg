@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="10.5" cy="10.5" r="7"/>
+    <line x1="15.6" y1="15.6" x2="21" y2="21"/>
+    <g>
+      <circle cx="10.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
+      <animateTransform attributeName="transform" type="rotate" values="0 10.5 10.5;360 10.5 10.5" dur="1.5s" repeatCount="indefinite"/>
+    </g>
+  </g>
+</svg>

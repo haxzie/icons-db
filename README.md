@@ -1,6 +1,6 @@
 # IconsDB
 
-Search 220,000+ open source icons, logos and emoji from 87 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
+Search 220,000+ open source icons, logos and emoji from 90 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
 
 ## How it works
 
@@ -8,7 +8,7 @@ Search 220,000+ open source icons, logos and emoji from 87 curated sets — inst
   - D1 rows (icon bodies + metadata) — seeded with `wrangler d1 execute`,
   - a compact client search index (`search-index.json`, ~600 KB gzipped) for instant in-browser keyword search,
   - int8 embeddings (`embeddings.bin`, ~11 MB) of every unique icon name, computed locally with `bge-small-en-v1.5`.
-- **Animated icons** — 1,554 of them, in two flavours. line-md, svg-spinners and a few eos-icons carry SMIL in the body, which plays wherever the SVG is inlined. Dither Icons animate on hover through a stylesheet keyed to runtime hooks the body cannot carry, so `packages/icon-index/src/dither-motion.ts` rewrites those hooks onto classes and prunes the sheet to the rules one icon needs. Either way `packages/core/src/animation.ts` detects them (`animated` column per icon, count per collection, index list for the "Animated only" filter) and resolves a still (`staticFrame`, the most legible frame rather than the last one) for the places animation cannot go: PNG export, CSS masks, and `?static` on the SVG endpoint.
+- **Animated icons** — 2,007 of them, in two flavours. line-md, meteocons, svg-spinners, svg-loaders, Agent Loaders and a few eos-icons carry SMIL in the body, which plays wherever the SVG is inlined. Dither Icons animate on hover through a stylesheet keyed to runtime hooks the body cannot carry, so `packages/icon-index/src/dither-motion.ts` rewrites those hooks onto classes and prunes the sheet to the rules one icon needs. Either way `packages/core/src/animation.ts` detects them (`animated` column per icon, count per collection, index list for the "Animated only" filter) and resolves a still (`staticFrame`, the most legible frame rather than the last one) for the places animation cannot go: PNG export, CSS masks, and `?static` on the SVG endpoint.
 - **Search** is hybrid: the browser runs keyword/prefix search itself; `/api/v1/search` embeds the query with Workers AI (`@cf/baai/bge-small-en-v1.5`), brute-forces cosine similarity over the embeddings in the isolate, and the two lists are blended by `packages/core/src/rank.ts`.
 - **Site** is Next.js (App Router) deployed to Cloudflare Workers via `@opennextjs/cloudflare`, with D1 for icon data, KV for the Next incremental cache, and static assets for the index files.
 
@@ -47,6 +47,12 @@ pnpm ship                             # opennextjs-cloudflare build && deploy
 3. Re-run build → embed → seed → deploy.
 
 Animated sets need no extra step: `isAnimated` flags each icon during the build.
+
+One set is ours rather than normalised from upstream: **Agent Loaders**
+(`packages/icon-index/icons/agent-loaders/`), 39 hand-authored SMIL icons for the states an
+LLM or agent UI reports — thinking, calling a tool, reading a file, embedding, streaming
+tokens back. Drop a new 24x24 SVG in that directory and the build picks it up; the
+conventions are in `packages/icon-index/src/agent-loaders.ts`.
 
 ## API
 

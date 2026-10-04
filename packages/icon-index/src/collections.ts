@@ -95,6 +95,9 @@ export const PREFIXES = [
   // animated
   "svg-spinners",
   "eos-icons",
+  "meteocons",
+  "svg-loaders",
+  "agent-loaders",
 ] as const;
 
 export const KINDS: Record<string, CollectionKind> = {
@@ -219,4 +222,7 @@ export const HOMEPAGES: Record<string, string> = {
   reicon: "https://reicon.dev",
   "svg-spinners": "https://github.com/n3r4zzurr0/svg-spinners",
   "eos-icons": "https://eos-icons.com",
+  meteocons: "https://meteocons.com",
+  "svg-loaders": "https://github.com/SamHerbert/SVG-Loaders",
+  "agent-loaders": "https://github.com/haxzie/icons-db/tree/main/packages/icon-index/icons/agent-loaders",
 };

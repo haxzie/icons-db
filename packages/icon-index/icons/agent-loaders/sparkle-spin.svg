@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(11 13)">
+      <g>
+        <path d="M0-7.5c.9 4.2 3.3 6.6 7.5 7.5-4.2.9-6.6 3.3-7.5 7.5-.9-4.2-3.3-6.6-7.5-7.5C-3.3-.9-.9-3.3 0-7.5Z"/>
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="2.4s" repeatCount="indefinite"/>
+      </g>
+    </g>
+    <path d="M19.5 2.5c.3 1.4 1.1 2.2 2.5 2.5-1.4.3-2.2 1.1-2.5 2.5-.3-1.4-1.1-2.2-2.5-2.5 1.4-.3 2.2-1.1 2.5-2.5Z"><animate attributeName="opacity" values=".25;1;.25" dur="1.4s" begin="0.3s" repeatCount="indefinite"/></path>
+  </g>
+</svg>

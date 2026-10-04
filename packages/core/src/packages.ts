@@ -103,6 +103,10 @@ export const SET_PACKAGES: Record<string, PackageInfo[]> = {
   teenyicons: [{ npm: "teenyicons", framework: "js", symbol: (n) => camel(n) }],
   hugeicons: [{ npm: "@hugeicons/core-free-icons", framework: "js", symbol: (n) => pascal(n) + "Icon", usage: (s) => `<HugeiconsIcon icon={${s}} />  // from @hugeicons/react` }],
   "line-md": [reactIcons("lia", "Lia")],
+  "svg-loaders": [
+    { npm: "react-loading-icons", framework: "react", symbol: (n) => pascal(n), note: "A React port of the same twelve loaders, one component each." },
+    { npm: "svg-loaders", framework: "js", symbol: (n) => n, usage: (s) => `<img src="svg-loaders/svg-smil-loaders/${s}.svg" />` },
+  ],
   la: [reactIcons("lia", "Lia")],
   eva: [{ npm: "eva-icons", framework: "js", symbol: (n) => camel(n) }],
   uil: [{ npm: "@iconscout/react-unicons", framework: "react", symbol: (n) => "Uil" + pascal(n) }],

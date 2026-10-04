@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(12 12)">
+      <g>
+        <path d="M0-9c1.1 5 3.9 7.9 9 9-5.1 1.1-7.9 3.9-9 9-1.1-5-3.9-7.9-9-9C-3.9-1.1-1.1-4 0-9Z"/>
+        <animateTransform attributeName="transform" type="scale" values="1;0.78;1" dur="1.4s" repeatCount="indefinite"/>
+      </g>
+    </g>
+  </g>
+</svg>

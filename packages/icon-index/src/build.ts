@@ -16,8 +16,10 @@ import {
   type SearchIndexData,
 } from "@icons-db/core";
 import { AUTHOR_TWITTERS, HOMEPAGES, KINDS, PREFIXES } from "./collections";
+import { loadAgentLoaders, AGENT_LOADERS_PREFIX } from "./agent-loaders";
 import { loadDither, DITHER_PREFIX } from "./dither";
 import { loadLobehub, LOBEHUB_PREFIX } from "./lobehub";
+import { loadSvgLoaders, SVG_LOADERS_PREFIX } from "./svg-loaders";
 import { DIST } from "./paths";
 
 const require = createRequire(import.meta.url);
@@ -42,6 +44,8 @@ function enrichText(family: string): string {
 async function loadSet(prefix: string): Promise<SetFiles> {
   if (prefix === LOBEHUB_PREFIX) return loadLobehub();
   if (prefix === DITHER_PREFIX) return loadDither();
+  if (prefix === SVG_LOADERS_PREFIX) return loadSvgLoaders();
+  if (prefix === AGENT_LOADERS_PREFIX) return loadAgentLoaders();
   const dir = dirname(require.resolve(`@iconify-json/${prefix}/package.json`));
   const read = async (f: string) => JSON.parse(await readFile(join(dir, f), "utf8"));
   let meta: IconifyMetaData = {};

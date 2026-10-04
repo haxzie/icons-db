@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="4" y1="7" x2="20" y2="7"><animate attributeName="x2" values="4;20;20;20" keyTimes="0;0.3;0.95;1" dur="2.4s" repeatCount="indefinite"/></line>
+    <line x1="4" y1="12" x2="20" y2="12"><animate attributeName="x2" values="4;4;20;20" keyTimes="0;0.3;0.6;1" dur="2.4s" repeatCount="indefinite"/></line>
+    <line x1="4" y1="17" x2="14" y2="17"><animate attributeName="x2" values="4;4;4;14" keyTimes="0;0.6;0.65;0.9" dur="2.4s" repeatCount="indefinite"/></line>
+  </g>
+</svg>

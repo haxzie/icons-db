@@ -71,6 +71,7 @@
     "@iconify-json/material-symbols": "latest",
     "@iconify-json/material-symbols-light": "^1.2.93",
     "@iconify-json/mdi": "latest",
+    "@iconify-json/meteocons": "^1.2.4",
     "@iconify-json/mingcute": "^1.2.8",
     "@iconify-json/mynaui": "^1.2.19",
     "@iconify-json/noto": "^1.2.8",
@@ -105,7 +106,8 @@
     "@resvg/resvg-js": "^2.6.2",
     "@unlocalhosted/dither-icons": "^0.2.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "svg-loaders": "^0.2.0"
   },
   "devDependencies": {
     "@iconify/types": "^2.0.0",

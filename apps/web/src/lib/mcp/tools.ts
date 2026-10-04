@@ -32,7 +32,7 @@ export function registerTools(server: McpServer, origin: string) {
       title: "Search icons",
       description:
         "Find open source icons, logos or emoji by meaning (e.g. \"shopping cart\", \"log out\", \"github\"). " +
-        "Searches 220k icons across 87 sets with hybrid keyword + semantic ranking. " +
+        "Searches 220k icons across 90 sets with hybrid keyword + semantic ranking. " +
         "If the project already depends on an icon package (lucide-react, @heroicons/react, @tabler/icons-react, react-icons, …) pass it as `package` so every result is importable without adding a dependency. " +
         "Pass several `queries` when you need a consistent set of icons for one UI (nav bar, toolbar): the response says which sets cover all of them. " +
         "Pass animated=true for self-animating icons — spinners and loaders, or line-md's draw-on transitions. " +
