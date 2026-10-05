@@ -18,8 +18,14 @@ export async function generateMetadata({ params }: { params: Promise<{ prefix: s
   const { prefix } = await params;
   const c = collections.find((x) => x.prefix === prefix);
   if (!c) return { title: "Set not found", robots: { index: false } };
-  const title = `${c.name} icons — ${c.total.toLocaleString()} free ${c.kind === "emoji" ? "emoji" : c.kind === "brands" ? "logos" : "icons"} (${c.license.spdx ?? c.license.title})`;
-  const description = `Browse and search all ${c.total.toLocaleString()} ${c.name} icons by ${c.author.name}. ${c.license.title}${c.license.attribution ? ", attribution required" : ", free for commercial use"}. Download as SVG or PNG, or copy as React, Vue, Svelte or CSS.`;
+  // "free" and the SVG/component formats are the SVG sets' story. A raster set
+  // has neither: these are trademarks, and they only come as PNG.
+  const title = c.raster
+    ? `${c.name} — ${c.total.toLocaleString()} app icons as PNG`
+    : `${c.name} icons — ${c.total.toLocaleString()} free ${c.kind === "emoji" ? "emoji" : c.kind === "brands" ? "logos" : "icons"} (${c.license.spdx ?? c.license.title})`;
+  const description = c.raster
+    ? `Browse and search all ${c.total.toLocaleString()} ${c.name} icons. PNG at 128, 256, 512 and 1024px, rounded or square. Each icon is a trademark of its publisher, shown to identify the app — see the terms before using one.`
+    : `Browse and search all ${c.total.toLocaleString()} ${c.name} icons by ${c.author.name}. ${c.license.title}${c.license.attribution ? ", attribution required" : ", free for commercial use"}. Download as SVG or PNG, or copy as React, Vue, Svelte or CSS.`;
   return {
     title,
     description,
