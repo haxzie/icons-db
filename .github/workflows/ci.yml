@@ -9,6 +9,13 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # `opennextjs-cloudflare build` opens a remote binding session (D1 and the
+    # avatar bucket are `remote: true`, and Workers AI has no local emulation),
+    # so the check needs the same credentials the deploy does. Without them the
+    # build fails before it compiles anything.
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
