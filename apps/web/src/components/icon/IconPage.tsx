@@ -46,7 +46,7 @@ export function IconPage({
     <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_420px]">
       <div>
         {icon.raster ? (
-          <div className="checkerboard flex aspect-square max-h-[420px] items-center justify-center rounded-2xl border md:max-h-[520px]">
+          <div className="flex aspect-square max-h-[420px] items-center justify-center rounded-2xl border bg-bg-elevated md:max-h-[520px]">
             {/* eslint-disable-next-line @next/next/no-img-element -- R2 PNG at a fixed size */}
             <img
               src={rasterUrl(icon.prefix, icon.name, { size: 512 })}
