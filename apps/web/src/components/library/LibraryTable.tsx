@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { CollectionMeta } from "@icons-db/core";
@@ -94,7 +95,13 @@ export function LibraryTable({
                 className="cursor-pointer border-t transition hover:bg-accent-soft/60 focus:outline-none focus-visible:bg-accent-soft/60"
               >
                 <td className="px-4 py-2.5">
-                  <span className="font-medium">{c.name}</span>
+                  {/* The row is clickable for convenience, but the name has to be
+                    * a real anchor: a tr/onClick row is invisible to crawlers, so
+                    * without this every set page — and the icon pages below it —
+                    * is reachable only from the sitemap. */}
+                  <Link href={`/library/${c.prefix}`} onClick={(e) => e.stopPropagation()} className="font-medium hover:underline">
+                    {c.name}
+                  </Link>
                   <span className="ml-2 font-mono text-xs text-fg-subtle">{c.prefix}</span>
                   {c.animated > 0 && (
                     <span

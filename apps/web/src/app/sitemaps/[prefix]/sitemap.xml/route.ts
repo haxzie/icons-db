@@ -1,6 +1,6 @@
 import { collectionByPrefix, collections } from "@/lib/collections";
 import { listIconNames } from "@/lib/db";
-import { getPosts } from "@/lib/blog";
+import { CATEGORIES, getPosts } from "@/lib/blog";
 import { concepts } from "@/lib/concepts";
 import { LIBRARY_CATEGORIES } from "@/lib/library-categories";
 import { PER_PAGE } from "@/components/library/Pagination";
@@ -25,7 +25,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ prefix: string
     const posts = await getPosts();
     const staticPages = [
       "", "/library", "/library/category", "/icons", "/install", "/licenses", "/blog",
-      "/blog/category/announcements", "/blog/category/showcase", "/blog/category/tips", "/blog/category/guides",
+      // Derived, not listed: a category added to CATEGORIES would otherwise ship
+      // with no sitemap entry and no inbound link outside /blog itself.
+      ...CATEGORIES.map((c) => `/blog/category/${c.slug}`),
       ...LIBRARY_CATEGORIES.map((c) => `/library/category/${c.slug}`),
     ].map((p) => `  <url><loc>${SITE}${p}</loc><changefreq>weekly</changefreq></url>`);
     const setPages = collections.flatMap((c) => {

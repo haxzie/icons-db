@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in to IconsDB to connect the MCP server to your coding agent.",
+  alternates: { canonical: "/sign-in" },
   robots: { index: false, follow: false },
 };
 

@@ -23,6 +23,16 @@ export default function LibraryPage() {
         <p className="text-sm text-fg-muted">
           {collections.length} curated open source sets, {total.toLocaleString()} icons. Every set is free for commercial use; sets marked amber need attribution.
         </p>
+        {/* The only crawlable entry point into /icons, which is the larger of the
+          * two browse surfaces — without it the concept pages hang off icon
+          * detail pages alone. */}
+        <p className="mt-2 text-sm text-fg-muted">
+          After one particular thing?{" "}
+          <Link href="/icons" className="text-accent hover:underline">
+            Browse icons by name
+          </Link>{" "}
+          to see the same concept side by side across every set.
+        </p>
 
         <section className="mt-6">
           <div className="mb-3 flex items-baseline justify-between gap-4">

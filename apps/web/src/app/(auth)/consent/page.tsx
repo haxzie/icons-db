@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Authorize",
+  alternates: { canonical: "/consent" },
   robots: { index: false, follow: false },
 };
 
