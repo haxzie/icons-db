@@ -34,6 +34,7 @@ export type Grouped = {
   styles: string[];
   license: string;
   attribution: boolean;
+  restricted: boolean;
   score: number;
 };
 
@@ -77,6 +78,7 @@ export function groupHits(hits: IconHit[], f: SearchFilters, limit: number): Gro
       styles: [v.style],
       license: licenseLabel(c),
       attribution: c.license.attribution,
+      restricted: Boolean(c.license.restricted),
       score: h.score,
     };
     seen.set(key, g);
@@ -87,7 +89,7 @@ export function groupHits(hits: IconHit[], f: SearchFilters, limit: number): Gro
 
 export function groupedLine(g: Grouped): string {
   const styles = g.styles.length > 1 ? ` · ${g.styles.length} styles: ${g.styles.join(", ")}` : g.styles[0] !== "Regular" ? ` · ${g.styles[0]}` : "";
-  return `${g.id} — ${g.set}${styles} · ${g.license}${g.attribution ? " (attribution)" : ""}`;
+  return `${g.id} — ${g.set}${styles} · ${g.license}${g.restricted ? " (restricted)" : g.attribution ? " (attribution)" : ""}`;
 }
 
 export type IconFormat = "react" | "vue" | "svelte" | "solid" | "svg" | "jsx" | "iconify" | "unplugin" | "css" | "data-uri" | "all";
@@ -149,7 +151,12 @@ export function codeFor(icon: IconRecord, c: CollectionMeta, format: IconFormat,
 }
 
 export function licenseLine(c: CollectionMeta): string {
-  return `License: ${licenseLabel(c)} — ${c.license.attribution ? "attribution required" : "free for commercial use, no attribution"}${c.license.url ? ` (${c.license.url})` : ""}`;
+  const terms = c.license.restricted
+    ? "not openly licensed; use only to identify the thing depicted"
+    : c.license.attribution
+      ? "attribution required"
+      : "free for commercial use, no attribution";
+  return `License: ${licenseLabel(c)} — ${terms}${c.license.url ? ` (${c.license.url})` : ""}`;
 }
 
 export function text(t: string) {

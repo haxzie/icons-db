@@ -175,9 +175,13 @@ export function CollectionBrowser({
             )}
             {c.version && <span className="ml-1 font-mono">v{c.version}</span>}
             <br />
-            {c.license.attribution ? "Attribution required." : "Free for commercial use, no attribution required."}{" "}
-            <Link href="/licenses" className="underline decoration-line hover:text-fg">
-              Details
+            {c.license.restricted
+              ? "Not openly licensed — these are trademarks of their publishers."
+              : c.license.attribution
+                ? "Attribution required."
+                : "Free for commercial use, no attribution required."}{" "}
+            <Link href={c.license.restricted ? "/licenses#app-icons" : "/licenses"} className="underline decoration-line hover:text-fg">
+              {c.license.restricted ? "Terms" : "Details"}
             </Link>
           </p>
           {c.kind === "brands" && <TrademarkNotice compact className="mt-2 border-t pt-2" />}

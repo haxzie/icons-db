@@ -80,10 +80,16 @@ export async function loadAppIcons(): Promise<{ collection: CollectionMeta; icon
     author: { name: "App publishers", url: "https://www.apple.com/app-store/" },
     license: {
       // Not a licence in the sense every other row here means it. Spelled out
-      // rather than left "Unknown" so the badge cannot read as permissive.
+      // rather than left "Unknown" so it cannot read as permissive.
       title: "Trademarks of their owners",
       url: "/licenses#app-icons",
-      attribution: true,
+      // `attribution` would be a lie in both directions: there is no licence
+      // asking for credit, and there is no permission to say "no credit
+      // needed" about either. `restricted` is the honest flag.
+      attribution: false,
+      restricted: true,
+      // The title is a sentence; the badge is a 10px pill.
+      badge: "Trademark",
     },
     homepage: "https://www.apple.com/app-store/",
     category: "Brands / Logos",

@@ -3,6 +3,15 @@ export type License = {
   spdx?: string;
   url?: string;
   attribution: boolean;
+  /**
+   * Not an open licence at all — no grant, usage limited to identifying the
+   * thing depicted. Distinct from `attribution`, which means "open, but credit
+   * the author": every site that phrases a licence has to say something else
+   * entirely here, and "free for commercial use" would be a lie.
+   */
+  restricted?: boolean;
+  /** Short badge label, for when `title` is a sentence rather than an identifier. */
+  badge?: string;
 };
 
 export type CollectionKind = "icons" | "emoji" | "brands" | "apps";

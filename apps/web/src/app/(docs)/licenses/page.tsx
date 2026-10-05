@@ -119,7 +119,9 @@ export default function LicensesPage() {
                         <span className="mr-2">{c.license.title}</span>
                         <LicenseBadge license={c.license} withLink />
                       </td>
-                      <td className="px-4 py-2.5 text-fg-muted">{c.license.attribution ? "Required" : "Not required"}</td>
+                      <td className="px-4 py-2.5 text-fg-muted">
+                        {c.license.restricted ? "See terms" : c.license.attribution ? "Required" : "Not required"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

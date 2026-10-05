@@ -49,7 +49,11 @@ export default async function CollectionPage({ params }: { params: Promise<{ pre
           <h2 className="mb-1 text-lg font-medium">All {c.name} icons, A–Z</h2>
           <p className="mb-4 text-sm text-fg-muted">
             Page 1 of {pages} · {total.toLocaleString()} icons ·{" "}
-            {c.license.attribution ? `${c.license.title}, attribution required` : `${c.license.title}, free for commercial use`}
+            {c.license.restricted
+              ? `${c.license.title} — not openly licensed`
+              : c.license.attribution
+                ? `${c.license.title}, attribution required`
+                : `${c.license.title}, free for commercial use`}
           </p>
           <IconLinkGrid>
             {icons.map((i) => (
