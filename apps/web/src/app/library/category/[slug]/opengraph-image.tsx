@@ -35,9 +35,13 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
 
   const sets = categorySets(category);
   const icons = sets.reduce((n, s) => n + s.total, 0);
+  // "multicolor" matches on palette, which the app icons also satisfy, so a
+  // category can now hold a set that is neither open source nor free. Claim it
+  // only when every set in the category earns it.
+  const allOpen = sets.every((s) => !s.raster);
   // One string, not an interpolated run: satori throws on any element with more
   // than one child unless it is explicitly `display: flex`.
-  const subtitle = `${sets.length} open source ${sets.length === 1 ? "set" : "sets"} · ${icons.toLocaleString()} free icons · IconsDB`;
+  const subtitle = `${sets.length} ${allOpen ? "open source " : ""}${sets.length === 1 ? "set" : "sets"} · ${icons.toLocaleString()} ${allOpen ? "free " : ""}icons · IconsDB`;
 
   // One pass over the pool, cycled to fill the grid. Whatever D1 does not have
   // (an alias with no row of its own) just leaves an empty tile.

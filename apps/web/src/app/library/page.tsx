@@ -9,19 +9,37 @@ import { collections } from "@/lib/collections";
 
 export const metadata: Metadata = {
   title: "Icon sets",
-  description: "Browse every open source icon set in IconsDB with licence details, authors and icon counts.",
+  description: "Browse every icon set in IconsDB with licence details, authors and icon counts — 90 open source sets plus the App Store Top 500 app icons.",
   alternates: { canonical: "/library" },
   openGraph: og({ url: "/library" }),
 };
 
 export default function LibraryPage() {
-  const total = collections.reduce((n, c) => n + c.total, 0);
+  // Counted separately so the blanket "open source, free for commercial use"
+  // line stays true: the app icons are neither, and a sentence covering
+  // "every set" cannot quietly include them.
+  const open = collections.filter((c) => !c.raster);
+  const openTotal = open.reduce((n, c) => n + c.total, 0);
+  const restricted = collections.filter((c) => c.raster);
   return (
     <main className="flex-1 pb-16">
       <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Library" action={<SubmitSetButton />} />
       <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8">
         <p className="text-sm text-fg-muted">
-          {collections.length} curated open source sets, {total.toLocaleString()} icons. Every set is free for commercial use; sets marked amber need attribution.
+          {open.length} curated open source sets, {openTotal.toLocaleString()} icons — all free for commercial use; sets marked amber need attribution.
+          {restricted.map((c) => (
+            <span key={c.prefix}>
+              {" "}
+              <Link href={`/library/${c.prefix}`} className="underline decoration-line hover:text-fg">
+                {c.name}
+              </Link>{" "}
+              ({c.total.toLocaleString()} icons) is the exception: trademarks of their publishers, not openly licensed —{" "}
+              <Link href="/licenses#app-icons" className="underline decoration-line hover:text-fg">
+                terms
+              </Link>
+              .
+            </span>
+          ))}
         </p>
         {/* The only crawlable entry point into /icons, which is the larger of the
           * two browse surfaces — without it the concept pages hang off icon
