@@ -19,6 +19,7 @@ type IconRow = {
   category: string | null;
   aliases: string | null;
   animated: number;
+  raster: number;
 };
 
 type CollectionRow = {
@@ -36,6 +37,7 @@ type CollectionRow = {
   homepage: string | null;
   category: string | null;
   palette: number;
+  raster: number;
   animated: number;
   height: number | null;
   samples: string | null;
@@ -63,6 +65,7 @@ function toIcon(r: IconRow): IconRecord {
     // The column is a materialised copy of what the body already says; read the
     // body too so the flag is right on rows seeded before the column existed.
     animated: r.animated === 1 || isAnimated(r.body),
+    raster: r.raster === 1,
   };
 }
 
@@ -82,6 +85,7 @@ function toCollection(r: CollectionRow): CollectionMeta {
     homepage: r.homepage ?? undefined,
     category: r.category ?? undefined,
     palette: r.palette === 1,
+    raster: r.raster === 1,
     animated: r.animated ?? 0,
     height: r.height ?? undefined,
     samples: r.samples ? JSON.parse(r.samples) : [],
@@ -185,10 +189,10 @@ export async function getCollectionFacets(prefix: string): Promise<{ categories:
   return { categories: cats.results.map((r) => r.category), styles: styles.results.map((r) => r.style) };
 }
 
-export type IconLink = Pick<IconRecord, "prefix" | "name" | "body" | "width" | "height" | "left" | "top" | "rotate" | "hFlip" | "vFlip">;
+export type IconLink = Pick<IconRecord, "prefix" | "name" | "body" | "width" | "height" | "left" | "top" | "rotate" | "hFlip" | "vFlip" | "raster">;
 
-const LINK_COLS = "prefix, name, body, width, height, ox, oy, rotate, hflip, vflip";
-type LinkRow = Pick<IconRow, "prefix" | "name" | "body" | "width" | "height" | "ox" | "oy" | "rotate" | "hflip" | "vflip">;
+const LINK_COLS = "prefix, name, body, width, height, ox, oy, rotate, hflip, vflip, raster";
+type LinkRow = Pick<IconRow, "prefix" | "name" | "body" | "width" | "height" | "ox" | "oy" | "rotate" | "hflip" | "vflip" | "raster">;
 const toLink = (r: LinkRow): IconLink => ({
   prefix: r.prefix,
   name: r.name,
@@ -200,6 +204,7 @@ const toLink = (r: LinkRow): IconLink => ({
   rotate: r.rotate,
   hFlip: r.hflip === 1,
   vFlip: r.vflip === 1,
+  raster: r.raster === 1,
 });
 
 /** Same family name in other sets — the cheapest "similar icons" signal, no embeddings needed. */

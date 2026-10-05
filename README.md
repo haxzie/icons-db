@@ -1,6 +1,6 @@
 # IconsDB
 
-Search 220,000+ open source icons, logos and emoji from 90 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
+Search 220,000+ open source icons, logos and emoji from 91 curated sets — instant keyword search plus semantic (natural-language) search, with copy/download as SVG, PNG, React, Vue, Svelte or CSS. Live at **https://iconsdb.app**.
 
 ## How it works
 
@@ -10,6 +10,13 @@ Search 220,000+ open source icons, logos and emoji from 90 curated sets — inst
   - int8 embeddings (`embeddings.bin`, ~11 MB) of every unique icon name, computed locally with `bge-small-en-v1.5`.
 - **Animated icons** — 2,007 of them, in two flavours. line-md, meteocons, svg-spinners, svg-loaders, Agent Loaders and a few eos-icons carry SMIL in the body, which plays wherever the SVG is inlined. Dither Icons animate on hover through a stylesheet keyed to runtime hooks the body cannot carry, so `packages/icon-index/src/dither-motion.ts` rewrites those hooks onto classes and prunes the sheet to the rules one icon needs. Either way `packages/core/src/animation.ts` detects them (`animated` column per icon, count per collection, index list for the "Animated only" filter) and resolves a still (`staticFrame`, the most legible frame rather than the last one) for the places animation cannot go: PNG export, CSS masks, and `?static` on the SVG endpoint.
 - **Search** is hybrid: the browser runs keyword/prefix search itself; `/api/v1/search` embeds the query with Workers AI (`@cf/baai/bge-small-en-v1.5`), brute-forces cosine similarity over the embeddings in the isolate, and the two lists are blended by `packages/core/src/rank.ts`.
+- **App icons** — one set is raster rather than vector. `app-icons` holds the 500 most-rated
+  apps on the US App Store as PNGs at 128/256/512/1024, in two shapes: `square` (Apple's
+  artwork untouched) and `rounded` (the iOS squircle applied as a superellipse, since iOS
+  artwork is a flat opaque square and the OS masks it at render time). These rows carry
+  `raster=1` and an empty `body`; the blobs live in R2 and `packages/core/src/raster.ts` is
+  where the split is defined. Unlike every other set they are **not openly licensed** — see
+  below.
 - **Site** is Next.js (App Router) deployed to Cloudflare Workers via `@opennextjs/cloudflare`, with D1 for icon data, KV for the Next incremental cache, and static assets for the index files.
 
 ## Layout
@@ -46,7 +53,8 @@ pnpm ship                             # opennextjs-cloudflare build && deploy
 2. Add the prefix (and homepage) to `packages/icon-index/src/collections.ts`; add manual style suffixes to `packages/core/src/variants.ts` if the set's metadata doesn't declare them.
 3. Re-run build → embed → seed → deploy.
 
-Animated sets need no extra step: `isAnimated` flags each icon during the build.
+Animated sets need no extra step: `isAnimated` flags each icon during the build. A raster set is
+a different shape again — see "Raster (PNG) sets" in `.claude/skills/deploy/SKILL.md`.
 
 One set is ours rather than normalised from upstream: **Agent Loaders**
 (`packages/icon-index/icons/agent-loaders/`), 39 hand-authored SMIL icons for the states an
@@ -56,4 +64,9 @@ conventions are in `packages/icon-index/src/agent-loaders.ts`.
 
 ## API
 
-Code is MIT licensed (see LICENSE) — this covers the site, API, MCP server and pipeline, not the icons. Icons keep their original licenses (all MIT/Apache-2.0/ISC/CC0; see https://iconsdb.app/licenses for every set).
+Code is MIT licensed (see LICENSE) — this covers the site, API, MCP server and pipeline, not the icons. Icons keep their original licenses (MIT/Apache-2.0/ISC/CC0; see https://iconsdb.app/licenses for every set).
+
+**One exception:** the `app-icons` set is not open source. Each icon is the property of its app's
+publisher, reproduced to identify that app, and carries no licence grant — see
+`packages/icon-index/app-icons/NOTICE.md` and https://iconsdb.app/licenses#app-icons, which
+includes the removal process for publishers.

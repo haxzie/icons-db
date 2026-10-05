@@ -1,4 +1,5 @@
 import { getIcons } from "@/lib/db";
+import { rasterUrl } from "@icons-db/core";
 import { CACHE_LONG, error, json } from "@/lib/api";
 
 export async function GET(req: Request, ctx: { params: Promise<{ prefix: string }> }) {
@@ -9,6 +10,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ prefix: string 
   const icons = await getIcons(prefix, names);
   const out: Record<string, unknown> = {};
   for (const i of icons) {
+    if (i.raster) {
+      out[i.name] = { raster: true, width: i.width, height: i.height, png: rasterUrl(i.prefix, i.name) };
+      continue;
+    }
     out[i.name] = {
       body: i.body,
       width: i.width,

@@ -56,6 +56,7 @@ jobs:
       # ~170 MB of 1024px masters from Apple, then masked and downsampled to the
       # four sizes. Not committed: the manifest is the source of truth.
       - name: Artwork
+        if: ${{ !inputs.skip_blobs }}
         run: |
           pnpm --filter @icons-db/icon-index app-icons:fetch
           pnpm --filter @icons-db/icon-index app-icons:png

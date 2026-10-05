@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ concept: 
   };
 }
 
-const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos & file types", emoji: "Emoji" };
+const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos & file types", emoji: "Emoji", apps: "App icons" };
 
 export default async function ConceptPage({ params }: { params: Promise<{ concept: string }> }) {
   const { concept } = await params;
@@ -45,7 +45,7 @@ export default async function ConceptPage({ params }: { params: Promise<{ concep
     getConceptData(concept),
     relatedConcepts(SITE, concept, (s) => conceptBySlug.has(s)).catch(() => [] as string[]),
   ]);
-  const groups = (["icons", "brands", "emoji"] as CollectionKind[])
+  const groups = (["icons", "brands", "emoji", "apps"] as CollectionKind[])
     .map((k) => ({ kind: k, items: inSets.filter((i) => (collectionByPrefix.get(i.prefix)?.kind ?? "icons") === k) }))
     .filter((g) => g.items.length > 0);
   const noAttribution = inSets.filter((i) => !collectionByPrefix.get(i.prefix)?.license.attribution).length;

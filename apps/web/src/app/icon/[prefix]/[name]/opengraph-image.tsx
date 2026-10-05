@@ -12,7 +12,8 @@ export const revalidate = 604800;
 export default async function OgImage({ params }: { params: Promise<{ prefix: string; name: string }> }) {
   const { prefix, name } = await params;
   const [icon, c] = [await getIcon(prefix, name), collectionByPrefix.get(prefix)];
-  const noun = c?.kind === "emoji" ? "emoji" : c?.kind === "brands" ? "logo" : "icon";
+  const noun = c?.kind === "emoji" ? "emoji" : c?.kind === "apps" ? "app icon" : c?.kind === "brands" ? "logo" : "icon";
   const title = icon ? `${humanize(icon.family)} ${noun}` : name;
+  // A raster set has no SPDX id; "Trademarks of their owners" is the honest subtitle.
   return new ImageResponse(OgCard({ title: title[0].toUpperCase() + title.slice(1), subtitle: c ? `${c.name} · ${c.license.spdx ?? c.license.title}` : undefined }), size);
 }

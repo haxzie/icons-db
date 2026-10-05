@@ -11,7 +11,7 @@
     "test": "turbo run test",
     "index:build": "pnpm --filter @icons-db/icon-index build",
     "ship": "pnpm --filter @icons-db/web deploy",
-    "data:upload": "cd apps/web && wrangler r2 object put icons-db-data/embeddings.bin --file=../../packages/icon-index/dist/embeddings.bin --content-type=application/octet-stream --remote && wrangler r2 object put icons-db-data/search-index.json --file=../../packages/icon-index/dist/search-index.json --content-type=application/json --remote"
+    "data:upload": "cd apps/web && npx wrangler r2 object put icons-db-data/embeddings.bin --file=../../packages/icon-index/dist/embeddings.bin --content-type=application/octet-stream --remote && npx wrangler r2 object put icons-db-data/search-index.json --file=../../packages/icon-index/dist/search-index.json --content-type=application/json --remote"
   },
   "devDependencies": {
     "turbo": "^2.10.9"

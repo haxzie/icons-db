@@ -1,6 +1,11 @@
 import {
+  buildRasterSnippets,
   buildSnippets,
+  humanize,
+  isRasterSize,
   packageImport,
+  RASTER_SIZES,
+  RASTER_VARIANTS,
   renderSVG,
   splitVariant,
   styleBucket,
@@ -16,6 +21,9 @@ import { collectionByPrefix } from "@/lib/collections";
 
 export const SITE = "https://iconsdb.app";
 export const TRADEMARK = "Brand logos are trademarks of their owners; the license covers the SVG only.";
+export const APP_ICON_RIGHTS =
+  "This is an app icon, the property of its publisher, reproduced to identify the app. It is not openly licensed: " +
+  "use it to refer to that app, not as your own icon or in any way implying endorsement. https://iconsdb.app/licenses#app-icons";
 
 export type Grouped = {
   id: string;
@@ -87,6 +95,25 @@ export type IconFormat = "react" | "vue" | "svelte" | "solid" | "svg" | "jsx" | 
 const FRAMEWORK_FORMATS: Record<string, Framework> = { react: "react", vue: "vue", svelte: "svelte", solid: "solid" };
 
 export function codeFor(icon: IconRecord, c: CollectionMeta, format: IconFormat, opts: { color?: string; size?: number; package?: string } = {}): { blocks: { label: string; code: string; note?: string }[]; svg: string } {
+  if (icon.raster) {
+    // A PNG has no markup to inline, so none of the component formats mean
+    // anything here. Returning the <img>/URL snippets regardless of the
+    // requested format is deliberate: an agent that asked for React should get
+    // something it can paste, plus a note saying why it is not a component.
+    const size = opts.size && isRasterSize(opts.size) ? opts.size : undefined;
+    const blocks = buildRasterSnippets({
+      prefix: icon.prefix,
+      name: icon.name,
+      label: humanize(icon.family),
+      origin: SITE,
+      size,
+    }).map((s) => ({ label: s.label, code: s.code, note: s.note }));
+    blocks[0] = {
+      ...blocks[0],
+      note: `${c.name} is a PNG set — there is no SVG, and no component form. Sizes: ${RASTER_SIZES.join("/")}; shapes: ${RASTER_VARIANTS.join("/")}.`,
+    };
+    return { blocks, svg: "" };
+  }
   const svg = renderSVG(toIconifyIcon(icon), {
     color: opts.color,
     width: opts.size ? String(opts.size) : "1em",

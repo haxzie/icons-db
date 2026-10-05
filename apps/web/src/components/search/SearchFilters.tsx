@@ -22,7 +22,7 @@ const STYLES: { id: StyleBucket; label: string }[] = [
   { id: "color", label: "Color" },
 ];
 
-const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji sets" };
+const KIND_TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji sets", apps: "App icons" };
 
 type Props = {
   collections: CollectionMeta[];
@@ -49,7 +49,7 @@ type Props = {
 export function SearchFilters(p: Props) {
   const [setQuery, setSetQuery] = useState("");
   const q = setQuery.trim().toLowerCase();
-  const groups = (["icons", "brands", "emoji"] as CollectionKind[])
+  const groups = (["icons", "brands", "emoji", "apps"] as CollectionKind[])
     .map((k) => ({
       kind: k,
       items: p.collections

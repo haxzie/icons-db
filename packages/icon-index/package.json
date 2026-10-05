@@ -9,7 +9,11 @@
     "embed": "tsx src/embed.ts",
     "seed": "tsx src/seed.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "app-icons:harvest": "node app-icons/harvest.mjs",
+    "app-icons:fetch": "node app-icons/fetch.mjs",
+    "app-icons:png": "python3 app-icons/build-png.py",
+    "app-icons:upload": "tsx src/upload-raster.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",
