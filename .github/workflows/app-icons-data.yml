@@ -1,0 +1,102 @@
+# Seeds the App Store Top 500 set into D1 and R2.
+#
+# The dataset steps are manual because they are rare (see the deploy skill), not
+# because they are delicate — but "rare" still means "done from somebody's
+# laptop with wrangler logged in". This puts them where the credentials already
+# live, so a reseed is a button rather than an afternoon.
+#
+# Dispatch-only, and deliberately separate from deploy.yml: the Worker must ship
+# *after* the data, or the library lists a collection with nothing behind it.
+name: App icons data
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch holding the pipeline to run
+        required: true
+        default: main
+      skip_blobs:
+        description: Skip the 4,000-object R2 upload (rows and index only)
+        type: boolean
+        default: false
+
+concurrency:
+  group: app-icons-data
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow
+
+      - name: Schema
+        working-directory: apps/web
+        run: npx wrangler d1 migrations apply icons-db --remote
+
+      # ~170 MB of 1024px masters from Apple, then masked and downsampled to the
+      # four sizes. Not committed: the manifest is the source of truth.
+      - name: Artwork
+        run: |
+          pnpm --filter @icons-db/icon-index app-icons:fetch
+          pnpm --filter @icons-db/icon-index app-icons:png
+
+      - uses: actions/cache@v4
+        with:
+          path: packages/icon-index/.model-cache
+          key: bge-small-en-v1.5-${{ hashFiles('packages/icon-index/src/embed.ts') }}
+
+      - name: Index + embeddings
+        run: |
+          pnpm index:build
+          pnpm --filter @icons-db/icon-index embed
+
+      # Blobs before rows: a row whose PNG is missing is a 404 on a live page,
+      # while a PNG with no row is merely invisible.
+      - name: Blobs to R2
+        if: ${{ !inputs.skip_blobs }}
+        run: pnpm --filter @icons-db/icon-index app-icons:upload -- --remote
+
+      - name: Rows to D1
+        working-directory: apps/web
+        run: |
+          set -e
+          npx wrangler d1 execute icons-db --remote --yes \
+            --file=../../packages/icon-index/dist/seed/collections.sql
+          for f in $(grep -l "'app-icons:" ../../packages/icon-index/dist/seed/icons-*.sql); do
+            echo "seeding $f"
+            npx wrangler d1 execute icons-db --remote --yes --file="$f"
+          done
+
+      - name: Search index + embeddings to R2
+        run: pnpm data:upload
+
+      - name: Verify
+        working-directory: apps/web
+        run: |
+          set -e
+          npx wrangler d1 execute icons-db --remote --yes \
+            --command "SELECT COUNT(*) AS n, SUM(raster) AS raster FROM icons WHERE prefix='app-icons'"
+          npx wrangler r2 object get icons-db-data/raster/app-icons/rounded/256/netflix.png \
+            --remote --pipe > /tmp/check.png
+          file /tmp/check.png | grep -q 'PNG image data, 256 x 256'
+          echo "artwork and rows are in place"
