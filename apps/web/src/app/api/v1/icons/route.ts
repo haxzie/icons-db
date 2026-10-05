@@ -1,5 +1,6 @@
 import { CACHE_LONG, error, json } from "@/lib/api";
 import { getIconsByIds } from "@/lib/db";
+import { rasterUrl } from "@icons-db/core";
 
 const ID = /^[a-z0-9-]+:[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -13,6 +14,12 @@ export async function GET(req: Request) {
   const records = await getIconsByIds(ids);
   const icons: Record<string, unknown> = {};
   for (const r of records) {
+    if (r.raster) {
+      // No body to give: point at the PNG endpoint rather than returning an
+      // empty SVG that every consumer would render as a blank box.
+      icons[r.id] = { raster: true, width: r.width, height: r.height, png: rasterUrl(r.prefix, r.name) };
+      continue;
+    }
     icons[r.id] = {
       body: r.body,
       width: r.width,

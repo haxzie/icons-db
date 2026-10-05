@@ -5,7 +5,7 @@ export type License = {
   attribution: boolean;
 };
 
-export type CollectionKind = "icons" | "emoji" | "brands";
+export type CollectionKind = "icons" | "emoji" | "brands" | "apps";
 
 export type CollectionMeta = {
   prefix: string;
@@ -17,6 +17,8 @@ export type CollectionMeta = {
   homepage?: string;
   category?: string;
   palette: boolean;
+  /** PNG set rather than SVG: icons live in R2 and carry no body. See `raster.ts`. */
+  raster: boolean;
   /** How many icons in the set animate (SMIL/CSS inside the body). */
   animated: number;
   height?: number;
@@ -41,7 +43,7 @@ export type IndexIconEntry = [number, string, number, number] | [number, string,
 
 export type SearchIndexData = {
   v: 1;
-  prefixes: { prefix: string; name: string; suffixes: Record<string, string> }[];
+  prefixes: { prefix: string; name: string; suffixes: Record<string, string>; raster?: boolean }[];
   categories: string[];
   icons: IndexIconEntry[];
   /** Indices into `icons` that animate. Sparse enough (~1% of icons) to be much
@@ -83,4 +85,6 @@ export type IconRecord = {
   category: string | null;
   aliases: string[];
   animated: boolean;
+  /** PNG icon: `body` is empty and the artwork is served from R2. */
+  raster: boolean;
 };

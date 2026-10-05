@@ -6,13 +6,17 @@ export type SnippetKind =
   | "iconify"
   | "unplugin"
   | "css"
-  | "data-uri";
+  | "data-uri"
+  | "html"
+  | "url"
+  | "markdown";
 
 export type Snippet = { kind: SnippetKind; label: string; language: string; code: string; note?: string };
 
 import { pascal } from "./packages";
 import { isAnimated, staticFrame } from "./animation";
 import { svgToDataUri } from "./svg";
+import { DEFAULT_RASTER_SIZE, DEFAULT_RASTER_VARIANT, rasterUrl, type RasterSize, type RasterVariant } from "./raster";
 
 const MASK_NOTE =
   "This icon is animated. Browsers do not run SVG animation inside a CSS mask, so the rule above uses a still of the drawn icon. Inline the SVG (or use the React/Vue/Svelte snippet) to keep the animation.";
@@ -79,5 +83,52 @@ export function buildSnippets(opts: { prefix: string; name: string; svg: string 
       note: animated ? MASK_NOTE : undefined,
     },
     { kind: "data-uri", label: "Data URI", language: "text", code: dataUri, note: animated ? DATA_URI_NOTE : undefined },
+  ];
+}
+
+/**
+ * Snippets for a raster (PNG) icon.
+ *
+ * Deliberately not the SVG list with the impossible entries removed: nothing
+ * here can be recoloured or masked, so a component wrapping inline markup has
+ * nothing to wrap. What people actually want from a PNG is a URL, so every
+ * snippet is a different way of spelling one.
+ */
+export function buildRasterSnippets(opts: {
+  prefix: string;
+  name: string;
+  label: string;
+  origin: string;
+  size?: RasterSize;
+  variant?: RasterVariant;
+}): Snippet[] {
+  const { prefix, name, label, origin } = opts;
+  const size = opts.size ?? DEFAULT_RASTER_SIZE;
+  const variant = opts.variant ?? DEFAULT_RASTER_VARIANT;
+  const url = origin + rasterUrl(prefix, name, { size, variant });
+  const alt = `${label} icon`;
+  const display = Math.min(size, 64);
+  return [
+    {
+      kind: "html",
+      label: "HTML",
+      language: "html",
+      code: `<img src="${url}" alt="${alt}" width="${display}" height="${display}" />`,
+    },
+    {
+      kind: "react",
+      label: "React",
+      language: "tsx",
+      code: `<img src="${url}" alt="${alt}" width={${display}} height={${display}} />`,
+    },
+    {
+      kind: "css",
+      label: "CSS",
+      language: "css",
+      code: `.icon-${name} {\n  width: ${display}px;\n  height: ${display}px;\n  background: url("${url}") no-repeat center / contain;\n}`,
+      note: "A PNG cannot be used as a CSS mask the way the SVG sets can — it carries its own colour, so it goes in `background` instead.",
+    },
+    { kind: "markdown", label: "Markdown", language: "markdown", code: `![${alt}](${url})` },
+    { kind: "url", label: "URL", language: "text", code: url },
   ];
 }

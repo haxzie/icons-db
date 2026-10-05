@@ -1,3 +1,4 @@
+import { rasterUrl } from "@icons-db/core";
 import { collectionByPrefix, collections } from "@/lib/collections";
 import { listIconNames } from "@/lib/db";
 import { CATEGORIES, getPosts } from "@/lib/blog";
@@ -49,9 +50,15 @@ export async function GET(_req: Request, ctx: { params: Promise<{ prefix: string
   const c = collectionByPrefix.get(prefix);
   if (!c) return new Response("not found", { status: 404 });
   const names = await listIconNames(prefix);
+  // A raster set has no .svg endpoint, and pointing image:loc at one would hand
+  // Google a sitemap full of 400s. The licence URL may be a site-relative anchor
+  // (the app icons point at /licenses#app-icons), which a sitemap cannot carry.
+  const licenseUrl = c.license.url ?? "/licenses";
+  const license = licenseUrl.startsWith("/") ? `${SITE}${licenseUrl}` : licenseUrl;
   const entries = names.map((n) => {
     const loc = `${SITE}/icon/${prefix}/${n}`;
-    return `  <url><loc>${esc(loc)}</loc><changefreq>monthly</changefreq><image:image><image:loc>${esc(`${SITE}/api/v1/icon/${prefix}/${n}.svg`)}</image:loc><image:title>${esc(`${n} — ${c.name}`)}</image:title><image:license>${esc(c.license.url ?? `${SITE}/licenses`)}</image:license></image:image></url>`;
+    const image = c.raster ? `${SITE}${rasterUrl(prefix, n, { size: 512 })}` : `${SITE}/api/v1/icon/${prefix}/${n}.svg`;
+    return `  <url><loc>${esc(loc)}</loc><changefreq>monthly</changefreq><image:image><image:loc>${esc(image)}</image:loc><image:title>${esc(`${n} — ${c.name}`)}</image:title><image:license>${esc(license)}</image:license></image:image></url>`;
   });
   return new Response(urlset(entries), { headers });
 }

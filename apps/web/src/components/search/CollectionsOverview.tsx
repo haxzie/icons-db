@@ -6,10 +6,10 @@ import { IconGlyph } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
 const POPULAR = ["home", "search", "settings", "user", "heart", "star", "bell", "calendar", "shopping-cart", "trash", "arrow-right", "check", "menu", "download", "lock", "camera"];
-const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji" };
+const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Logos, file types & flags", emoji: "Emoji", apps: "App icons" };
 
 export function CollectionsOverview({ collections }: { collections: CollectionMeta[] }) {
-  const groups = (["icons", "brands", "emoji"] as CollectionKind[])
+  const groups = (["icons", "brands", "emoji", "apps"] as CollectionKind[])
     .map((k) => ({ kind: k, items: collections.filter((c) => c.kind === k) }))
     .filter((g) => g.items.length > 0);
   return (

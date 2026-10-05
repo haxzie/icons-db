@@ -87,6 +87,43 @@ icon dataset changes.
 If you migrate the D1 schema, add a file under `apps/web/migrations/` and
 `wrangler d1 migrations apply icons-db --remote`.
 
+## Raster (PNG) sets — App Store Top 500
+
+One collection is PNG, not SVG: `app-icons`, prefix `app-icons`, 500 icons. Its rows carry
+`raster=1` and an empty `body`; the artwork lives in R2 under
+`raster/app-icons/{variant}/{size}/{slug}.png` (variants `rounded`/`square`, sizes
+128/256/512/1024 — 4,000 objects, ~414 MB).
+
+**Source of truth** is `packages/icon-index/app-icons/manifest.json`, which *is* committed.
+The PNGs are not: `raw/` and `png/` are gitignored and rebuilt from the manifest.
+
+```bash
+# only when refreshing the ranking — re-queries Apple's charts, ~5 min, rewrites manifest.json
+pnpm --filter @icons-db/icon-index app-icons:harvest
+
+# from a checkout with no PNGs (what CI or a fresh clone needs):
+pnpm --filter @icons-db/icon-index app-icons:fetch   # manifest -> raw/ 1024px masters, ~2 min
+pnpm --filter @icons-db/icon-index app-icons:png     # mask + downsample -> png/, ~45 s
+
+# then the normal index build, and the blob upload:
+pnpm index:build
+pnpm --filter @icons-db/icon-index app-icons:upload -- --remote     # 4,000 objects, ~8 min
+```
+
+`app-icons:upload` takes `--only <slugs>`, `--sizes` and `--variants` to re-push a subset, and
+`--local` for miniflare (which forces concurrency 1 — parallel writes to local storage fail).
+It skips nothing, so re-running it is a safe overwrite.
+
+Migration `0007_raster.sql` adds the `raster` columns and must be applied before seeding rows.
+
+**Order matters**: upload the blobs *before* seeding the D1 rows. A row without its PNG is a
+404 on a live page; a PNG without its row is invisible.
+
+**Licensing is not like the other sets.** These are trademarks, not open-source icons, and
+`/licenses#app-icons` carries the terms and a takedown address. If that address changes, change
+it in `apps/web/src/app/(docs)/licenses/page.tsx` and
+`packages/icon-index/app-icons/NOTICE.md` together.
+
 ## Secrets / config CI relies on
 
 - GitHub repo secret `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, **KV**, **R2**, SSL/zone).

@@ -81,7 +81,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
                 border: `1px solid ${art.stroke}`,
               }}
             >
-              {record && <img src={toDataUri(record.body, record.width, record.height, art.ink, record.animated)} width={82} height={82} alt="" />}
+              {record && !record.raster && <img src={toDataUri(record.body, record.width, record.height, art.ink, record.animated)} width={82} height={82} alt="" />}
             </div>
           );
         })}

@@ -2,8 +2,10 @@
 
 import { useSyncExternalStore } from "react";
 import type { IconifyIcon } from "@iconify/types";
+import type { RasterRef } from "@icons-db/core";
 
-type Entry = IconifyIcon | null;
+/** Raster sets have no body, so the store carries a pointer to the PNG instead. */
+type Entry = IconifyIcon | RasterRef | null;
 
 const cache = new Map<string, Entry>();
 const listeners = new Set<() => void>();
@@ -23,7 +25,7 @@ async function flush() {
     Array.from({ length: Math.ceil(ids.length / 200) }, (_, i) => ids.slice(i * 200, i * 200 + 200)).map(async (chunk) => {
       try {
         const res = await fetch(`/api/v1/icons?ids=${chunk.join(",")}`);
-        const data = (await res.json()) as { icons: Record<string, IconifyIcon> };
+        const data = (await res.json()) as { icons: Record<string, IconifyIcon | RasterRef> };
         for (const id of chunk) cache.set(id, data.icons[id] ?? null);
       } catch {
         for (const id of chunk) cache.set(id, null);
@@ -46,7 +48,7 @@ export function requestIcon(prefix: string, name: string) {
   }
 }
 
-export function primeIcon(prefix: string, name: string, icon: IconifyIcon) {
+export function primeIcon(prefix: string, name: string, icon: IconifyIcon | RasterRef) {
   cache.set(`${prefix}:${name}`, icon);
 }
 
@@ -55,7 +57,7 @@ function subscribe(cb: () => void) {
   return () => listeners.delete(cb);
 }
 
-export function useIcon(prefix: string, name: string): IconifyIcon | null | undefined {
+export function useIcon(prefix: string, name: string): Entry | undefined {
   const id = `${prefix}:${name}`;
   const value = useSyncExternalStore(
     subscribe,

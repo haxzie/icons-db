@@ -4,7 +4,7 @@ import { detectIconPackages, humanize, SET_PACKAGES, setsForPackage, type StyleB
 import { collectionByPrefix, collections } from "@/lib/collections";
 import { getIcon, getIcons, getSameFamilyAcrossSets, getVariants } from "@/lib/db";
 import { search } from "@/lib/search.server";
-import { codeFor, groupedLine, groupHits, licenseLabel, licenseLine, SITE, text, TRADEMARK, type IconFormat, type SearchFilters } from "./format";
+import { APP_ICON_RIGHTS, codeFor, groupedLine, groupHits, licenseLabel, licenseLine, SITE, text, TRADEMARK, type IconFormat, type SearchFilters } from "./format";
 
 const ID = /^[a-z0-9-]+:[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const FORMAT = z.enum(["react", "vue", "svelte", "solid", "svg", "jsx", "iconify", "unplugin", "css", "data-uri", "all"]);
@@ -121,7 +121,8 @@ export function registerTools(server: McpServer, origin: string) {
     const c = collectionByPrefix.get(prefix);
     if (!icon || !c) return { lines: [`${id}: not found. Use search_icons to find valid ids.`], data: null };
     const { blocks, svg } = codeFor(icon, c, format, opts);
-    const lines = [`# ${id} — ${humanize(icon.family)} (${c.name}, ${icon.style})`];
+    const lines = [`# ${id} — ${humanize(icon.family)} (${c.name}${icon.raster ? ", PNG" : `, ${icon.style}`})`];
+    if (icon.raster) lines.push("", APP_ICON_RIGHTS);
     for (const b of brief ? blocks.slice(0, 1) : blocks) {
       lines.push(`## ${b.label}`, "```", b.code.trimEnd(), "```");
       if (b.note) lines.push(b.note);

@@ -1,6 +1,7 @@
 import type { CollectionMeta, IconRecord } from "@icons-db/core";
-import { humanize } from "@icons-db/core";
+import { humanize, rasterUrl } from "@icons-db/core";
 import { SITE } from "./site";
+import { appBySlug } from "./app-icons";
 
 export { SITE };
 
@@ -11,7 +12,7 @@ export function og(overrides: Record<string, unknown> = {}) {
   return { images: [OG_IMAGE], ...overrides };
 }
 
-const KIND_NOUN = { icons: "icon", brands: "logo", emoji: "emoji" } as const;
+const KIND_NOUN = { icons: "icon", brands: "logo", emoji: "emoji", apps: "app icon" } as const;
 
 function titleCase(s: string): string {
   return s.replace(/\b[a-z]/g, (ch) => ch.toUpperCase());
@@ -19,12 +20,24 @@ function titleCase(s: string): string {
 
 export function iconTitle(icon: IconRecord, c: CollectionMeta): string {
   const noun = KIND_NOUN[c.kind];
+  // "YouTube", not the humanised slug "Youtube" — these are brand names, and
+  // their own capitalisation is the only correct one.
+  const app = icon.raster ? appBySlug.get(icon.name) : undefined;
+  if (app) return `${app.name} ${noun} — ${c.name}`;
   const style = c.kind === "icons" && icon.style && icon.style !== "Regular" ? ` ${icon.style.toLowerCase()}` : "";
   return `${titleCase(humanize(icon.family))}${style} ${noun} — ${c.name}`;
 }
 
 export function iconDescription(icon: IconRecord, c: CollectionMeta): string {
   const noun = KIND_NOUN[c.kind];
+  if (icon.raster) {
+    // No SVG and no component snippets to promise, so the copy says what is
+    // actually on the page: PNGs at four sizes, in two shapes.
+    const app = appBySlug.get(icon.name);
+    const label = app?.name ?? humanize(icon.family);
+    const by = app ? ` by ${app.publisher}` : "";
+    return `Download the ${label}${by} ${noun} as a PNG at 128, 256, 512 or 1024px, rounded or square. Trademark of its owner — see the terms before using it.`;
+  }
   const license = c.license.attribution ? `${c.license.title}, attribution required` : `${c.license.title}, free for commercial use`;
   const aliases = icon.aliases.length ? ` Also known as ${icon.aliases.slice(0, 3).join(", ")}.` : "";
   const animated = icon.animated ? " Animated SVG." : "";
@@ -40,10 +53,14 @@ export function iconJsonLd(icon: IconRecord, c: CollectionMeta) {
       "@type": "ImageObject",
       name,
       description: iconDescription(icon, c),
-      contentUrl: `${SITE}/api/v1/icon/${icon.prefix}/${icon.name}.svg`,
-      thumbnailUrl: `${SITE}/api/v1/icon/${icon.prefix}/${icon.name}.svg?size=128`,
+      contentUrl: icon.raster
+        ? SITE + rasterUrl(icon.prefix, icon.name, { size: 512 })
+        : `${SITE}/api/v1/icon/${icon.prefix}/${icon.name}.svg`,
+      thumbnailUrl: icon.raster
+        ? SITE + rasterUrl(icon.prefix, icon.name, { size: 128 })
+        : `${SITE}/api/v1/icon/${icon.prefix}/${icon.name}.svg?size=128`,
       url,
-      encodingFormat: "image/svg+xml",
+      encodingFormat: icon.raster ? "image/png" : "image/svg+xml",
       license: c.license.url,
       acquireLicensePage: `${SITE}/licenses`,
       creditText: c.author.name,
@@ -71,7 +88,9 @@ export function collectionJsonLd(c: CollectionMeta) {
     "@type": "CollectionPage",
     name: `${c.name} icons`,
     url: `${SITE}/library/${c.prefix}`,
-    description: `All ${c.total.toLocaleString()} ${c.name} icons, free to download as SVG/PNG or copy as code. ${c.license.title}.`,
+    description: c.raster
+      ? `All ${c.total.toLocaleString()} ${c.name} icons, as PNGs at 128, 256, 512 and 1024px. ${c.license.title}.`
+      : `All ${c.total.toLocaleString()} ${c.name} icons, free to download as SVG/PNG or copy as code. ${c.license.title}.`,
     license: c.license.url,
     creator: { "@type": "Organization", name: c.author.name, url: c.author.url },
     numberOfItems: c.total,

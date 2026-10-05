@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import type { IconifyIcon } from "@iconify/types";
-import { renderInline } from "@icons-db/core";
+import { isRasterRef, renderInline, type RasterRef } from "@icons-db/core";
 import { useIcon } from "@/lib/icon-store";
 
 /** SMIL only. Dither's icons animate through CSS, which already re-runs on
@@ -55,10 +55,35 @@ export function InlineSvg({
   );
 }
 
-/** Lazily fetches the icon body through the cross-set batched store and renders it inline. */
+/** A raster set's icon: a PNG from R2, sized by the same className the SVG sets get. */
+export function RasterGlyph({ icon, alt, className }: { icon: RasterRef; alt?: string; className?: string }) {
+  return (
+    // next/image would proxy every one of these through the Worker for no
+    // benefit: they are already exported at exactly the sizes we offer.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={icon.png}
+      alt={alt ?? ""}
+      width={icon.width}
+      height={icon.height}
+      loading="lazy"
+      decoding="async"
+      className={className}
+    />
+  );
+}
+
+/**
+ * Lazily fetches the icon through the cross-set batched store and renders it.
+ *
+ * Both kinds of set land here: the store returns Iconify data for the SVG sets
+ * and a PNG pointer for the raster ones, so every grid, panel and variant strip
+ * draws app icons correctly without knowing they exist.
+ */
 export function IconGlyph({ prefix, name, className }: { prefix: string; name: string; className?: string }) {
   const icon = useIcon(prefix, name);
   if (icon === undefined) return <span className={`block animate-pulse rounded bg-bg-muted ${className ?? ""}`} />;
   if (icon === null) return <span className={`block rounded bg-bg-muted opacity-40 ${className ?? ""}`} />;
+  if (isRasterRef(icon)) return <RasterGlyph icon={icon} className={className} />;
   return <InlineSvg icon={icon} className={className} />;
 }

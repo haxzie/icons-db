@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { buildSnippets, humanize, renderSVG, toIconifyIcon } from "@icons-db/core";
+import { buildRasterSnippets, buildSnippets, humanize, rasterUrl, renderSVG, toIconifyIcon } from "@icons-db/core";
 import { getAliasParent } from "@/lib/db";
 import { getIconPageData } from "@/lib/page-data";
 import { collectionByPrefix } from "@/lib/collections";
+import { appBySlug } from "@/lib/app-icons";
 import { conceptBySlug } from "@/lib/concepts";
 import { iconDescription, iconJsonLd, iconTitle, JsonLd, SITE } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -45,9 +46,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     notFound();
   }
   const { icon, variants, acrossSets, related } = data;
-  const svg = renderSVG(toIconifyIcon(icon), { width: "1em", height: "1em" });
-  const snippets = buildSnippets({ prefix, name: icon.name, svg });
-  const noun = collection.kind === "emoji" ? "emoji" : collection.kind === "brands" ? "logo" : "icon";
+  const app = icon.raster ? appBySlug.get(icon.name) : undefined;
+  const svg = icon.raster ? "" : renderSVG(toIconifyIcon(icon), { width: "1em", height: "1em" });
+  const snippets = icon.raster
+    ? buildRasterSnippets({ prefix, name: icon.name, label: app?.name ?? humanize(icon.family), origin: SITE })
+    : buildSnippets({ prefix, name: icon.name, svg });
+  const noun = collection.kind === "emoji" ? "emoji" : collection.kind === "apps" ? "app icon" : collection.kind === "brands" ? "logo" : "icon";
   const otherVariants = variants.filter((v) => v.name !== icon.name);
 
   return (
@@ -59,21 +63,37 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           { href: "/library", label: "Library" },
           { href: `/library/${prefix}`, label: collection.name },
         ]}
-        title={`${humanize(icon.family)} ${noun}`}
+        title={app ? `${app.name} ${noun}` : `${humanize(icon.family)} ${noun}`}
       />
       <div className="mx-auto w-full max-w-[1400px] px-4 pt-2 md:px-8">
-        <p className="mb-6 max-w-3xl text-fg-muted">
-          <span className="font-mono text-fg">{icon.name}</span> from{" "}
-          <Link href={`/library/${prefix}`} className="text-fg underline decoration-line">
-            {collection.name}
-          </Link>{" "}
-          by {collection.author.name} · {icon.style}
-          {icon.category && <> · {icon.category}</>}
-          {icon.animated && <> · animated</>} · <LicenseBadge license={collection.license} withLink />{" "}
-          {collection.license.attribution ? "Attribution required." : "Free for personal and commercial use."}
-        </p>
+        {app ? (
+          <p className="mb-6 max-w-3xl text-fg-muted">
+            <span className="text-fg">{app.name}</span> by {app.publisher} · {app.genre} ·{" "}
+            {app.ratings.toLocaleString()} ratings ·{" "}
+            <a href={app.storeUrl} className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
+              View on the App Store
+            </a>
+            <br />
+            This icon is the property of {app.publisher} and is shown to identify the app.{" "}
+            <Link href="/licenses#app-icons" className="underline decoration-line hover:text-fg">
+              Terms of use
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="mb-6 max-w-3xl text-fg-muted">
+            <span className="font-mono text-fg">{icon.name}</span> from{" "}
+            <Link href={`/library/${prefix}`} className="text-fg underline decoration-line">
+              {collection.name}
+            </Link>{" "}
+            by {collection.author.name} · {icon.style}
+            {icon.category && <> · {icon.category}</>}
+            {icon.animated && <> · animated</>} · <LicenseBadge license={collection.license} withLink />{" "}
+            {collection.license.attribution ? "Attribution required." : "Free for personal and commercial use."}
+          </p>
+        )}
 
-        <IconPage icon={icon} collection={collection} svg={svg} variants={variants.map((v) => ({ name: v.name, style: v.style }))} />
+        <IconPage icon={icon} collection={collection} svg={svg} variants={variants.map((v) => ({ name: v.name, style: v.style }))} label={app?.name} />
 
         {otherVariants.length > 0 && (
           <Section title={`${otherVariants.length} other ${otherVariants.length === 1 ? "variant" : "variants"} in ${collection.name}`}>
@@ -114,10 +134,10 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           </Section>
         )}
 
-        <Section title={`Use the ${humanize(icon.family)} ${noun}`}>
+        <Section title={`Use the ${app?.name ?? humanize(icon.family)} ${noun}`}>
           <div className="grid gap-4 md:grid-cols-2">
             {snippets
-              .filter((s) => ["svg", "react", "vue", "css"].includes(s.kind))
+              .filter((s) => (icon.raster ? ["html", "react", "css", "markdown"] : ["svg", "react", "vue", "css"]).includes(s.kind))
               .map((s) => (
                 <div key={s.kind} className="min-w-0 rounded-2xl border bg-bg-elevated p-4">
                   <h3 className="mb-2 text-sm font-medium">{s.label}</h3>
@@ -126,22 +146,42 @@ export default async function Page({ params }: { params: Promise<Params> }) {
                 </div>
               ))}
           </div>
-          <p className="mt-4 text-sm text-fg-muted">
-            Direct links:{" "}
-            <a href={`/api/v1/icon/${prefix}/${icon.name}.svg`} className="underline decoration-line hover:text-fg">
-              SVG
-            </a>
-            {" · "}
-            <a href={`/api/v1/icon/${prefix}/${icon.name}.svg?download`} className="underline decoration-line hover:text-fg">
-              download
-            </a>
-            {" · "}
-            <a href={`/api/v1/icons/${prefix}?icons=${icon.name}`} className="underline decoration-line hover:text-fg">
-              JSON
-            </a>
-            {" · "}
-            <span className="font-mono">{`${SITE}/api/v1/icon/${prefix}/${icon.name}.svg?color=%231a73e8&size=48`}</span>
-          </p>
+          {icon.raster ? (
+            <p className="mt-4 text-sm text-fg-muted">
+              Direct links:{" "}
+              {[128, 256, 512, 1024].map((sz, i) => (
+                <span key={sz}>
+                  {i > 0 && " · "}
+                  <a href={rasterUrl(prefix, icon.name, { size: sz as 128 })} className="underline decoration-line hover:text-fg">
+                    {sz}px
+                  </a>
+                </span>
+              ))}
+              {" · "}
+              <a href={rasterUrl(prefix, icon.name, { variant: "square" })} className="underline decoration-line hover:text-fg">
+                square
+              </a>
+              {" · "}
+              <span className="font-mono">{`${SITE}${rasterUrl(prefix, icon.name, { size: 512 })}`}</span>
+            </p>
+          ) : (
+            <p className="mt-4 text-sm text-fg-muted">
+              Direct links:{" "}
+              <a href={`/api/v1/icon/${prefix}/${icon.name}.svg`} className="underline decoration-line hover:text-fg">
+                SVG
+              </a>
+              {" · "}
+              <a href={`/api/v1/icon/${prefix}/${icon.name}.svg?download`} className="underline decoration-line hover:text-fg">
+                download
+              </a>
+              {" · "}
+              <a href={`/api/v1/icons/${prefix}?icons=${icon.name}`} className="underline decoration-line hover:text-fg">
+                JSON
+              </a>
+              {" · "}
+              <span className="font-mono">{`${SITE}/api/v1/icon/${prefix}/${icon.name}.svg?color=%231a73e8&size=48`}</span>
+            </p>
+          )}
         </Section>
       </div>
     </main>

@@ -3,20 +3,30 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  buildRasterSnippets,
   buildSnippets,
+  DEFAULT_RASTER_SIZE,
+  DEFAULT_RASTER_VARIANT,
   humanize,
   isAnimated,
+  isRasterRef,
+  RASTER_SIZES,
+  RASTER_VARIANTS,
+  rasterUrl,
   renderSVG,
   splitVariant,
   staticFrame,
   type CollectionMeta,
   type KeywordIndex,
+  type RasterSize,
+  type RasterVariant,
   type SemanticHit,
 } from "@icons-db/core";
 import { useIcon } from "@/lib/icon-store";
 import { downloadBlob, svgToPng, useCopy } from "@/lib/client-utils";
 import { track, type Surface } from "@/lib/analytics";
-import { IconGlyph, InlineSvg, replaySmil } from "../IconGlyph";
+import { SITE } from "@/lib/site";
+import { IconGlyph, InlineSvg, RasterGlyph, replaySmil } from "../IconGlyph";
 import { LicenseBadge } from "../LicenseBadge";
 
 type Props = {
@@ -29,18 +39,25 @@ type Props = {
   variant?: "panel" | "page";
   /** Pre-computed variants (server-rendered pages); otherwise derived from the client index. */
   variants?: { name: string; style: string }[];
+  /** Display name for raster icons — the app's own, e.g. "Uber - Rides, Eats,
+   * Hotels". Server pages have it; the search panel falls back to the slug,
+   * since shipping the 500-app manifest to the client to title-case alt text
+   * would cost more than it is worth. */
+  label?: string;
 };
 
 const PREVIEW_SIZES = [16, 24, 32, 48, 96];
 const PNG_SIZES = [64, 128, 256, 512, 1024];
 const PRESET_COLORS = ["#000000", "#ffffff", "#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6"];
 
-export function IconDetail({ prefix, name, index, collection, onClose, onSelect, variant = "panel", variants: givenVariants }: Props) {
+export function IconDetail({ prefix, name, index, collection, onClose, onSelect, variant = "panel", variants: givenVariants, label }: Props) {
   const icon = useIcon(prefix, name);
   const { copied, copy } = useCopy();
   const [color, setColor] = useState<string>("");
   const [previewSize, setPreviewSize] = useState(48);
   const [pngSize, setPngSize] = useState(256);
+  const [rasterSize, setRasterSize] = useState<RasterSize>(DEFAULT_RASTER_SIZE);
+  const [rasterVariant, setRasterVariant] = useState<RasterVariant>(DEFAULT_RASTER_VARIANT);
   const [tab, setTab] = useState("svg");
   const [similar, setSimilar] = useState<SemanticHit[]>([]);
   const previewRef = useRef<SVGSVGElement>(null);
@@ -85,9 +102,25 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
     return () => ctrl.abort();
   }, [prefix, family, index]);
 
-  const svg = useMemo(() => (icon ? renderSVG(icon, { width: "1em", height: "1em", color: color || undefined }) : ""), [icon, color]);
-  const animated = useMemo(() => Boolean(icon) && isAnimated(svg), [icon, svg]);
-  const snippets = useMemo(() => (icon ? buildSnippets({ prefix, name, svg }) : []), [icon, prefix, name, svg]);
+  // One store, two kinds of icon. Narrowing here keeps every SVG-only
+  // computation below honest instead of guarding each one.
+  const rasterIcon = icon && isRasterRef(icon) ? icon : null;
+  const svgIcon = icon && !isRasterRef(icon) ? icon : null;
+
+  const svg = useMemo(
+    () => (svgIcon ? renderSVG(svgIcon, { width: "1em", height: "1em", color: color || undefined }) : ""),
+    [svgIcon, color],
+  );
+  const animated = useMemo(() => Boolean(svgIcon) && isAnimated(svg), [svgIcon, svg]);
+  const snippets = useMemo(
+    () =>
+      rasterIcon
+        ? buildRasterSnippets({ prefix, name, label: label ?? titleCase(humanize(name)), origin: SITE, size: rasterSize, variant: rasterVariant })
+        : svgIcon
+          ? buildSnippets({ prefix, name, svg })
+          : [],
+    [rasterIcon, svgIcon, prefix, name, svg, rasterSize, rasterVariant, label],
+  );
   const active = snippets.find((s) => s.kind === tab) ?? snippets[0];
 
   /** line-md and friends play once on load; hovering any tile replays it, and
@@ -116,8 +149,8 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
   }
 
   async function downloadPng() {
-    if (!icon) return;
-    let px = renderSVG(icon, { width: pngSize, height: pngSize, color: color || (document.documentElement.classList.contains("dark") ? "#ffffff" : "#000000") });
+    if (!svgIcon) return;
+    let px = renderSVG(svgIcon, { width: pngSize, height: pngSize, color: color || (document.documentElement.classList.contains("dark") ? "#ffffff" : "#000000") });
     // A PNG is one frame, and frame 0 of most animated icons is blank.
     if (animated) px = staticFrame(px);
     const blob = await svgToPng(px, pngSize);
@@ -167,8 +200,14 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
 
       <div className="p-4">
         <div className="relative flex items-center justify-center rounded-xl border bg-bg py-8" style={{ color: color || undefined }}>
-          {icon ? (
-            <InlineSvg icon={icon} svgRef={previewRef} style={{ width: previewSize, height: previewSize }} />
+          {rasterIcon ? (
+            <RasterGlyph
+              icon={{ ...rasterIcon, png: rasterUrl(prefix, name, { size: rasterSize, variant: rasterVariant }) }}
+              alt={`${label ?? titleCase(humanize(name))} app icon`}
+              className="block size-28 object-contain"
+            />
+          ) : svgIcon ? (
+            <InlineSvg icon={svgIcon} svgRef={previewRef} style={{ width: previewSize, height: previewSize }} />
           ) : (
             <span className="size-12 animate-pulse rounded bg-bg-muted" />
           )}
@@ -185,6 +224,41 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             </button>
           )}
         </div>
+        {rasterIcon ? (
+          <div className="mt-3 space-y-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-fg-subtle">Size</span>
+              <div className="ml-auto flex gap-1">
+                {RASTER_SIZES.map((sz) => (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => setRasterSize(sz)}
+                    className={`rounded px-1.5 py-0.5 tabular-nums ${rasterSize === sz ? "bg-bg-muted text-fg" : "text-fg-subtle hover:text-fg"}`}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-fg-subtle">Shape</span>
+              <div className="ml-auto flex gap-1">
+                {RASTER_VARIANTS.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setRasterVariant(v)}
+                    title={v === "rounded" ? "iOS icon mask, transparent corners" : "Artwork exactly as Apple serves it"}
+                    className={`rounded px-1.5 py-0.5 capitalize ${rasterVariant === v ? "bg-bg-muted text-fg" : "text-fg-subtle hover:text-fg"}`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="mt-3 space-y-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-fg-subtle">Size</span>
@@ -239,9 +313,29 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             </div>
           </div>
         </div>
+        )}
 
+        {rasterIcon ? (
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <a
+              href={rasterUrl(prefix, name, { size: rasterSize, variant: rasterVariant, download: true })}
+              onClick={() =>
+                track("icon_downloaded", { set: prefix, icon: name, format: "png", size: rasterSize, surface, recolored: false })
+              }
+              className="col-span-2 flex h-9 items-center justify-center rounded-lg border bg-bg-elevated text-sm hover:border-fg-subtle"
+            >
+              Download PNG · {rasterSize}px {rasterVariant}
+            </a>
+            <Action onClick={() => copyAs(SITE + rasterUrl(prefix, name, { size: rasterSize, variant: rasterVariant }), "url", "url")} done={copied === "url"}>
+              Copy URL
+            </Action>
+            <Action onClick={() => copyAs(`${prefix}:${name}`, "name", "name")} done={copied === "name"}>
+              Copy name
+            </Action>
+          </div>
+        ) : (
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Action onClick={() => copyAs(svg, "svg", "svg")} done={copied === "svg"} disabled={!icon}>
+          <Action onClick={() => copyAs(svg, "svg", "svg")} done={copied === "svg"} disabled={!svgIcon}>
             Copy SVG
           </Action>
           <Action onClick={() => copyAs(`${prefix}:${name}`, "name", "name")} done={copied === "name"}>
@@ -255,7 +349,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             Download SVG
           </a>
           <div className="flex h-9 overflow-hidden rounded-lg border bg-bg-elevated text-sm">
-            <button type="button" onClick={downloadPng} disabled={!icon} className="flex-1 hover:bg-bg-muted">
+            <button type="button" onClick={downloadPng} disabled={!svgIcon} className="flex-1 hover:bg-bg-muted">
               PNG
             </button>
             <select
@@ -271,6 +365,7 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
             </select>
           </div>
         </div>
+        )}
 
         {variants.length > 1 && (
           <Section title={`${variants.length} variants`}>
@@ -340,7 +435,18 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
           </Section>
         )}
 
-        {collection && (
+        {collection?.kind === "apps" ? (
+          <Section title="Rights">
+            <p className="text-xs leading-relaxed text-fg-muted">
+              This icon is the property of its publisher and is shown to identify their app. It is not openly licensed, and downloading it
+              grants you no rights in the mark. Use it to refer to the app; do not use it as your own icon or in a way that implies
+              endorsement.{" "}
+              <Link href="/licenses#app-icons" className="underline decoration-line hover:text-fg">
+                Full terms
+              </Link>
+            </p>
+          </Section>
+        ) : collection ? (
           <Section title="License">
             <p className="text-xs leading-relaxed text-fg-muted">
               <span className="text-fg">{collection.name}</span> by{" "}
@@ -369,10 +475,14 @@ export function IconDetail({ prefix, name, index, collection, onClose, onSelect,
               {collection.kind === "brands" && " Logos are trademarks of their owners; the license covers the SVG only."}
             </p>
           </Section>
-        )}
+        ) : null}
       </div>
     </aside>
   );
+}
+
+function titleCase(s: string): string {
+  return s.replace(/\b[a-z]/g, (ch) => ch.toUpperCase());
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

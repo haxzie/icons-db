@@ -20,6 +20,7 @@ import { loadAgentLoaders, AGENT_LOADERS_PREFIX } from "./agent-loaders";
 import { loadDither, DITHER_PREFIX } from "./dither";
 import { loadLobehub, LOBEHUB_PREFIX } from "./lobehub";
 import { loadSvgLoaders, SVG_LOADERS_PREFIX } from "./svg-loaders";
+import { loadAppIcons, loadManifest } from "./app-icons";
 import { DIST } from "./paths";
 
 const require = createRequire(import.meta.url);
@@ -84,6 +85,7 @@ function collectionMeta(prefix: string, s: SetFiles, total: number, animated: nu
     homepage: HOMEPAGES[prefix] ?? s.info.author?.url,
     category: s.info.category,
     palette: Boolean(s.info.palette),
+    raster: false,
     animated,
     height: typeof s.info.height === "number" ? s.info.height : undefined,
     samples: s.info.samples ?? [],
@@ -124,6 +126,7 @@ function iconRow(r: IconRecord): string {
     sqlStr(r.category),
     sqlStr(r.aliases.length ? JSON.stringify(r.aliases) : null),
     r.animated ? 1 : 0,
+    r.raster ? 1 : 0,
   ].join(",")})`;
 }
 
@@ -143,6 +146,7 @@ function collectionRow(c: CollectionMeta): string {
     sqlStr(c.homepage),
     sqlStr(c.category),
     c.palette ? 1 : 0,
+    c.raster ? 1 : 0,
     c.animated,
     c.height ?? "NULL",
     sqlStr(JSON.stringify(c.samples)),
@@ -152,9 +156,9 @@ function collectionRow(c: CollectionMeta): string {
 }
 
 const ICON_COLS =
-  "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases,animated)";
+  "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases,animated,raster)";
 const COLLECTION_COLS =
-  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,animated,height,samples,version,suffixes)";
+  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,raster,animated,height,samples,version,suffixes)";
 
 async function main() {
   await rm(DIST, { recursive: true, force: true });
@@ -280,6 +284,7 @@ async function main() {
         category: categories.get(name) ?? categories.get(family) ?? null,
         aliases: [],
         animated: isAnimated(data.body),
+        raster: false,
       };
       if (record.animated) animatedIdx.push(indexIcons.length);
       iconIdxByName.set(name, indexIcons.length);
@@ -314,6 +319,50 @@ async function main() {
         (animated ? `  ${animated} animated` : ""),
     );
   }
+
+  // Raster sets. No Iconify package to walk and no body to parse, so they join
+  // the index and the seed directly rather than going through `loadSet`.
+  {
+    const { collection, icons: appIcons } = await loadAppIcons();
+    const manifest = await loadManifest();
+    const byName = new Map(manifest.apps.map((a) => [a.slug, a]));
+    const prefixIdx = prefixes.length;
+    prefixes.push({ prefix: collection.prefix, name: collection.name, suffixes: collection.suffixes, raster: true });
+
+    for (const r of appIcons) {
+      const app = byName.get(r.name);
+      // The app's real name is far better search text than its slug: "Uber -
+      // Rides, Eats, Hotels" beats "uber rides eats hotels", and the genre
+      // bridges "food delivery" to DoorDash without naming it.
+      const text = app ? `${app.name}. ${app.genre}` : humanize(r.name);
+      indexIcons.push([prefixIdx, r.name, textId(text), categoryId(r.category)]);
+      const row = iconRow(r);
+      seedRows.push(row);
+      seedBytes += row.length;
+      await flushSeed();
+    }
+    totalIcons += appIcons.length;
+    collections.push(collection);
+
+    // Per-app metadata for the icon pages: publisher, store listing, ratings.
+    // The icon row cannot carry it, and the takedown promise on /licenses needs
+    // every icon to name its rights holder and link back to the source.
+    await writeFile(
+      join(DIST, "app-icons.json"),
+      JSON.stringify(
+        manifest.apps.map((a) => ({
+          slug: a.slug,
+          name: a.name,
+          publisher: a.seller,
+          genre: a.genre,
+          ratings: a.ratings,
+          storeUrl: a.storeUrl,
+        })),
+      ),
+    );
+    console.log(`${collection.prefix.padEnd(18)} ${String(appIcons.length).padStart(6)} icons  (raster PNG)`);
+  }
+
   await flushSeed(true);
 
   const index: SearchIndexData = { v: 1, prefixes, categories: categoryNames, icons: indexIcons, animated: animatedIdx };

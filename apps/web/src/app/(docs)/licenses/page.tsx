@@ -14,10 +14,10 @@ export const metadata: Metadata = {
   openGraph: og({ url: "/licenses" }),
 };
 
-const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos, file types & flags", emoji: "Emoji" };
+const TITLES: Record<CollectionKind, string> = { icons: "Icon sets", brands: "Brand logos, file types & flags", emoji: "Emoji", apps: "App icons" };
 
 export default function LicensesPage() {
-  const groups = (["icons", "brands", "emoji"] as CollectionKind[]).map((k) => ({ kind: k, items: collections.filter((c) => c.kind === k) }));
+  const groups = (["icons", "brands", "emoji", "apps"] as CollectionKind[]).map((k) => ({ kind: k, items: collections.filter((c) => c.kind === k) }));
   const attribution = collections.filter((c) => c.license.attribution);
   return (
     <main className="flex-1 pb-16">
@@ -29,7 +29,11 @@ export default function LicensesPage() {
             Iconify
           </a>
           . IconsDB does not relicense anything: every icon stays under the license its authors chose, listed below with a link to the full text.
-          The site and API code are MIT licensed.
+          The site and API code are MIT licensed. One set is the exception and is not open source —{" "}
+          <a href="#app-icons" className="underline decoration-line hover:text-fg">
+            App Store Top 500
+          </a>
+          .
         </p>
 
         <section className="mt-8 rounded-2xl border bg-bg-elevated p-5">
@@ -52,6 +56,29 @@ export default function LicensesPage() {
         </section>
 
         <TrademarkNotice className="mt-4" />
+
+        <section id="app-icons" className="mt-4 scroll-mt-24 rounded-2xl border border-amber-500/40 bg-amber-500/5 p-5">
+          <h2 className="font-medium">App Store Top 500</h2>
+          <p className="mt-1 text-sm leading-relaxed text-fg-muted">
+            Unlike every other set here, these 500 icons are <span className="text-fg">not openly licensed</span>. Each one is the property of
+            the app&apos;s publisher and is reproduced to identify that app. No affiliation with, sponsorship by or endorsement from any
+            publisher is implied, including Apple. Artwork comes from Apple&apos;s public lookup API; the square variant is what Apple serves,
+            and the rounded variant applies the iOS icon mask, so it is a modified reproduction.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-fg-muted">
+            Downloading one grants you no rights in the mark it depicts. Using a company&apos;s icon to identify that company — a login button,
+            an integration list, a comparison table — is generally fine. Using it as your own product&apos;s icon, or in a way that suggests the
+            publisher endorses you, is not.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-fg-muted">
+            <span className="text-fg">Publishers:</span> email{" "}
+            <a href="mailto:takedown@iconsdb.app" className="underline decoration-line hover:text-fg">
+              takedown@iconsdb.app
+            </a>{" "}
+            to have your icon removed. Removal is honoured on request — no formal notice needed, and we will not ask you to establish
+            infringement first. Each icon&apos;s page links the App Store listing it came from.
+          </p>
+        </section>
 
         {groups.map((g) => (
           <section key={g.kind} className="mt-10">
