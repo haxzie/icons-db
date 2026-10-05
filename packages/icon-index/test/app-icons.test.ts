@@ -41,6 +41,22 @@ describe("loadAppIcons", () => {
     expect(collection.license.title).toMatch(/trademark/i);
   });
 
+  it("is restricted, not attribution-required", () => {
+    // `attribution` has two states and both promise an open licence: "credit
+    // the author" or "free for commercial use, no credit needed". Claiming
+    // either put "Attribution required." under a set that has no licence.
+    const { license } = loaded.collection;
+    expect(license.restricted).toBe(true);
+    expect(license.attribution).toBe(false);
+  });
+
+  it("gives the badge something that fits in a pill", () => {
+    const { license } = loaded.collection;
+    expect(license.badge).toBeDefined();
+    expect(license.badge!.length).toBeLessThan(16);
+    expect(license.title.length).toBeGreaterThan(license.badge!.length);
+  });
+
   it("only advertises samples that exist in the set", () => {
     for (const s of loaded.collection.samples) {
       expect(loaded.icons.some((i) => i.name === s)).toBe(true);

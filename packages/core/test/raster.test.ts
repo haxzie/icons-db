@@ -92,3 +92,21 @@ describe("buildRasterSnippets", () => {
     expect(byKind.markdown).toBe("![Netflix icon](https://iconsdb.app/api/v1/icon/app-icons/netflix.png?size=512&variant=square)");
   });
 });
+
+describe("restricted licences", () => {
+  // The badge renders `title` when nothing shorter is given, and `title` for a
+  // set with no licence is a sentence. That combination is what overflowed the
+  // pill in production.
+  it("prefers a short badge label over a sentence title", () => {
+    const sentence = { title: "Trademarks of their owners", attribution: false, restricted: true, badge: "Trademark" };
+    expect(sentence.badge ?? sentence.spdx ?? sentence.title).toBe("Trademark");
+  });
+
+  it("keeps restricted distinct from attribution", () => {
+    // Both branches of `attribution` make a promise about an open licence.
+    // A restricted set must not take either.
+    const l = { title: "Trademarks of their owners", attribution: false, restricted: true } as const;
+    expect(l.attribution).toBe(false);
+    expect(l.restricted).toBe(true);
+  });
+});

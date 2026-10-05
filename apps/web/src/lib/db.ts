@@ -34,6 +34,8 @@ type CollectionRow = {
   license_spdx: string | null;
   license_url: string | null;
   attribution: number;
+  restricted: number;
+  license_badge: string | null;
   homepage: string | null;
   category: string | null;
   palette: number;
@@ -81,6 +83,8 @@ function toCollection(r: CollectionRow): CollectionMeta {
       spdx: r.license_spdx ?? undefined,
       url: r.license_url ?? undefined,
       attribution: r.attribution === 1,
+      restricted: r.restricted === 1,
+      badge: r.license_badge ?? undefined,
     },
     homepage: r.homepage ?? undefined,
     category: r.category ?? undefined,

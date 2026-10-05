@@ -93,7 +93,7 @@ export function registerTools(server: McpServer, origin: string) {
           lines.push(`Sets covering all ${queries.length} concepts (best first): ${full.map(([p]) => p).join(", ")}`, "");
           for (const [p, m] of full.slice(0, 5)) {
             const c = collectionByPrefix.get(p)!;
-            lines.push(`${c.name} (${p}) · ${licenseLabel(c)}${c.license.attribution ? " (attribution)" : ""}:`);
+            lines.push(`${c.name} (${p}) · ${licenseLabel(c)}${c.license.restricted ? " (restricted)" : c.license.attribution ? " (attribution)" : ""}:`);
             for (const q of queries) lines.push(`  ${q} → ${m.get(q)!.id}${m.get(q)!.styles.length > 1 ? ` (${m.get(q)!.styles.join("/")})` : ""}`);
             lines.push("");
           }

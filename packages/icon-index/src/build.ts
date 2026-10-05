@@ -143,6 +143,8 @@ function collectionRow(c: CollectionMeta): string {
     sqlStr(c.license.spdx),
     sqlStr(c.license.url),
     c.license.attribution ? 1 : 0,
+    c.license.restricted ? 1 : 0,
+    sqlStr(c.license.badge),
     sqlStr(c.homepage),
     sqlStr(c.category),
     c.palette ? 1 : 0,
@@ -158,7 +160,7 @@ function collectionRow(c: CollectionMeta): string {
 const ICON_COLS =
   "(id,prefix,name,body,width,height,ox,oy,rotate,hflip,vflip,family,style,category,aliases,animated,raster)";
 const COLLECTION_COLS =
-  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,homepage,category,palette,raster,animated,height,samples,version,suffixes)";
+  "(prefix,name,kind,total,author_name,author_url,author_twitter,license_title,license_spdx,license_url,attribution,restricted,license_badge,homepage,category,palette,raster,animated,height,samples,version,suffixes)";
 
 async function main() {
   await rm(DIST, { recursive: true, force: true });
