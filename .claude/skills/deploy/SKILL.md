@@ -97,6 +97,29 @@ One collection is PNG, not SVG: `app-icons`, prefix `app-icons`, 500 icons. Its 
 **Source of truth** is `packages/icon-index/app-icons/manifest.json`, which *is* committed.
 The PNGs are not: `raw/` and `png/` are gitignored and rebuilt from the manifest.
 
+### Seeding it (the normal path)
+
+Use the **App icons data** workflow — `.github/workflows/app-icons-data.yml`, dispatch-only. It
+runs the migration, artwork, index, blobs, rows and index upload in the one order that cannot
+break, from where the Cloudflare credentials already live:
+
+```bash
+gh workflow run app-icons-data.yml -f ref=<branch>                   # ~55 min, most of it blobs
+gh workflow run app-icons-data.yml -f ref=main -f skip_blobs=true    # rows + index only, ~10 min
+```
+
+`ref` is the branch whose pipeline to run, so a branch's data can be seeded *before* it merges —
+which is the order a new raster set needs (see "Order matters" below). `workflow_dispatch` only
+fires from the default branch, so the workflow file itself must be on `main` even when `ref`
+points elsewhere.
+
+The blob step is ~45 min: each object is a separate `wrangler` process and there are 4,000 of
+them. `skip_blobs` skips both it and the artwork build that only exists to feed it.
+
+### Doing it by hand
+
+Only needed if you are debugging the pipeline itself.
+
 ```bash
 # only when refreshing the ranking — re-queries Apple's charts, ~5 min, rewrites manifest.json
 pnpm --filter @icons-db/icon-index app-icons:harvest
@@ -107,7 +130,7 @@ pnpm --filter @icons-db/icon-index app-icons:png     # mask + downsample -> png/
 
 # then the normal index build, and the blob upload:
 pnpm index:build
-pnpm --filter @icons-db/icon-index app-icons:upload -- --remote     # 4,000 objects, ~8 min
+pnpm --filter @icons-db/icon-index app-icons:upload -- --remote     # 4,000 objects
 ```
 
 `app-icons:upload` takes `--only <slugs>`, `--sizes` and `--variants` to re-push a subset, and
@@ -116,8 +139,11 @@ It skips nothing, so re-running it is a safe overwrite.
 
 Migration `0007_raster.sql` adds the `raster` columns and must be applied before seeding rows.
 
-**Order matters**: upload the blobs *before* seeding the D1 rows. A row without its PNG is a
-404 on a live page; a PNG without its row is invisible.
+**Order matters**, twice over. Blobs before rows: a row without its PNG is a 404 on a live
+page, while a PNG without its row is merely invisible. And **all of it before the Worker
+ships** — `collections.json` is built from the committed manifest, so merging the code first
+puts the set in the library with nothing behind it. For a new raster set that means: seed from
+the branch, *then* merge.
 
 **Licensing is not like the other sets.** These are trademarks, not open-source icons, and
 `/licenses#app-icons` carries the terms and a takedown address. If that address changes, change
