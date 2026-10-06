@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import NextTopLoader from "nextjs-toploader";
 import { OG_IMAGE } from "@/lib/seo";
-import { prefetchIndexScript } from "@/lib/prefetch-index-script";
 import { DevTools } from "@/components/DevTools";
 import "./globals.css";
 
@@ -33,7 +32,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script dangerouslySetInnerHTML={{ __html: prefetchIndexScript }} />
       </head>
       {/* No rail here: each browsing section supplies its own chrome via
           AppChrome, so the (auth) pages can render bare — a consent screen

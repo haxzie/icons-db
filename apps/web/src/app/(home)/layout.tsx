@@ -1,5 +1,11 @@
 import { AppChrome } from "@/components/shell/AppChrome";
+import { PreloadSearchIndex } from "@/components/search/PreloadSearchIndex";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <AppChrome>{children}</AppChrome>;
+  return (
+    <>
+      <PreloadSearchIndex />
+      <AppChrome>{children}</AppChrome>
+    </>
+  );
 }

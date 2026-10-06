@@ -4,6 +4,7 @@ import { collections } from "@/lib/collections";
 import { getCollectionFirstPage } from "@/lib/page-data";
 import { collectionJsonLd, JsonLd, og } from "@/lib/seo";
 import { CollectionBrowser } from "@/components/library/CollectionBrowser";
+import { PreloadSearchIndex } from "@/components/search/PreloadSearchIndex";
 import { IconLinkGrid, IconLinkTile } from "@/components/IconLinkTile";
 import { Pagination, PER_PAGE } from "@/components/library/Pagination";
 
@@ -44,6 +45,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ pre
   return (
     <>
       <JsonLd data={collectionJsonLd(c)} />
+      <PreloadSearchIndex />
       <CollectionBrowser collection={c} collections={collections} initialIcons={icons.map((i) => i.name)}>
         <section className="mt-12 border-t pt-8">
           <h2 className="mb-1 text-lg font-medium">All {c.name} icons, A–Z</h2>

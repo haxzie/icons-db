@@ -2,26 +2,22 @@
 
 const URL_PATH = "/data/search-index.json";
 
-declare global {
-  interface Window {
-    /** Set by <PrefetchSearchIndex />; resolves null if that fetch failed. */
-    __iconsIndex?: Promise<ArrayBuffer | null> | null;
-  }
-}
-
 let pending: Promise<ArrayBuffer> | null = null;
 
 /**
  * The one `/data/search-index.json` response, shared by the grid on the main
- * thread, the keyword-index worker and the semantic worker. Prefers the fetch
- * <PrefetchSearchIndex /> starts during HTML parse; falls back to its own when
- * that script didn't run (a soft client-side navigation onto a search route)
- * or its fetch failed.
+ * thread, the keyword-index worker and the semantic worker — which between
+ * them used to fetch and re-decompress it three times. <PreloadSearchIndex />
+ * has normally had the bytes in flight since the HTML was parsed, so this
+ * resolves from the warmed preload entry rather than starting a fresh trip.
  */
 export function indexBuffer(): Promise<ArrayBuffer> {
   if (!pending) {
-    pending = (window.__iconsIndex ?? Promise.resolve(null))
-      .then((buf) => buf ?? fetch(URL_PATH).then((r) => r.arrayBuffer()))
+    pending = fetch(URL_PATH)
+      .then((r) => {
+        if (!r.ok) throw new Error(`index fetch failed: ${r.status}`);
+        return r.arrayBuffer();
+      })
       .catch((err) => {
         pending = null;
         throw err;
