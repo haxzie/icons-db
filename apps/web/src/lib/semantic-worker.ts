@@ -54,13 +54,19 @@ const CACHE_LIMIT = 500;
 
 const post = (msg: WorkerResponse) => self.postMessage(msg);
 
+// The main thread downloads the search index once and clones the bytes in (see
+// lib/search-index-source.ts), so this worker parses them rather than fetching
+// and re-decompressing the same 1.7 MB response. They arrive on their own
+// message because `init` must not wait on them to start the model download.
+let receiveData: (buffer: ArrayBuffer) => void;
+const dataBytes = new Promise<ArrayBuffer>((resolve) => {
+  receiveData = resolve;
+});
+
 async function init(req: Extract<WorkerRequest, { type: "init" }>) {
   try {
     const [dataRes, embRes, pipe] = await Promise.all([
-      fetch(req.dataUrl).then((r) => {
-        if (!r.ok) throw new Error(`index fetch failed: ${r.status}`);
-        return r.json() as Promise<SearchIndexData>;
-      }),
+      dataBytes.then((buffer) => JSON.parse(new TextDecoder().decode(buffer)) as SearchIndexData),
       fetch(req.embeddingsUrl).then((r) => {
         if (!r.ok) throw new Error(`embeddings fetch failed: ${r.status}`);
         return r.arrayBuffer();
@@ -105,6 +111,7 @@ async function embed(query: string): Promise<Float32Array> {
 self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
   const req = e.data;
   if (req.type === "init") return init(req);
+  if (req.type === "data") return receiveData(req.buffer);
   if (req.type === "search") {
     if (!encode || !data || !textMap || !embeddings) return;
     const t0 = performance.now();

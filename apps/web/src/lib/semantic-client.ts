@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SemanticHit } from "@icons-db/core";
 import type { WorkerRequest, WorkerResponse } from "./semantic-types";
+import { indexBuffer } from "./search-index-source";
 
 const MODEL = "Xenova/bge-small-en-v1.5";
 
@@ -41,7 +42,17 @@ export class LocalSemanticSearch {
       this._status = { state: "error", message: e.message };
       this.onStatus(this._status);
     };
-    this.send({ type: "init", dataUrl: "/data/search-index.json", embeddingsUrl: "/data/embeddings.bin", model: MODEL });
+    // Start the model and embeddings downloads now; feed in the index bytes
+    // the page already fetched once they land, so the worker never pulls that
+    // 1.7 MB response a second time.
+    this.send({ type: "init", embeddingsUrl: "/data/embeddings.bin", model: MODEL });
+    indexBuffer().then(
+      (buffer) => this.send({ type: "data", buffer }),
+      (err) => {
+        this._status = { state: "error", message: err instanceof Error ? err.message : String(err) };
+        this.onStatus(this._status);
+      },
+    );
   }
 
   get status() {
