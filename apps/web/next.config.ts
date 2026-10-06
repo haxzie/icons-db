@@ -24,10 +24,15 @@ const nextConfig: NextConfig = {
       key: "Link",
       value: "</data/search-index.json>; rel=preload; as=fetch; fetchpriority=low",
     };
+    // Only on real document navigations. Prefetching "/" from another page
+    // requests this same path with an RSC header, and Chrome honours a preload
+    // in a Link header whatever the response it came on — which leaked the
+    // index onto every page linking home all over again.
+    const navigationOnly = [{ type: "header" as const, key: "RSC" }];
     return [
-      { source: "/", headers: [preloadIndex] },
+      { source: "/", missing: navigationOnly, headers: [preloadIndex] },
       // Not /library/category, which has no icon grid to search.
-      { source: "/library/:prefix((?!category$)[^/]+)", headers: [preloadIndex] },
+      { source: "/library/:prefix((?!category$)[^/]+)", missing: navigationOnly, headers: [preloadIndex] },
       { source: "/icon/:prefix/:name", headers: [cache] },
       { source: "/library/:prefix", headers: [cache] },
       { source: "/library/:prefix/page/:n", headers: [cache] },
