@@ -255,7 +255,14 @@ export function CollectionBrowser({
                 Library
               </Link>
               <span className="text-fg-subtle">/</span>
-              <span className="max-w-[220px] truncate">{c.name}</span>
+              {/* The set page's h1. Tailwind's preflight drops the default
+                  heading size and margin, so this renders exactly as the span
+                  it replaced — it just stops 91 of the site's biggest landing
+                  pages from having no h1 at all. */}
+              <h1 className="max-w-[220px] truncate">
+                {c.name}
+                <span className="sr-only"> icons</span>
+              </h1>
             </div>
           }
         />

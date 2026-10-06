@@ -9,7 +9,7 @@ import { Pagination, PER_PAGE } from "@/components/library/Pagination";
 
 export const revalidate = 86400;
 
-// Rendered on demand (ISR): prerendering 82 sets in parallel trips D1's rate limit.
+// Rendered on demand (ISR): prerendering every set in parallel trips D1's rate limit.
 export function generateStaticParams() {
   return [];
 }
@@ -43,7 +43,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ pre
   const pages = Math.ceil(total / PER_PAGE);
   return (
     <>
-      <JsonLd data={collectionJsonLd(c)} />
+      <JsonLd data={collectionJsonLd(c, icons)} />
       <CollectionBrowser collection={c} collections={collections} initialIcons={icons.map((i) => i.name)}>
         <section className="mt-12 border-t pt-8">
           <h2 className="mb-1 text-lg font-medium">All {c.name} icons, A–Z</h2>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { concepts, conceptName } from "@/lib/concepts";
-import { og } from "@/lib/seo";
+import { itemList, JsonLd, og, OPEN_SET_COUNT, pageJsonLd } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 
 export const metadata: Metadata = {
-  title: "Free icons by name — every concept across 82 open source sets",
+  title: `Free icons by name — every concept across ${OPEN_SET_COUNT} open source sets`,
   description: "Browse free SVG icons by what they depict: home, search, settings, arrows, users and thousands more, each compared across open source icon sets.",
   alternates: { canonical: "/icons" },
   openGraph: og({ url: "/icons" }),
@@ -20,6 +20,23 @@ export default function IconsIndex() {
   const popular = concepts.slice(0, 60);
   return (
     <main className="flex-1 pb-16">
+      <JsonLd
+        data={pageJsonLd({
+          type: "CollectionPage",
+          url: "/icons",
+          name: "Icons by name",
+          description: metadata.description!,
+          crumbs: [{ name: "Icons", url: "/icons" }],
+          extra: {
+            // The 60 most common concepts, not all 4,440: the list is here to
+            // describe the page, and inlining every one would outweigh it.
+            mainEntity: itemList(
+              popular.map((c) => ({ url: `/icons/${c.slug}`, name: `${conceptName(c.slug)} icons` })),
+              { name: "Icon concepts", total: concepts.length },
+            ),
+          },
+        })}
+      />
       <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Icons by name" />
       <div className="mx-auto w-full max-w-[1400px] px-4 pt-2 md:px-8">
         <p className="mb-8 max-w-3xl text-fg-muted">

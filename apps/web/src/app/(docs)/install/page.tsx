@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { og } from "@/lib/seo";
+import { JsonLd, og, OPEN_ICON_COUNT, ORG_ID, pageJsonLd, SET_COUNT, SITE } from "@/lib/seo";
 import Link from "next/link";
 import { IconGlyph } from "@/components/IconGlyph";
 import { TrademarkNotice } from "@/components/TrademarkNotice";
@@ -8,8 +8,7 @@ import { CopyButton } from "@/components/CopyButton";
 
 export const metadata: Metadata = {
   title: "Install — MCP server for coding agents",
-  description:
-    "Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to 200,000 open source icons. Remote MCP server with semantic search and paste-ready imports.",
+  description: `Connect Claude Code, Cursor, Codex, VS Code, Windsurf, Gemini CLI or Zed to ${OPEN_ICON_COUNT.toLocaleString()} open source icons. Remote MCP server with semantic search and paste-ready imports.`,
   alternates: { canonical: "/install" },
   openGraph: og({ url: "/install" }),
 };
@@ -103,7 +102,7 @@ const TOOLS: { name: string; when: string; args: string }[] = [
     args: "id, format=react|vue|svelte|solid|svg|jsx|iconify|unplugin|css|data-uri|all, color?, size?, package?",
   },
   { name: "get_icons", when: "Batch get_icon for a whole nav bar or toolbar in one round-trip.", args: "ids[], format?, package?" },
-  { name: "list_icon_sets", when: "All 83 sets with counts, licence, attribution flag and npm packages.", args: "kind?, license?, package?" },
+  { name: "list_icon_sets", when: `All ${SET_COUNT} sets with counts, licence, attribution flag and npm packages.`, args: "kind?, license?, package?" },
 ];
 
 const EXAMPLE = `> Add home, settings and log-out icons to the sidebar using our existing icon library.
@@ -134,6 +133,31 @@ const AGENT_LOGOS = [
 export default function InstallPage() {
   return (
     <main className="flex-1 pb-16">
+      <JsonLd
+        data={pageJsonLd({
+          url: "/install",
+          name: "Install IconsDB for your agents",
+          description: metadata.description!,
+          crumbs: [{ name: "Install", url: "/install" }],
+          extra: {
+            mainEntity: {
+              "@type": "SoftwareApplication",
+              "@id": `${SITE}/install#mcp`,
+              name: "IconsDB MCP server",
+              applicationCategory: "DeveloperApplication",
+              applicationSubCategory: "Model Context Protocol server",
+              operatingSystem: "Any",
+              url: URL,
+              softwareHelp: { "@type": "WebPage", url: `${SITE}/install` },
+              provider: { "@id": ORG_ID },
+              featureList: TOOLS.map((t) => t.name),
+              // Free, and we mean no price rather than no listing: an agent
+              // signs in but is never charged.
+              offers: { "@type": "Offer", price: 0, priceCurrency: "USD" },
+            },
+          },
+        })}
+      />
       <div className="mx-auto w-full max-w-3xl px-4 pt-12 md:px-8">
         <div className="flex justify-center">
           {AGENT_LOGOS.map((a, i) => (
@@ -149,7 +173,7 @@ export default function InstallPage() {
         </div>
         <h1 className="mt-6 text-center text-[32px] font-medium leading-tight tracking-tight">Install IconsDB for your agents</h1>
         <p className="mx-auto mt-3 max-w-xl text-center text-fg-muted">
-          Give your coding agent 200,000 open source icons. The IconsDB{" "}
+          Give your coding agent {OPEN_ICON_COUNT.toLocaleString()} open source icons. The IconsDB{" "}
           <a href="https://modelcontextprotocol.io" className="underline decoration-line hover:text-fg" target="_blank" rel="noreferrer">
             MCP
           </a>{" "}
@@ -175,7 +199,7 @@ export default function InstallPage() {
         <ul className="mt-3 list-disc space-y-2 pl-5 text-fg-muted">
           <li>
             <span className="text-fg">Intent search.</span> &ldquo;a shopping cart&rdquo;, &ldquo;log out&rdquo;, &ldquo;a lady cooking&rdquo; — hybrid keyword +
-            semantic ranking across 83 sets.
+            semantic ranking across {SET_COUNT} sets.
           </li>
           <li>
             <span className="text-fg">Package-aware.</span> If the project uses <code className="font-mono text-sm">lucide-react</code>, every result is a paste-ready

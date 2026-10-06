@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import NextTopLoader from "nextjs-toploader";
-import { OG_IMAGE } from "@/lib/seo";
+import { JsonLd, OG_IMAGE, siteJsonLd, SITE_DESCRIPTION, SITE_TITLE } from "@/lib/seo";
 import { DevTools } from "@/components/DevTools";
 import "./globals.css";
 
@@ -11,9 +11,8 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://iconsdb.app"),
-  title: { default: "IconsDB — search 200,000+ open source icons, logos & emoji", template: "%s · IconsDB" },
-  description:
-    "Instant, semantic search across Lucide, Heroicons, Tabler, Phosphor, Material Symbols, Font Awesome, Twemoji, Noto Emoji and 76 more open source sets. Copy as SVG, React, Vue or CSS.",
+  title: { default: SITE_TITLE, template: "%s · IconsDB" },
+  description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
     siteName: "IconsDB",
@@ -32,6 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Publisher and site nodes, once for the whole app: every page's own
+            JSON-LD refers to these by `@id` instead of repeating them. */}
+        <JsonLd data={siteJsonLd()} />
       </head>
       {/* No rail here: each browsing section supplies its own chrome via
           AppChrome, so the (auth) pages can render bare — a consent screen

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { collections } from "@/lib/collections";
 import { listCollectionPage } from "@/lib/db";
+import { collectionJsonLd, JsonLd, og } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { IconLinkGrid, IconLinkTile } from "@/components/IconLinkTile";
 import { LicenseBadge } from "@/components/LicenseBadge";
@@ -16,10 +17,15 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { prefix, n } = await params;
   const c = collections.find((x) => x.prefix === prefix);
   if (!c) return { title: "Set not found", robots: { index: false } };
+  const title = `${c.name} icons — page ${n}`;
+  const description = `Page ${n} of all ${c.total.toLocaleString()} ${c.name} icons, A–Z. ${c.license.title}. Download as SVG/PNG or copy as code.`;
+  const image = `/library/${prefix}/opengraph-image`;
   return {
-    title: `${c.name} icons — page ${n}`,
-    description: `Page ${n} of all ${c.total.toLocaleString()} ${c.name} icons, A–Z. ${c.license.title}. Download as SVG/PNG or copy as code.`,
+    title,
+    description,
     alternates: { canonical: `/library/${prefix}/page/${n}` },
+    openGraph: og({ title, description, url: `/library/${prefix}/page/${n}`, images: [{ url: image, width: 1200, height: 630, type: "image/png", alt: `${c.name} icons` }] }),
+    twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }
 
@@ -34,6 +40,7 @@ export default async function CollectionPageN({ params }: { params: Promise<Para
   if (icons.length === 0) notFound();
   return (
     <main className="flex-1 pb-16">
+      <JsonLd data={collectionJsonLd(c, icons, page)} />
       <PageHeader
         crumbs={[
           { href: "/library", label: "Library" },

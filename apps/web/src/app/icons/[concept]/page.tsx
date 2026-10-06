@@ -6,7 +6,7 @@ import { collectionByPrefix, collections } from "@/lib/collections";
 import { conceptBySlug, conceptName, conceptTitle } from "@/lib/concepts";
 import { getConceptData } from "@/lib/page-data";
 import { relatedConcepts } from "@/lib/search.server";
-import { JsonLd, og, SITE } from "@/lib/seo";
+import { itemList, JsonLd, og, pageJsonLd, SITE } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { IconLinkGrid, IconLinkTile } from "@/components/IconLinkTile";
 import { LicenseBadge } from "@/components/LicenseBadge";
@@ -54,24 +54,23 @@ export default async function ConceptPage({ params }: { params: Promise<{ concep
   return (
     <main className="flex-1 pb-16">
       <JsonLd
-        data={[
-          {
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            name: `${conceptTitle(concept)} icons`,
-            numberOfItems: inSets.length,
-            itemListElement: inSets.map((i, n) => ({ "@type": "ListItem", position: n + 1, url: `${SITE}/icon/${i.prefix}/${i.name}`, name: `${name} — ${collectionByPrefix.get(i.prefix)?.name}` })),
+        data={pageJsonLd({
+          type: "CollectionPage",
+          url: `/icons/${concept}`,
+          name: `${conceptTitle(concept)} icons`,
+          description: `${totalIcons.toLocaleString()} free ${name} icons across ${inSets.length} open source icon sets. Download as SVG or PNG, or copy as React, Vue, Svelte or CSS.`,
+          image: `/icons/${concept}/opengraph-image`,
+          crumbs: [
+            { name: "Icons", url: "/icons" },
+            { name: `${conceptTitle(concept)} icons`, url: `/icons/${concept}` },
+          ],
+          extra: {
+            mainEntity: itemList(
+              inSets.map((i) => ({ url: `/icon/${i.prefix}/${i.name}`, name: `${name} — ${collectionByPrefix.get(i.prefix)?.name}` })),
+              { name: `${conceptTitle(concept)} icons` },
+            ),
           },
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "IconsDB", item: SITE },
-              { "@type": "ListItem", position: 2, name: "Icons", item: `${SITE}/icons` },
-              { "@type": "ListItem", position: 3, name: `${conceptTitle(concept)} icons`, item: `${SITE}/icons/${concept}` },
-            ],
-          },
-        ]}
+        })}
       />
       <PageHeader crumbs={[{ href: "/", label: "Search" }, { href: "/icons", label: "Icons" }]} title={`${conceptTitle(concept)} icons`} />
       <div className="mx-auto w-full max-w-[1400px] px-4 pt-2 md:px-8">

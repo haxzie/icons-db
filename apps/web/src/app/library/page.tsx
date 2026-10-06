@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { og } from "@/lib/seo";
+import { itemList, JsonLd, og, pageJsonLd } from "@/lib/seo";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { CategoryCards } from "@/components/library/CategoryCards";
 import { LibraryTable } from "@/components/library/LibraryTable";
@@ -23,6 +23,21 @@ export default function LibraryPage() {
   const restricted = collections.filter((c) => c.raster);
   return (
     <main className="flex-1 pb-16">
+      <JsonLd
+        data={pageJsonLd({
+          type: "CollectionPage",
+          url: "/library",
+          name: "Icon sets",
+          description: metadata.description!,
+          crumbs: [{ name: "Library", url: "/library" }],
+          extra: {
+            mainEntity: itemList(
+              collections.map((c) => ({ url: `/library/${c.prefix}`, name: `${c.name} — ${c.total.toLocaleString()} icons (${c.license.title})` })),
+              { name: "Icon sets on IconsDB" },
+            ),
+          },
+        })}
+      />
       <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Library" action={<SubmitSetButton />} />
       <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8">
         <p className="text-sm text-fg-muted">

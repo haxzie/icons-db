@@ -53,12 +53,17 @@ export async function GET(_req: Request, ctx: { params: Promise<{ prefix: string
   // A raster set has no .svg endpoint, and pointing image:loc at one would hand
   // Google a sitemap full of 400s. The licence URL may be a site-relative anchor
   // (the app icons point at /licenses#app-icons), which a sitemap cannot carry.
-  const licenseUrl = c.license.url ?? "/licenses";
-  const license = licenseUrl.startsWith("/") ? `${SITE}${licenseUrl}` : licenseUrl;
+  //
+  // A restricted set gets no <image:license> at all: that tag is what earns the
+  // "Licensable" badge in Google Images, and offering a licence on someone
+  // else's trademark is the opposite of what /licenses#app-icons says.
+  const licenseUrl = c.license.restricted ? undefined : (c.license.url ?? "/licenses");
+  const license = licenseUrl?.startsWith("/") ? `${SITE}${licenseUrl}` : licenseUrl;
   const entries = names.map((n) => {
     const loc = `${SITE}/icon/${prefix}/${n}`;
     const image = c.raster ? `${SITE}${rasterUrl(prefix, n, { size: 512 })}` : `${SITE}/api/v1/icon/${prefix}/${n}.svg`;
-    return `  <url><loc>${esc(loc)}</loc><changefreq>monthly</changefreq><image:image><image:loc>${esc(image)}</image:loc><image:title>${esc(`${n} — ${c.name}`)}</image:title><image:license>${esc(license)}</image:license></image:image></url>`;
+    const licenseTag = license ? `<image:license>${esc(license)}</image:license>` : "";
+    return `  <url><loc>${esc(loc)}</loc><changefreq>monthly</changefreq><image:image><image:loc>${esc(image)}</image:loc><image:title>${esc(`${n} — ${c.name}`)}</image:title>${licenseTag}</image:image></url>`;
   });
   return new Response(urlset(entries), { headers });
 }

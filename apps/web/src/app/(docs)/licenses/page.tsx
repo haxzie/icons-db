@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { og } from "@/lib/seo";
+import { itemList, JsonLd, og, pageJsonLd } from "@/lib/seo";
 import Link from "next/link";
 import type { CollectionKind } from "@icons-db/core";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -21,6 +21,21 @@ export default function LicensesPage() {
   const attribution = collections.filter((c) => c.license.attribution);
   return (
     <main className="flex-1 pb-16">
+      <JsonLd
+        data={pageJsonLd({
+          type: "AboutPage",
+          url: "/licenses",
+          name: "Licenses & attribution",
+          description: metadata.description!,
+          crumbs: [{ name: "Licenses", url: "/licenses" }],
+          extra: {
+            mainEntity: itemList(
+              collections.map((c) => ({ url: `/library/${c.prefix}`, name: `${c.name} — ${c.license.title}, by ${c.author.name}` })),
+              { name: "Icon set licenses" },
+            ),
+          },
+        })}
+      />
       <PageHeader crumbs={[{ href: "/", label: "Search" }]} title="Licenses & attribution" width="max-w-4xl" />
       <div className="mx-auto w-full max-w-4xl px-4 md:px-8">
         <p className="text-fg-muted">

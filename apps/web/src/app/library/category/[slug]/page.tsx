@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { categoryBySlug, categorySets, LIBRARY_CATEGORIES } from "@/lib/library-categories";
-import { JsonLd, og, SITE } from "@/lib/seo";
+import { itemList, JsonLd, og, pageJsonLd } from "@/lib/seo";
 import { CategoryCards } from "@/components/library/CategoryCards";
 import { CategoryHero } from "@/components/library/CategoryHero";
 import { LibraryTable } from "@/components/library/LibraryTable";
@@ -40,29 +40,24 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   return (
     <main className="flex-1 pb-16">
       <JsonLd
-        data={[
-          {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            name: `${category.title} icon sets`,
-            description: category.blurb,
-            url: `${SITE}/library/category/${slug}`,
-            mainEntity: {
-              "@type": "ItemList",
-              numberOfItems: sets.length,
-              itemListElement: sets.map((s, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE}/library/${s.prefix}`, name: s.name })),
-            },
+        data={pageJsonLd({
+          type: "CollectionPage",
+          url: `/library/category/${slug}`,
+          name: `${category.title} icon sets`,
+          description: category.blurb,
+          image: `/library/category/${slug}/opengraph-image`,
+          crumbs: [
+            { name: "Library", url: "/library" },
+            { name: "Categories", url: "/library/category" },
+            { name: category.title, url: `/library/category/${slug}` },
+          ],
+          extra: {
+            mainEntity: itemList(
+              sets.map((s) => ({ url: `/library/${s.prefix}`, name: `${s.name} — ${s.total.toLocaleString()} icons (${s.license.title})` })),
+              { name: `${category.title} icon sets` },
+            ),
           },
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "IconsDB", item: SITE },
-              { "@type": "ListItem", position: 2, name: "Library", item: `${SITE}/library` },
-              { "@type": "ListItem", position: 3, name: category.title, item: `${SITE}/library/category/${slug}` },
-            ],
-          },
-        ]}
+        })}
       />
       <CategoryHero category={category} />
       <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8">

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PostSidebar } from "@/components/blog/PostSidebar";
 import { categoryLabel, getPost, getPosts } from "@/lib/blog";
-import { JsonLd, SITE } from "@/lib/seo";
+import { abs, breadcrumbJsonLd, JsonLd, ORG_ID, SITE } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return (await getPosts()).map((p) => ({ slug: p.slug }));
@@ -13,28 +13,48 @@ export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const post = await getPost((await params).slug);
-  if (!post) return { title: "Not found" };
+  if (!post) return { title: "Not found", robots: { index: false } };
+  const image = { url: `/blog/${post.slug}/opengraph-image`, width: 1200, height: 630, type: "image/png", alt: post.title };
   return {
     title: post.title,
     description: post.description,
+    authors: [{ name: post.author }],
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { type: "article", title: post.title, description: post.description, publishedTime: post.date, url: `/blog/${post.slug}`, images: [{ url: `/blog/${post.slug}/opengraph-image`, width: 1200, height: 630, type: "image/png", alt: post.title }] },
+    openGraph: { type: "article", title: post.title, description: post.description, publishedTime: post.date, url: `/blog/${post.slug}`, images: [image] },
+    twitter: { card: "summary_large_image", title: post.title, description: post.description, images: [image.url] },
   };
 }
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
   if (!post) notFound();
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    author: { "@type": "Person", name: post.author },
-    publisher: { "@type": "Organization", name: "IconsDB", url: SITE },
-    mainEntityOfPage: `${SITE}/blog/${post.slug}`,
-  };
+  const url = abs(`/blog/${post.slug}`);
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": `${url}#post`,
+      headline: post.title,
+      description: post.description,
+      datePublished: post.date,
+      dateModified: post.date,
+      url,
+      mainEntityOfPage: { "@type": "WebPage", "@id": `${url}#page`, url },
+      image: [`${url}/opengraph-image`],
+      author: { "@type": "Person", name: post.author },
+      publisher: { "@id": ORG_ID },
+      isPartOf: { "@type": "Blog", "@id": `${SITE}/blog#blog`, name: "IconsDB Blog", url: `${SITE}/blog` },
+      articleSection: categoryLabel(post.category),
+      keywords: post.tags.join(", "),
+      inLanguage: "en",
+      timeRequired: `PT${post.readingMinutes}M`,
+    },
+    breadcrumbJsonLd(`/blog/${post.slug}`, [
+      { name: "Blog", url: "/blog" },
+      { name: categoryLabel(post.category), url: `/blog/category/${post.category}` },
+      { name: post.title, url: `/blog/${post.slug}` },
+    ]),
+  ];
   return (
     <div className="flex flex-1">
       <JsonLd data={jsonLd} />

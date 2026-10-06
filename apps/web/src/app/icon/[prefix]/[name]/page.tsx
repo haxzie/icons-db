@@ -26,12 +26,16 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const title = iconTitle(icon, collection);
   const description = iconDescription(icon, collection);
   const url = `/icon/${prefix}/${icon.name}`;
+  const image = { url: `${url}/opengraph-image`, width: 1200, height: 630, type: "image/png", alt: title };
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, type: "article", images: [{ url: `${url}/opengraph-image`, width: 1200, height: 630, type: "image/png", alt: title }] },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: { title, description, url, type: "article", images: [image] },
+    // A page-level `twitter` replaces the root one wholesale, images included,
+    // so the icon's own card has to be re-attached here or the tweet shows the
+    // generic site card instead.
+    twitter: { card: "summary_large_image", title, description, images: [image.url] },
   };
 }
 
