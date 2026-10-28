@@ -21,11 +21,16 @@ const arg = (name, fallback) => {
   return i === -1 ? fallback : Number(process.argv[i + 1]);
 };
 const hours = arg("hours", 24);
-// Nothing on the icon page needs to touch 500 rows. The pre-fix queries sat at
-// ~7,200; the fixed ones at 5, 71 and 2,398 -- the last being the category
-// branch, which is why it gets its own allowance below.
-const budget = arg("budget", 500);
-const EXEMPT = [/INDEXED BY icons_prefix_category_family_name/, /^SELECT name FROM icons WHERE prefix = \?1 AND name > \?2/];
+// The failure mode this catches is a query losing its index and scanning a whole
+// icon set, which measured 7,200-16,300 rows per call. Measured in production
+// after the fix, the two related-icons queries average 614 and 1,077 -- a spot
+// check on one narrow family had suggested 71, so the threshold is set from the
+// fleet average, not from a single icon. 2,000 sits clear of both and well under
+// a full scan.
+const budget = arg("budget", 2000);
+// listIconNames legitimately pages whole sets, 5,000 rows at a time, to build
+// the per-set sitemaps.
+const EXEMPT = [/^SELECT name FROM icons WHERE prefix = \?1 AND name > \?2/];
 const MIN_CALLS = 1000; // ignore long-tail shapes that cannot move the bill
 
 const sql = `
@@ -35,7 +40,7 @@ SELECT query,
        SUM(sampleInterval) AS calls
 FROM events.d1Queries
 WHERE accountTag = '${ACCOUNT}' AND databaseId = '${DATABASE}'
-  AND timestamp >= now() - INTERVAL ${hours} HOUR
+  AND timestamp >= now() - INTERVAL ${Math.round(hours * 60)} MINUTE
 GROUP BY query ORDER BY rows_read DESC LIMIT 40`;
 
 const { data } = JSON.parse(execFileSync("cf", ["analytics", "sql", "get", "--query", sql], { encoding: "utf8", maxBuffer: 1 << 28 }));
