@@ -222,23 +222,56 @@ export async function getSameFamilyAcrossSets(prefix: string, family: string, li
   return results.map(toLink);
 }
 
+/** Half-open range standing in for `family LIKE '<stem>-%'`. A bound LIKE pattern
+ *  cannot drive an index seek, so this scanned the whole set; a range can. '-' is
+ *  0x2D, so the exclusive upper bound is the stem followed by 0x2E. */
+export const stemRange = (family: string) => {
+  const stem = family.split("-")[0];
+  return [`${stem}-`, `${stem}.`] as const;
+};
+
 export async function getRelatedInSet(prefix: string, family: string, category: string | null, limit = 24): Promise<IconLink[]> {
   const { DB } = await getEnv();
-  const stem = family.split("-")[0];
-  const stmt = category
-    ? DB.prepare(
-        `SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 AND family != ?2 AND (category = ?3 OR family LIKE ?4) GROUP BY family ORDER BY (category = ?3) DESC, name LIMIT ?5`,
-      ).bind(prefix, family, category, `${stem}-%`, limit)
-    : DB.prepare(
-        `SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 AND family != ?2 AND family LIKE ?3 GROUP BY family ORDER BY name LIMIT ?4`,
-      ).bind(prefix, family, `${stem}-%`, limit);
-  const { results } = await stmt.all<LinkRow>();
-  return results.map(toLink);
+  const [lo, hi] = stemRange(family);
+  // Overfetch the siblings: de-duplicating against the category half below can
+  // drop rows, and the range makes them cheap now.
+  const siblings = DB.prepare(
+    `SELECT ${LINK_COLS}, family FROM icons WHERE prefix = ?1 AND family != ?2 AND family >= ?3 AND family < ?4 GROUP BY family ORDER BY name LIMIT ?5`,
+  ).bind(prefix, family, lo, hi, limit * 2);
+  // This was one statement with `category = ?3 OR family LIKE ?4`, and the OR made
+  // it unindexable. Two indexed statements, category first, reproduce the old
+  // `ORDER BY (category = ?3) DESC, name`.
+  const stmts = category
+    ? [
+        DB.prepare(
+          // INDEXED BY is load-bearing: left to itself SQLite picks the family index
+          // to satisfy GROUP BY and rescans the whole set. Forcing the category index
+          // trades a temp B-tree for a seek, and caps this at the category's size
+          // (~2.4k rows measured) instead of the set's (up to 20k).
+          `SELECT ${LINK_COLS}, family FROM icons INDEXED BY icons_prefix_category_family_name WHERE prefix = ?1 AND family != ?2 AND category = ?3 GROUP BY family ORDER BY name LIMIT ?4`,
+        ).bind(prefix, family, category, limit),
+        siblings,
+      ]
+    : [siblings];
+  const batches = await Promise.all(stmts.map((s) => s.all<LinkRow & { family: string }>()));
+  const seen = new Set<string>();
+  const out: IconLink[] = [];
+  for (const { results } of batches) {
+    for (const r of results) {
+      if (seen.has(r.family)) continue;
+      seen.add(r.family);
+      out.push(toLink(r));
+      if (out.length === limit) return out;
+    }
+  }
+  return out;
 }
 
 export async function listCollectionPage(prefix: string, page: number, perPage: number): Promise<{ icons: IconLink[]; total: number }> {
   const { DB } = await getEnv();
-  const total = await DB.prepare("SELECT COUNT(*) AS n FROM icons WHERE prefix = ?1").bind(prefix).first<{ n: number }>();
+  // collections.total is a verified-exact mirror of COUNT(*) for the set, and a
+  // primary-key lookup instead of a ~16k-row scan.
+  const total = await DB.prepare("SELECT total AS n FROM collections WHERE prefix = ?1").bind(prefix).first<{ n: number }>();
   const { results } = await DB.prepare(`SELECT ${LINK_COLS} FROM icons WHERE prefix = ?1 ORDER BY name LIMIT ?2 OFFSET ?3`)
     .bind(prefix, perPage, (page - 1) * perPage)
     .all<LinkRow>();
